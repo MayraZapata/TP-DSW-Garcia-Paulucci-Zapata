@@ -67,7 +67,7 @@ Regularidad:
 |Req|Detalle|
 |:-|:-|
 |CRUD simple|1. CRUD  Paciente<br>2. CRUD Médico<br>3. CRUD Especialidad|
-|CRUD dependiente|1. CRUD Turno {depende de} CRUD Tipo Paciente, Médico y Especialidad<br>2. CRUD Atención {depende de} CRUD Turno|
+|CRUD dependiente|1. CRUD Turno {depende de} CRUD Paciente, Médico y Especialidad<br>2. CRUD Atención {depende de} CRUD Turno|
 | Listado<br>+<br>detalle | 1. Listado de turnos filtrado por fecha y/o médico → detalle muestra información completa del turno, paciente y médico<br>2. Listado de pacientes → detalle muestra datos del paciente y sus turnos |
 | CUU/Epic  | 1. Reservar turno médico (selección de paciente, especialidad, médico y fecha)<br>2. Registrar atención médica (diagnóstico, observaciones y estado del turno) |
 
