@@ -1,21 +1,3 @@
- HEAD
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
 # Propuesta TP-DSW-303
 
 ## Grupo
@@ -85,7 +67,7 @@ Regularidad:
 |Req|Detalle|
 |:-|:-|
 |CRUD simple|1. CRUD  Paciente<br>2. CRUD Médico<br>3. CRUD Especialidad|
-|CRUD dependiente|1. CRUD Turno {depende de} CRUD Paciente, Médico y Especialidad<br>2. CRUD Atención {depende de} CRUD Turno|
+|CRUD dependiente|1. CRUD Turno {depende de} CRUD Tipo Paciente, Médico y Especialidad<br>2. CRUD Atención {depende de} CRUD Turno|
 | Listado<br>+<br>detalle | 1. Listado de turnos filtrado por fecha y/o médico → detalle muestra información completa del turno, paciente y médico<br>2. Listado de pacientes → detalle muestra datos del paciente y sus turnos |
 | CUU/Epic  | 1. Reservar turno médico (selección de paciente, especialidad, médico y fecha)<br>2. Registrar atención médica (diagnóstico, observaciones y estado del turno) |
 
@@ -102,4 +84,3 @@ Adicionales para Aprobación
 | CUU/Epic | 1. Cancelación de turno<br>2. Reprogramación de turno |
 | Otros    | 1. Validación de disponibilidad de médicos para evitar superposición de turnos<br>2. Control de conflictos de horarios en tiempo real |
 
-ec5ebc55decc97e4dd1a9f085058fad112fe662f
