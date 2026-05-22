@@ -30,7 +30,6 @@ class Medico {
   id
   nombre
   apellido
-  especialidad
   disponible
 }
 
