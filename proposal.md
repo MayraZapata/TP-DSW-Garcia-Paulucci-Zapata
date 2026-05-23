@@ -79,16 +79,16 @@ class Usuario {
 
 class Administrador {}
 
-Usuario --> Paciente
-Usuario --> Administrador
-Usuario --> Medico
+Usuario <|-- Paciente
+Usuario <|-- Administrador
+Usuario <|-- Medico
 ObraSocial "1" --> "0..*" Paciente
 Paciente "1" --> "0..*" Atencion : solicita
 Medico "1" --> "0..*" Atencion : atiende
 Diagnostico "0..*" --> "0..*" Atencion  
 Especialidad "1" --> "0..*" Medico : pertenece
-Atencion --> Urgencia
-Atencion --> Consulta
+Atencion <|-- Urgencia
+Atencion <|-- Consulta
 TipoUrgencia "1" --> "0..*" Urgencia
 
 ```
