@@ -82,14 +82,15 @@ class Administrador {}
 Usuario <|-- Paciente
 Usuario <|-- Administrador
 Usuario <|-- Medico
-ObraSocial "1" --> "0..*" Paciente
+ObraSocial "1" --> "0..*" Paciente : pertenece
 Paciente "1" --> "0..*" Atencion : solicita
 Medico "1" --> "0..*" Atencion : atiende
-Diagnostico "0..*" --> "0..*" Atencion  
+Diagnostico "0..*" --> "0..*" Atencion 
 Especialidad "1" --> "0..*" Medico : pertenece
+TipoUrgencia "1" --> "0..*" Urgencia : clasifica
 Atencion <|-- Urgencia
 Atencion <|-- Consulta
-TipoUrgencia "1" --> "0..*" Urgencia
+
 
 ```
 
