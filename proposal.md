@@ -12,7 +12,7 @@
 
 ## Tema
 ### Descripción
-El sistema propuesto es una aplicación web destinada a la gestión de turnos médicos para un centro de salud. Permite administrar pacientes, médicos y especialidades, facilitando la asignación de turnos según disponibilidad y evitando superposición de horarios. La aplicación contempla distintos tipos de usuarios: los pacientes pueden solicitar turnos, mientras que los profesionales acceden a la gestión y visualización de sus turnos y pacientes asignados. Además, permite registrar las atenciones realizadas, brindando un seguimiento básico del historial de cada paciente.
+El sistema propuesto es una aplicación web destinada a la gestión de turnos médicos para un centro de salud. Permite administrar las atenciones entre pacientes y médicos, facilitando la asignación de turnos según disponibilidad y evitando superposición de horarios. La aplicación contempla distintos tipos de usuarios: los administradores registran a los medicos, visualizan el historial clinico del paciente y verifican los turnos vencidos (no asistidos), los pacientes pueden solicitar turnos y los profesionales acceden a la gestión y visualización de sus turnos y pacientes asignados. Además, permite clasificar las atenciones en consultas (las realizadas por turno) o en una urgencia que deba ser registrada por el administrador.
 
 ### Modelo de Dominio
 
