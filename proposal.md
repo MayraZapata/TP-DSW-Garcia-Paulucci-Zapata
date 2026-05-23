@@ -22,7 +22,7 @@ class Paciente {
   idPaciente
   nombrePaciente
   apellidoPaciente
-  dirección
+  direccion
   telefono
   historialClinico
   fechaNacimiento
@@ -44,8 +44,8 @@ class Especialidad {
 class Atencion {
   idAtencion
   nroIngreso
-  fechaAtención
-  horaAtención
+  fechaAtencion
+  horaAtencion
 }
 
 class Consulta {
@@ -54,30 +54,30 @@ class Consulta {
 
 class Urgencia {}
 
-Class TipoUrgencia {
+class TipoUrgencia {
   idTipo
   descripciónTipo
 }
 
-Class Diagnostico {
+class Diagnostico {
   idDiagnostico
   nombreDiagnostico
   tratamiento
 }
 
-Class ObraSocial {
+class ObraSocial {
   idObra
-  nombre
+  nombreObra
   monto
 }
 
-Class Usuario {
+class Usuario {
   contraseña
   idUsuario
   nombreUsuario
 }
 
-Class Administrador {}
+class Administrador {}
 
 Usuario --> Paciente
 Usuario --> Administrador
