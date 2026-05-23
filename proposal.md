@@ -88,8 +88,8 @@ Medico "1" --> "0..*" Atencion : atiende
 Diagnostico "0..*" --> "0..*" Atencion 
 Especialidad "1" --> "0..*" Medico : pertenece
 TipoUrgencia "1" --> "0..*" Urgencia : clasifica
-Atencion <|-- Urgencia
 Atencion <|-- Consulta
+Atencion <|-- Urgencia
 
 
 ```
