@@ -19,43 +19,78 @@ El sistema propuesto es una aplicación web destinada a la gestión de turnos m�
 ```mermaid
 classDiagram
 class Paciente {
-  id
-  nombre
-  apellido
-  dni
+  idPaciente
+  nombrePaciente
+  apellidoPaciente
+  dirección
   telefono
+  historialClinico
+  fechaNacimiento
+  nroDni
 }
 
 class Medico {
-  id
-  nombre
-  apellido
-  disponible
+  matricula
+  nombreMedico
+  apellidoMedico
 }
 
 class Especialidad {
-  id
+  idEspecialidad
   nombre
-}
-
-class Turno {
-  id
-  fecha
-  estado
+  descripción
 }
 
 class Atencion {
-  id
-  diagnostico
-  observaciones
+  idAtencion
+  nroIngreso
+  fechaAtención
+  horaAtención
+}
+
+class Consulta {
   estado
 }
 
-Paciente "1" --> "0..*" Turno : solicita
-Medico "1" --> "0..*" Turno : atiende
+class Urgencia {}
+
+Class TipoUrgencia {
+  idTipo
+  descripciónTipo
+}
+
+Class Diagnostico {
+  idDiagnostico
+  nombreDiagnostico
+  tratamiento
+}
+
+Class ObraSocial {
+  idObra
+  nombre
+  monto
+}
+
+Class Usuario {
+  contraseña
+  idUsuario
+  nombreUsuario
+}
+
+Class Administrador {}
+
+Usuario --> Paciente
+Usuario --> Administrador
+Usuario --> Medico
+ObraSocial "1" --> "0..*" Paciente
+Paciente "1" --> "0..*" Atencion : solicita
+Medico "1" --> "0..*" Atencion : atiende
+Diagnostico "0..*" --> "0..*" Atencion  
 Especialidad "1" --> "0..*" Medico : pertenece
-Especialidad "1" --> "0..*" Turno : clasifica
-Turno "1" --> "0..1" Atencion : genera
+Atencion --> Urgencia
+Atencion --> Consulta
+TipoUrgencia "1" --> "0..*" Urgencia
+
 ```
 
 
@@ -65,21 +100,14 @@ Turno "1" --> "0..1" Atencion : genera
 Regularidad:
 |Req|Detalle|
 |:-|:-|
-|CRUD simple|1. CRUD  Paciente<br>2. CRUD Médico<br>3. CRUD Especialidad|
-|CRUD dependiente|1. CRUD Turno {depende de} CRUD Tipo Paciente, Médico y Especialidad<br>2. CRUD Atención {depende de} CRUD Turno|
+|CRUD simple|1. CRUD  Paciente<br>2. CRUD Diagnostico<br>3. CRUD Especialidad|
+|CRUD dependiente|1. CRUD Urgencia {depende de} CRUD TipoUrgencia<br>2. CRUD Medico {depende de} CRUD Especialidad|
 | Listado<br>+<br>detalle | 1. Listado de turnos filtrado por fecha y/o médico → detalle muestra información completa del turno, paciente y médico<br>2. Listado de pacientes → detalle muestra datos del paciente y sus turnos |
-| CUU/Epic  | 1. Reservar turno médico (selección de paciente, especialidad, médico y fecha)<br>2. Registrar atención médica (diagnóstico, observaciones y estado del turno) |
+| CUU/Epic  | 1. Reservar turno médico de consulta <br>2. Cancelar turno |
 
 Adicionales para Aprobación
 |Req|Detalle|
 |:-|:-|
-| CRUD     | 1. CRUD Paciente<br>2. CRUD Médico<br>3. CRUD Especialidad<br>4. CRUD Turno<br>5. CRUD Atención |
-| CUU/Epic | 1. Reservar turno médico<br>2. Registrar atención médica<br>3. Consulta de historial clínico del paciente (visualización de atenciones previas) |
-
-### Alcance Adicional Voluntario
-|Req|Detalle|
-|:-|:-|
-| Listados | 1. Listado de turnos filtrado por estado (pendiente, confirmado, cancelado)<br>2. Listado de médicos filtrado por especialidad |
-| CUU/Epic | 1. Cancelación de turno<br>2. Reprogramación de turno |
-| Otros    | 1. Validación de disponibilidad de médicos para evitar superposición de turnos<br>2. Control de conflictos de horarios en tiempo real |
+| CRUD     | 1. CRUD TipoUrgencia<br>2. CRUD ObraSocial<br>3. CRUD Usuario |
+| CUU/Epic | 1. Verificar los estados de turnos por fechas<br>2. Consultar turnos del medico<br>3. Consulta de historial clínico del paciente (visualización de atenciones previas)<br>4. Registrar urgencia |
 
