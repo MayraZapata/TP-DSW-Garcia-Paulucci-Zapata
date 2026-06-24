@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Médicos</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+    <button class="volver" onclick="location.href='menu.html'">  Volver  </button>
+    <div class="contenedor">
+        <h1>CRUD Médicos</h1>
+        <input type="text" id="nombre" placeholder="Nombre">
+        <input type="text" id="apellido" placeholder="Apellido">
+        <button onclick="crearMedico()"> Guardar Médico </button>
+        <hr>
+        <h2>Médicos registrados</h2>
+        <ul id="listaMedicos"></ul>
+    </div>
+    <script src="js/medicos.js"></script>
+</body>
+
+</html>
