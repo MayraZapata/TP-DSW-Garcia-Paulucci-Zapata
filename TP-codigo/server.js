@@ -189,3 +189,4 @@ app.put("/medicos/:id", (req, res) => {
 app.listen(3000, () => {
     console.log("Servidor ejecutándose en puerto 3000");
 });
+
