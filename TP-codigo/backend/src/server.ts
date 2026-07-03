@@ -3,7 +3,8 @@ import express from "express";
 import { RowDataPacket } from "mysql2";
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("../frontend"));
+
 
 console.log("Servidor iniciado");
 app.post("/login", (req, res) => {
@@ -15,11 +16,10 @@ app.post("/login", (req, res) => {
             if (error) {
                 return res.status(500).json(error);
             }
-            if (pacientes.length > 0) { //porque length esta subrayado en rojo?
-                //si el length esta subrayado en rojo, es posible que el tipo de datos de pacientes no sea un array. Asegurate de que la consulta a la base de datos devuelve un array de resultados.
+            if (pacientes.length > 0) { 
                 return res.json({
                     rol: "PACIENTE",
-                    nombre: pacientes[0].nombre  //acá tmb paciente está subrayado en rojo, es posible que el tipo de datos de pacientes no sea un array. Asegurate de que la consulta a la base de datos devuelve un array de resultados.
+                    nombre: pacientes[0].nombre  
                 });
             }
             conexion.query<RowDataPacket[]>(

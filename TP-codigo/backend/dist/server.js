@@ -2,7 +2,7 @@ import conexion from "./db.js";
 import express from "express";
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("../frontend"));
 console.log("Servidor iniciado");
 app.post("/login", (req, res) => {
     const { usuario, password } = req.body;
@@ -10,11 +10,10 @@ app.post("/login", (req, res) => {
         if (error) {
             return res.status(500).json(error);
         }
-        if (pacientes.length > 0) { //porque length esta subrayado en rojo?
-            //si el length esta subrayado en rojo, es posible que el tipo de datos de pacientes no sea un array. Asegurate de que la consulta a la base de datos devuelve un array de resultados.
+        if (pacientes.length > 0) {
             return res.json({
                 rol: "PACIENTE",
-                nombre: pacientes[0].nombre //acá tmb paciente está subrayado en rojo, es posible que el tipo de datos de pacientes no sea un array. Asegurate de que la consulta a la base de datos devuelve un array de resultados.
+                nombre: pacientes[0].nombre
             });
         }
         conexion.query("SELECT * FROM medico WHERE usuario = ? AND password = ?", [usuario, password], (error, medicos) => {
