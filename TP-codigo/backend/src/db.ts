@@ -3,7 +3,7 @@ import mysql from "mysql2";
 const conexion = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Clifor378",
+    password: "ContraseñaSQL", // Cambiar por la contraseña de tu base de datos
     database: "gestion_turnos"
 });
 
