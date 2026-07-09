@@ -1,0 +1,16 @@
+import { MikroORM } from "@mikro-orm/mysql";
+import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
+export const orm = await MikroORM.init({
+    entities: ['dist/**/*.entity.js'],
+    entitiesTs: ['src/**/*.entity.ts'],
+    dbName: 'gestion_turnos',
+    clientUrl: 'mysql://root:Clifor378@localhost:3306/gestion_turnos',
+    highlighter: new SqlHighlighter(),
+    debug: true,
+});
+export const syncSchema = async () => {
+    const generator = orm.getSchemaGenerator();
+    // Lo dejamos comentado para no borrar la BD por accidente
+    // await generator.dropSchema();
+};
+//# sourceMappingURL=orm.js.map

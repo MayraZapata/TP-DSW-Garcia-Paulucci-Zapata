@@ -11,8 +11,15 @@
     <button class="volver" onclick="location.href='menu.html'">  Volver  </button>
     <div class="contenedor">
         <h1>CRUD Médicos</h1>
+        <input type="number" id="matricula" placeholder="Matrícula">
         <input type="text" id="nombre" placeholder="Nombre">
         <input type="text" id="apellido" placeholder="Apellido">
+        <input type="text" id="nombreUsuario" placeholder="Nombre de Usuario">
+        <input type="password" id="password" placeholder="Contraseña">
+        <label for="idEspecialidad"> Especialidad </label>
+        <select id="idEspecialidad">
+            <option value=""> General </option>
+        </select>
         <button onclick="crearMedico()"> Guardar Médico </button>
         <hr>
         <h2>Médicos registrados</h2>
@@ -22,3 +29,4 @@
 </body>
 
 </html>
+

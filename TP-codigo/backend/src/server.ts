@@ -1,4 +1,16 @@
-import conexion from "./db.js";
+import app from "./app.js";
+
+app.listen(3000, () => {
+
+    console.log(
+        "Server running on http://localhost:3000/"
+    );
+
+});
+
+
+
+/*import conexion from "./db.js";
 import express from "express";
 import { RowDataPacket } from "mysql2";
 const app = express();
@@ -192,3 +204,4 @@ app.listen(3000, () => {
     console.log("Servidor ejecutándose en puerto 3000");
 });
 
+*/
