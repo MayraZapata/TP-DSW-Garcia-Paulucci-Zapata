@@ -29,13 +29,16 @@ export async function findOne(req: Request, res: Response) {
 
 export async function add(req: Request, res: Response) {
 
-    if (await existeUsuario(req.body.nombreUsuario)) {
-            return res.status(400).json({ message: "El nombre de usuario ya existe"});
-    }
-
     const medicoExistente = await em.findOne(Medico, { matricula: Number(req.body.matricula) });
+    
+
     if (medicoExistente) {
         return res.status(400).json({ message: "La matrícula ya existe"});
+    }
+
+
+    if (await existeUsuario(req.body.nombreUsuario)) {
+            return res.status(400).json({ message: "El nombre de usuario ya existe"});
     }
 
     let especialidad = null;
