@@ -23,7 +23,12 @@ export async function login(
     if (paciente) {
         return res.json({
             rol: "PACIENTE",
-            nombre: paciente.nombre,
+            usuario: {
+                idPaciente: paciente.idPaciente, // <--- Enviamos el ID del paciente
+                nombre: paciente.nombre,
+                apellido: paciente.apellido,
+                dni: paciente.dni,
+            },
         });
     }
 
@@ -36,7 +41,11 @@ export async function login(
     if (medico) {
         return res.json({
             rol: "MEDICO",
-            nombre: medico.nombre,
+            usuario: {
+                matricula: medico.matricula, // <--- Enviamos la matrícula del médico
+                nombre: medico.nombre,
+                apellido: medico.apellido,
+            },
         });
     }
 

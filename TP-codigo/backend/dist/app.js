@@ -10,6 +10,7 @@ import { medicoRouter } from "./usuarios/medico/medico.routes.js";
 import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
 import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";
 import { loginRouter } from "./cuu/login/login.routes.js";
+import { atencionRouter } from "./turno/atencion/Atencion.routes.js";
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ app.use("/api/medicos", medicoRouter);
 app.use("/api/pacientes", pacienteRouter);
 app.use("/api/obrasSociales", obraSocialRouter);
 app.use("/api/administradores", administradorRouter);
+app.use("/api/atenciones", atencionRouter);
 // Ruta no encontrada
 app.use((_, res) => {
     return res.status(404).json({ message: "Recurso no encontrado" });

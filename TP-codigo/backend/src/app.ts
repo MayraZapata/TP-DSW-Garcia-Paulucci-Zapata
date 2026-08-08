@@ -12,6 +12,7 @@ import { medicoRouter } from "./usuarios/medico/medico.routes.js";
 import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
 import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";
 import { loginRouter } from "./cuu/login/login.routes.js";
+import { atencionRouter } from "./turno/atencion/Atencion.routes.js";
 
 const app = express();
 
@@ -41,7 +42,7 @@ app.use("/api/medicos",medicoRouter);
 app.use("/api/pacientes", pacienteRouter);
 app.use("/api/obrasSociales", obraSocialRouter);
 app.use("/api/administradores", administradorRouter);
-
+app.use("/api/atenciones", atencionRouter);
 
 // Ruta no encontrada
 app.use((_, res) => {

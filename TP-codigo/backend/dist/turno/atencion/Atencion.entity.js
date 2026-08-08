@@ -15,19 +15,22 @@ import { TipoUrgencia } from "../tipoUrgencia/tipoUrgencia.entity.js";
 export let Atencion = class Atencion {
 };
 __decorate([
-    PrimaryKey(),
+    PrimaryKey({ autoincrement: true, fieldName: 'idAtencion' }),
     __metadata("design:type", Number)
 ], Atencion.prototype, "idAtencion", void 0);
 __decorate([
-    Property(),
+    Property({ fieldName: 'fechaAtencion' }) // <-- Agregamos fieldName
+    ,
     __metadata("design:type", Date)
 ], Atencion.prototype, "fechaAtencion", void 0);
 __decorate([
-    Property(),
+    Property({ fieldName: 'horaAtencion' }) // <-- Agregamos fieldName
+    ,
     __metadata("design:type", String)
 ], Atencion.prototype, "horaAtencion", void 0);
 __decorate([
-    Property(),
+    Property({ fieldName: 'nroIngreso' }) // <-- Agregamos fieldName
+    ,
     __metadata("design:type", Number)
 ], Atencion.prototype, "nroIngreso", void 0);
 __decorate([
@@ -35,11 +38,11 @@ __decorate([
     __metadata("design:type", String)
 ], Atencion.prototype, "estado", void 0);
 __decorate([
-    ManyToOne(() => Paciente),
+    ManyToOne(() => Paciente, { fieldName: 'idPaciente' }),
     __metadata("design:type", Paciente)
 ], Atencion.prototype, "paciente", void 0);
 __decorate([
-    ManyToOne(() => Medico),
+    ManyToOne(() => Medico, { fieldName: 'matricula' }),
     __metadata("design:type", Medico)
 ], Atencion.prototype, "medico", void 0);
 __decorate([

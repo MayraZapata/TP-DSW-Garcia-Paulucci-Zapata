@@ -21,8 +21,4 @@ export const syncSchema = async () => {
 
     const generator = orm.getSchemaGenerator();
 
-    // Lo dejamos comentado para no borrar la BD por accidente
-
-    // await generator.dropSchema();
-
 };

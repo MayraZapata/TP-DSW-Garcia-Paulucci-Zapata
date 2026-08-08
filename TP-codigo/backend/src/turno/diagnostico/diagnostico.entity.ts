@@ -4,10 +4,10 @@ import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 @Entity()
 export class Diagnostico {
 
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: "idDiagnostico" })
     idDiagnostico!: number;
 
-    @Property()
+    @Property({ fieldName: "nombreDiagnostico" })
     nombreDiagnostico!: string;
 
     @Property({ nullable: true })

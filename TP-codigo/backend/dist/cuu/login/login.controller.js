@@ -13,7 +13,12 @@ export async function login(req, res) {
     if (paciente) {
         return res.json({
             rol: "PACIENTE",
-            nombre: paciente.nombre,
+            usuario: {
+                idPaciente: paciente.idPaciente,
+                nombre: paciente.nombre,
+                apellido: paciente.apellido,
+                dni: paciente.dni,
+            },
         });
     }
     // Buscar médico
@@ -24,7 +29,11 @@ export async function login(req, res) {
     if (medico) {
         return res.json({
             rol: "MEDICO",
-            nombre: medico.nombre,
+            usuario: {
+                matricula: medico.matricula,
+                nombre: medico.nombre,
+                apellido: medico.apellido,
+            },
         });
     }
     // Buscar administrador
