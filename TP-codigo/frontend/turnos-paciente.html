@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Turnos - Paciente</title>
+  <link rel="stylesheet" href="css/estilos.css"> <!-- Ajustá según tu CSS -->
+</head>
+<body>
+  <div class="container">
+    <h2>Mis Turnos Reservados</h2>
+    
+    <table border="1" style="width:100%; text-align: left; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Médico</th>
+          <th>Especialidad</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tablaMisTurnos">
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+
+    <br>
+    <button onclick="location.href='menu.html'">Volver al Menú</button>
+  </div>
+
+  <script src="js/turnos-paciente.js"></script>
+</body>
+</html>
