@@ -1,4 +1,21 @@
+
+/*Creación y uso de la Base de datos*/
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `gestion_turnos` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 USE gestion_turnos;
+
+
+
+/*Eliminación de tablas para reiniciar la base de datos*/
+DROP TABLE IF EXISTS `atencion`;
+DROP TABLE IF EXISTS `medico`;
+DROP TABLE IF EXISTS `paciente`;
+DROP TABLE IF EXISTS `tipoUrgencia`;
+DROP TABLE IF EXISTS `diagnostico`;
+DROP TABLE IF EXISTS `obraSocial`;
+DROP TABLE IF EXISTS `especialidad`;
+DROP TABLE IF EXISTS `administrador`;
+
+
 
 
 /*Crear tabla Especialidad*/
@@ -110,4 +127,13 @@ CREATE TABLE IF NOT EXISTS atencion (
     FOREIGN KEY(idTipo)
         REFERENCES TipoUrgencia(idTipo)
 );
+
+
+
+
+
+/* Usuario común para el TP */
+DROP USER IF EXISTS 'UsuarioBD'@'%';
+create user UsuarioBD@'%' identified by 'SqlPassword-DSW';
+grant select, insert, update, delete on gestion_turnos.* to UsuarioBD@'%';
 
