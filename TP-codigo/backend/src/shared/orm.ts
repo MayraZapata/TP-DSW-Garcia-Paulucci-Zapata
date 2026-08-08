@@ -9,7 +9,7 @@ export const orm = await MikroORM.init({
     dbName: 'gestion_turnos',
 
     clientUrl:
-        'mysql://root:Clifor378@localhost:3306/gestion_turnos',
+        'mysql://UsuarioBD:SqlPassword-DSW@localhost:3306/gestion_turnos',
 
     highlighter: new SqlHighlighter(),
 
