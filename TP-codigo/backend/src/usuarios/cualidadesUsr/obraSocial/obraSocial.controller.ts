@@ -29,7 +29,16 @@ export async function findOne(req: Request, res: Response){
 //ADD
 //Crear y guardar una nueva especialidad en la base de datos
 export async function add( req: Request, res: Response) {
-    const obraSocial = em.create(ObraSocial,req.body);
+
+    const nombreObra = req.body.nombreObra?.trim();
+
+    // Evitar cargar dos veces la misma obra social por nombre
+    const existente = await em.findOne(ObraSocial, { nombreObra });
+    if (existente) {
+        return res.status(400).json({ message: "Ya existe una obra social con ese nombre" });
+    }
+
+    const obraSocial = em.create(ObraSocial, { ...req.body, nombreObra });
     await em.persistAndFlush(obraSocial);
 
     res.status(201).json(obraSocial);
@@ -43,6 +52,16 @@ export async function update(req: Request, res: Response) {
     const obraSocial = await em.findOne(ObraSocial, { idObra: Number(req.params.id) });
     if (!obraSocial)
         return res.status(404).json({message: "Obra Social inexistente" });
+
+    // Si se está cambiando el nombre, chequear que no choque con otra obra social ya cargada
+    if (req.body.nombreObra) {
+        const nombreObra = req.body.nombreObra.trim();
+        const existente = await em.findOne(ObraSocial, { nombreObra });
+        if (existente && existente.idObra !== obraSocial.idObra) {
+            return res.status(400).json({ message: "Ya existe otra obra social con ese nombre" });
+        }
+        req.body.nombreObra = nombreObra;
+    }
 
     em.assign(obraSocial, req.body);
 
