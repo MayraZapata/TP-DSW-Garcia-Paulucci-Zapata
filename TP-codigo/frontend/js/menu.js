@@ -10,6 +10,8 @@ const btnTurnos =
     document.getElementById("btnTurnos");
 const btnObraSocial =
     document.getElementById("btnObraSocial");
+const btnEspecialidad =
+    document.getElementById("btnEspecialidad");
 if (!rol) {
     location.href = "login.html";
 }
@@ -26,6 +28,8 @@ else if (rol === "MEDICO") {
         "none";
     btnObraSocial.style.display =
         "none";
+    btnEspecialidad.style.display =
+        "none";
 }
 
 else if (rol === "PACIENTE") {
@@ -36,6 +40,8 @@ else if (rol === "PACIENTE") {
     btnMedicos.style.display =
         "none";
     btnObraSocial.style.display =
+        "none";
+    btnEspecialidad.style.display =
         "none";
 }
 
