@@ -22,9 +22,16 @@ export async function findOne(req, res) {
 //ADD
 //Crear y guardar un nuevo diagnostico en la base de datos
 export async function add(req, res) {
+    const nombreDiagnostico = req.body.nombreDiagnostico?.trim();
+    // Evitar cargar dos veces el mismo diagnóstico como filas distintas del catálogo
+    // (esto NO limita que un paciente tenga el mismo diagnóstico en varias Atenciones)
+    const existente = await em.findOne(Diagnostico, { nombreDiagnostico });
+    if (existente) {
+        return res.status(400).json({ message: "Ya existe un diagnóstico con ese nombre" });
+    }
     // em.create arma la entidad en memoria a partir del body (nombreDiagnostico, tratamiento)
     // y persistAndFlush la inserta efectivamente en la base de datos
-    const diagnostico = em.create(Diagnostico, req.body);
+    const diagnostico = em.create(Diagnostico, { ...req.body, nombreDiagnostico });
     await em.persistAndFlush(diagnostico);
     res.status(201).json(diagnostico);
 }
@@ -34,6 +41,15 @@ export async function update(req, res) {
     const diagnostico = await em.findOne(Diagnostico, { idDiagnostico: Number(req.params.id) });
     if (!diagnostico)
         return res.status(404).json({ message: "Diagnostico inexistente" });
+    // Si se está cambiando el nombre, chequear que no choque con otro diagnóstico ya cargado
+    if (req.body.nombreDiagnostico) {
+        const nombreDiagnostico = req.body.nombreDiagnostico.trim();
+        const existente = await em.findOne(Diagnostico, { nombreDiagnostico });
+        if (existente && existente.idDiagnostico !== diagnostico.idDiagnostico) {
+            return res.status(400).json({ message: "Ya existe otro diagnóstico con ese nombre" });
+        }
+        req.body.nombreDiagnostico = nombreDiagnostico;
+    }
     // em.assign copia sobre la entidad ya encontrada los campos que vengan en el body
     em.assign(diagnostico, req.body);
     await em.flush();

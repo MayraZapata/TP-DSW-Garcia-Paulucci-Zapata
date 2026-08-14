@@ -12,6 +12,10 @@ const btnObraSocial =
     document.getElementById("btnObraSocial");
 const btnEspecialidad =
     document.getElementById("btnEspecialidad");
+const btnDiagnostico =
+    document.getElementById("btnDiagnostico");
+const btnTipoUrgencia =
+    document.getElementById("btnTipoUrgencia");
 if (!rol) {
     location.href = "login.html";
 }
@@ -30,6 +34,10 @@ else if (rol === "MEDICO") {
         "none";
     btnEspecialidad.style.display =
         "none";
+    btnDiagnostico.style.display =
+        "none";
+    btnTipoUrgencia.style.display =
+        "none";
 }
 
 else if (rol === "PACIENTE") {
@@ -42,6 +50,10 @@ else if (rol === "PACIENTE") {
     btnObraSocial.style.display =
         "none";
     btnEspecialidad.style.display =
+        "none";
+    btnDiagnostico.style.display =
+        "none";
+    btnTipoUrgencia.style.display =
         "none";
 }
 

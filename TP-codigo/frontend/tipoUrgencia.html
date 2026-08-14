@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tipos de Urgencia</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+    <button class="volver" onclick="location.href='menu.html'">  Volver  </button>
+    <div class="contenedor">
+        <h1>CRUD Tipos de Urgencia</h1>
+        <input type="text" id="nombre" placeholder="Nombre del Tipo de Urgencia">
+        <input type="text" id="descripcionTipo" placeholder="Descripción (opcional)">
+        <button onclick="crearTipoUrgencia()"> Guardar Tipo de Urgencia </button>
+        <hr>
+        <h2>Tipos de Urgencia registrados</h2>
+        <ul id="listaTiposUrgencia"></ul>
+    </div>
+    <script src="js/tipoUrgencia.js"></script>
+</body>
+
+</html>
