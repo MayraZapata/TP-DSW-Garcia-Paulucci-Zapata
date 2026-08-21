@@ -3,9 +3,10 @@ import { Atencion } from "./Atencion.entity.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 const em = orm.em;
-// GETALL - Para ver todos los turnos/atenciones
+// Para ver todos los turnos/atenciones
 export async function findAll(req, res) {
     try {
+        await actualizarTurnosVencidos();
         const atenciones = await em.find(Atencion, {}, { populate: ["paciente", "medico", "medico.especialidad"] });
         res.json(atenciones);
     }
@@ -13,7 +14,7 @@ export async function findAll(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-// ADD - Para crear un nuevo turno (Solicitado por el cliente)
+// Para crear un nuevo turno (Solicitado por el cliente)
 export async function add(req, res) {
     try {
         const { idPaciente, matriculaMedico, fechaAtencion, horaAtencion } = req.body;
@@ -58,9 +59,10 @@ export async function add(req, res) {
         return res.status(500).json({ message: error.message });
     }
 }
-// GET - Obtener turnos de un paciente específico
+// Obtener turnos de un paciente específico
 export async function findByPaciente(req, res) {
     try {
+        await actualizarTurnosVencidos();
         const { idPaciente } = req.params;
         const atenciones = await em.find(Atencion, { paciente: { idPaciente: Number(idPaciente) } }, { populate: ['medico', 'medico.especialidad'] });
         res.json(atenciones);
@@ -69,7 +71,7 @@ export async function findByPaciente(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-// PATCH - Cancelar turno si no ha pasado la fecha/hora
+// Cancelar turno si no ha pasado la fecha/hora
 export async function cancelarTurno(req, res) {
     try {
         const { idAtencion } = req.params;
@@ -96,9 +98,10 @@ export async function cancelarTurno(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-// GET - Turnos de un médico específico
+// Turnos de un médico específico
 export async function findByMedico(req, res) {
     try {
+        await actualizarTurnosVencidos();
         const { matricula } = req.params;
         const atenciones = await em.find(Atencion, { medico: { matricula: Number(matricula) } }, { populate: ['paciente'] });
         res.json(atenciones);
@@ -107,7 +110,7 @@ export async function findByMedico(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-// PATCH - Cambiar estado (atendido / ausente / pendiente)
+// Cambiar estado (atendido / ausente / pendiente)
 export async function cambiarEstado(req, res) {
     try {
         const { idAtencion } = req.params;
@@ -118,6 +121,44 @@ export async function cambiarEstado(req, res) {
         atencion.estado = estado;
         await em.flush();
         res.json({ message: `Estado actualizado a ${estado}`, atencion });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+// Función auxiliar para pasar a 'ausente' los turnos pendientes cuya fecha/hora ya pasó
+async function actualizarTurnosVencidos() {
+    try {
+        const ahora = new Date();
+        // Buscamos todas las atenciones pendientes
+        const pendientes = await em.find(Atencion, { estado: 'pendiente' });
+        for (const atencion of pendientes) {
+            const fechaStr = atencion.fechaAtencion.toISOString().split('T')[0];
+            const fechaHoraTurno = new Date(`${fechaStr}T${atencion.horaAtencion}`);
+            if (fechaHoraTurno < ahora) {
+                atencion.estado = 'ausente';
+            }
+        }
+        await em.flush(); // Guarda los cambios masivamente en MySQL
+    }
+    catch (error) {
+        console.error("Error al actualizar turnos vencidos:", error);
+    }
+}
+// Buscar turnos filtrando por fecha y/o médico
+export async function buscarTurnos(req, res) {
+    try {
+        await actualizarTurnosVencidos();
+        const { fecha, matricula } = req.query;
+        const filtro = {};
+        if (fecha) {
+            filtro.fechaAtencion = new Date(`${fecha}T00:00:00`);
+        }
+        if (matricula) {
+            filtro.medico = { matricula: Number(matricula) };
+        }
+        const atenciones = await em.find(Atencion, filtro, { populate: ['paciente', 'medico', 'medico.especialidad'] });
+        res.json(atenciones);
     }
     catch (error) {
         res.status(500).json({ message: error.message });

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de Turnos</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    /* Modal básico para el Detalle */
+    .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+    .modal-content { background: #fff; margin: 10% auto; padding: 20px; width: 50%; border-radius: 8px; position: relative; }
+    .close { position: absolute; right: 15px; top: 10px; cursor: pointer; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Consulta y Filtro de Turnos</h2>
+
+    <!-- Filtros -->
+    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+      <div>
+        <label>Fecha:</label>
+        <input type="date" id="filtroFecha">
+      </div>
+      <div>
+        <label>Médico:</label>
+        <select id="filtroMedico">
+          <option value="">-- Todos los Médicos --</option>
+        </select>
+      </div>
+      <button onclick="filtrarTurnos()">Filtrar</button>
+      <button onclick="limpiarFiltros()">Limpiar Filtros</button>
+    </div>
+
+    <!-- Tabla de Resultados -->
+    <table border="1" style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Médico</th>
+          <th>Paciente</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tablaTurnos"></tbody>
+    </table>
+
+    <br>
+    <button onclick="location.href='menu.html'">Volver al Menú</button>
+  </div>
+
+  <!-- Modal Detalle -->
+  <div id="modalDetalle" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h3>Detalle Completo del Turno</h3>
+      <div id="contenidoDetalle"></div>
+    </div>
+  </div>
+
+  <script src="js/reporte-turnos.js"></script>
+</body>
+</html>
