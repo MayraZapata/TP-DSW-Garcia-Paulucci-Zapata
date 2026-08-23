@@ -23,7 +23,7 @@ else if (rol === "MEDICO") {
   if (btnMedicos) btnMedicos.style.display = "none";
   if (btnTurnos) btnTurnos.style.display = "none";
   if (btnMisTurnos) btnMisTurnos.style.display = "none";
-  if (btnReporte) btnReporte.style.display = "none";
+  if (btnReporte) btnReporte.style.display = "block";
   // Mantiene visible sólo btnAgenda
 } 
 else if (rol === "PACIENTE") {
