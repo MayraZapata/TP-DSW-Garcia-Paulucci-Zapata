@@ -11,11 +11,11 @@ import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 export let Diagnostico = class Diagnostico {
 };
 __decorate([
-    PrimaryKey(),
+    PrimaryKey({ fieldName: "idDiagnostico" }),
     __metadata("design:type", Number)
 ], Diagnostico.prototype, "idDiagnostico", void 0);
 __decorate([
-    Property(),
+    Property({ fieldName: "nombreDiagnostico" }),
     __metadata("design:type", String)
 ], Diagnostico.prototype, "nombreDiagnostico", void 0);
 __decorate([

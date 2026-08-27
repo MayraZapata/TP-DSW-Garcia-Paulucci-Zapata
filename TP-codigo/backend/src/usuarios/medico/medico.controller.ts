@@ -27,6 +27,37 @@ export async function findOne(req: Request, res: Response) {
     res.json(medico);
 }
 
+export async function findByEspecialidad(req: Request, res: Response) {
+  try {
+    const idEspecialidad = Number(req.params.idEspecialidad);
+
+    // 1. Buscamos primero la especialidad
+    const especialidad = await em.findOne(Especialidad, { idEspecialidad });
+
+    if (!especialidad) {
+      return res.status(404).json({ message: "La especialidad ingresada no existe" });
+    }
+
+    // 2. Buscamos los médicos asociados a esa especialidad
+    const medicos = await em.find(
+      Medico,
+      { especialidad },
+      { populate: ["especialidad"] }
+    );
+
+    // 3. Si no hay médicos asignados a esa especialidad
+    if (medicos.length === 0) {
+      return res.status(404).json({ 
+        message: "No se encontraron médicos disponibles para la especialidad seleccionada" 
+      });
+    }
+
+    return res.json(medicos);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 export async function add(req: Request, res: Response) {
 
     const medicoExistente = await em.findOne(Medico, { matricula: Number(req.body.matricula) });

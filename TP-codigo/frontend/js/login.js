@@ -16,12 +16,17 @@ async function iniciarSesion() {
         });
 
         if (response.ok) {
-            const datos = await response.json();
-            console.log("Datos recibidos del servidor:", datos); // <-- Para ver qué llega
-            
-            localStorage.setItem("rol", datos.rol);
-            location.href = "menu.html";
-        } else {
+      const datos = await response.json();
+      console.log("Datos recibidos del servidor:", datos); // <-- Para ver qué llega
+
+      localStorage.setItem("rol", datos.rol);
+      
+      // Guardamos el objeto completo del usuario (o 'datos' si la API lo manda directo)
+      const objetoUsuario = datos.usuario || datos;
+      localStorage.setItem("usuario", JSON.stringify(objetoUsuario));
+
+      location.href = "menu.html";
+    } else {
             const errorDatos = await response.json();
             alert("Error: " + (errorDatos.mensaje || "Credenciales incorrectas"));
         }

@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
-    
+
 <head>
-    <meta charset="UTF-8">
-    <title>Menú Principal</title>
-    <link rel="stylesheet" href="css/estilos.css">
+  <meta charset="UTF-8">
+  <title>Menú Principal</title>
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
 
 <body>
-    <div class="contenedor">
-        <h1>Menú de Opciones</h1>
-        <h2 id="tituloRol"></h2>
-        <button id="btnPacientes" onclick="location.href='pacientes.html'"> CRUD Pacientes </button>
-        <button id="btnMedicos" onclick="location.href='medicos.html'"> CRUD Médicos </button>
-        <button onclick="cerrarSesion()"> Cerrar Sesión </button>
-    </div>
-    <script src="js/menu.js"></script>
+  <div class="contenedor">
+    <h1>Menú de Opciones</h1>
+    <h2 id="tituloRol"></h2>
+
+    <!-- CRUDs de Administrador -->
+    <button id="btnPacientes" onclick="location.href='pacientes.html'">CRUD Pacientes</button>
+    <button id="btnMedicos" onclick="location.href='medicos.html'">CRUD Médicos</button>
+
+    <!-- Opciones de Turnos -->
+    <button id="btnTurnos" onclick="location.href='turnos.html'">Solicitar Turno</button>
+    <button id="btnMisTurnos" onclick="location.href='turnos-paciente.html'">Mis Turnos / Cancelar</button>
+    <button id="btnAgenda" onclick="location.href='agenda-medico.html'">Agenda de Turnos</button>
+    <button id="btnReporteTurnos" onclick="location.href='reporte-turnos.html'" style="display: none;">
+      Consultar / Reporte de Turnos</button>
+
+    <!-- Botón de Salir -->
+    <button onclick="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+
+  <script src="js/menu.js"></script>
 </body>
+
 </html>

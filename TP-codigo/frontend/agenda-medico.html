@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Atenciones</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Agenda de Turnos</h2>
+
+    <div style="margin-bottom: 20px;">
+      <label for="selectMedico">Médico:</label>
+      <select id="selectMedico">
+        <option value="">-- Seleccione Médico --</option>
+      </select>
+    </div>
+
+    <table border="1" style="width:100%; text-align: left; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>DNI</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaAgenda">
+        <!-- Se llena dinámicamente -->
+      </tbody>
+    </table>
+
+    <br>
+    <button onclick="location.href='menu.html'">Volver al Menú</button>
+  </div>
+
+  <script src="js/agenda-medico.js"></script>
+</body>
+</html>

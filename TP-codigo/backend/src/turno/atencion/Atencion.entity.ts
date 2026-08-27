@@ -8,25 +8,25 @@ import { TipoUrgencia } from "../tipoUrgencia/tipoUrgencia.entity.js";
 @Entity()
 export class Atencion {
 
-    @PrimaryKey()
+    @PrimaryKey({ autoincrement: true, fieldName: 'idAtencion' })
     idAtencion!: number;
 
-    @Property()
+    @Property({ fieldName: 'fechaAtencion' }) // <-- Agregamos fieldName
     fechaAtencion!: Date;
 
-    @Property()
+    @Property({ fieldName: 'horaAtencion' }) // <-- Agregamos fieldName
     horaAtencion!: string;
 
-    @Property()
+    @Property({ fieldName: 'nroIngreso' }) // <-- Agregamos fieldName
     nroIngreso!: number;
 
     @Property({ nullable: true })
     estado?: string;
 
-    @ManyToOne(() => Paciente)
+    @ManyToOne(() => Paciente, { fieldName: 'idPaciente' })
     paciente!: Paciente;
 
-    @ManyToOne(() => Medico)
+    @ManyToOne(() => Medico, { fieldName: 'matricula' })
     medico!: Medico;
 
     @ManyToOne(() => Diagnostico, { nullable: true })

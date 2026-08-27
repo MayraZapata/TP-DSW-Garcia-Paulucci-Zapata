@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Solicitar Turno</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+  <button class="volver" onclick="location.href='menu.html'">Volver</button>
+  <div class="contenedor">
+    <h1>Solicitar Turno Médico</h1>
+
+    <!-- 1. Selección de Especialidad -->
+    <label for="idEspecialidad">Especialidad:</label>
+    <select id="idEspecialidad" onchange="cargarMedicosPorEspecialidad()">
+      <option value="">-- Seleccionar Especialidad --</option>
+    </select>
+
+    <!-- 2. Selección de Médico -->
+    <label for="matriculaMedico">Médico:</label>
+    <select id="matriculaMedico">
+      <option value="">-- Primero seleccione una especialidad --</option>
+    </select>
+
+    <!-- En lugar de la lista desplegable de pacientes: -->
+    <div id="seccionPaciente">
+      <label for="idPaciente">Paciente:</label>
+      <select id="idPaciente">
+        <option value="">-- Seleccionar Paciente --</option>
+      </select>
+    </div>
+
+    <!-- 4. Fecha y Hora del Turno -->
+    <label for="fechaAtencion">Fecha:</label>
+    <input type="date" id="fechaAtencion">
+
+    <label for="horaAtencion">Hora:</label>
+    <input type="time" id="horaAtencion">
+
+    <button onclick="reservarTurno()">Confirmar Reserva</button>
+
+  </div>
+
+  <script src="js/turnos.js"></script>
+</body>
+
+</html>
