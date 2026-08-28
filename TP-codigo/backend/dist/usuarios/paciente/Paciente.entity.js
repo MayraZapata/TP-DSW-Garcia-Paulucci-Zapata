@@ -11,7 +11,7 @@ import { Entity, PrimaryKey, Property, ManyToOne } from "@mikro-orm/core";
 import { ObraSocial } from "../cualidadesUsr/obraSocial/obraSocial.entity.js";
 //import { Atencion } from "../../turno/atencion/Atencion.entity.js";
 import { Usuario } from "../usuario.abstract.js";
-export let Paciente = class Paciente extends Usuario {
+let Paciente = class Paciente extends Usuario {
 };
 __decorate([
     PrimaryKey({ fieldName: "idPaciente" }),
@@ -36,4 +36,5 @@ __decorate([
 Paciente = __decorate([
     Entity()
 ], Paciente);
+export { Paciente };
 //# sourceMappingURL=paciente.entity.js.map

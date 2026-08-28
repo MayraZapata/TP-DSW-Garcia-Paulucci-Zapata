@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Entity, PrimaryKey } from "@mikro-orm/core";
 import { Usuario } from "../usuario.abstract.js";
-export let Administrador = class Administrador extends Usuario {
+let Administrador = class Administrador extends Usuario {
 };
 __decorate([
     PrimaryKey({ fieldName: "idAdministrador" }),
@@ -18,4 +18,5 @@ __decorate([
 Administrador = __decorate([
     Entity()
 ], Administrador);
+export { Administrador };
 //# sourceMappingURL=Administrador.entity.js.map

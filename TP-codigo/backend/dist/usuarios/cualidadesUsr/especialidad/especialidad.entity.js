@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
-export let Especialidad = class Especialidad {
+let Especialidad = class Especialidad {
 };
 __decorate([
     PrimaryKey({ fieldName: "idEspecialidad" }),
@@ -25,4 +25,5 @@ __decorate([
 Especialidad = __decorate([
     Entity()
 ], Especialidad);
+export { Especialidad };
 //# sourceMappingURL=especialidad.entity.js.map

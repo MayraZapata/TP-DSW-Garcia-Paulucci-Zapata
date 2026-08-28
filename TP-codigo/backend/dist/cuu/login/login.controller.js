@@ -14,7 +14,7 @@ export async function login(req, res) {
         return res.json({
             rol: "PACIENTE",
             usuario: {
-                idPaciente: paciente.idPaciente,
+                idPaciente: paciente.idPaciente, // <--- Enviamos el ID del paciente
                 nombre: paciente.nombre,
                 apellido: paciente.apellido,
                 dni: paciente.dni,
@@ -30,7 +30,7 @@ export async function login(req, res) {
         return res.json({
             rol: "MEDICO",
             usuario: {
-                matricula: medico.matricula,
+                matricula: medico.matricula, // <--- Enviamos la matrícula del médico
                 nombre: medico.nombre,
                 apellido: medico.apellido,
             },

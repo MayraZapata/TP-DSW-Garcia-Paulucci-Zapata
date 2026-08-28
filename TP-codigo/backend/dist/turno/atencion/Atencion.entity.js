@@ -12,7 +12,7 @@ import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js";
 import { TipoUrgencia } from "../tipoUrgencia/tipoUrgencia.entity.js";
-export let Atencion = class Atencion {
+let Atencion = class Atencion {
 };
 __decorate([
     PrimaryKey({ autoincrement: true, fieldName: 'idAtencion' }),
@@ -56,4 +56,5 @@ __decorate([
 Atencion = __decorate([
     Entity()
 ], Atencion);
+export { Atencion };
 //# sourceMappingURL=Atencion.entity.js.map
