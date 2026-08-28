@@ -1,3 +1,4 @@
+
 const rol = localStorage.getItem("rol");
 const tituloRol = document.getElementById("tituloRol");
 const btnPacientes = document.getElementById("btnPacientes");
@@ -6,9 +7,13 @@ const btnTurnos = document.getElementById("btnTurnos");
 const btnMisTurnos = document.getElementById("btnMisTurnos");
 const btnAgenda = document.getElementById("btnAgenda");
 const btnReporte = document.getElementById("btnReporteTurnos"); 
+const btnObraSocial = document.getElementById("btnObraSocial");
+const btnEspecialidad = document.getElementById("btnEspecialidad");
+const btnDiagnostico = document.getElementById("btnDiagnostico");
+const btnTipoUrgencia = document.getElementById("btnTipoUrgencia");
 
 if (!rol) {
-  location.href = "login.html";
+    location.href = "login.html";
 }
 
 if (rol === "ADMIN") {
@@ -24,6 +29,10 @@ else if (rol === "MEDICO") {
   if (btnTurnos) btnTurnos.style.display = "none";
   if (btnMisTurnos) btnMisTurnos.style.display = "none";
   if (btnReporte) btnReporte.style.display = "block";
+  if (btnObraSocial) btnObraSocial.style.display = "none";
+  if (btnEspecialidad) btnEspecialidad.style.display = "none";
+  if (btnDiagnostico) btnDiagnostico.style.display = "none";
+  if (btnTipoUrgencia) btnTipoUrgencia.style.display = "none";
   // Mantiene visible sólo btnAgenda
 } 
 else if (rol === "PACIENTE") {
@@ -32,11 +41,14 @@ else if (rol === "PACIENTE") {
   if (btnMedicos) btnMedicos.style.display = "none";
   if (btnAgenda) btnAgenda.style.display = "none";
   if (btnReporte) btnReporte.style.display = "none";
+  if (btnObraSocial) btnObraSocial.style.display = "none";
+  if (btnEspecialidad) btnEspecialidad.style.display = "none";
+  if (btnDiagnostico) btnDiagnostico.style.display = "none";
+  if (btnTipoUrgencia) btnTipoUrgencia.style.display = "none";
   // Mantiene visibles btnTurnos y btnMisTurnos
 }
 
 function cerrarSesion() {
-  localStorage.removeItem("rol");
-  localStorage.removeItem("usuario");
-  location.href = "login.html";
+    localStorage.removeItem("rol");
+    location.href = "login.html";
 }

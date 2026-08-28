@@ -11,6 +11,8 @@ import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
 import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";
 import { loginRouter } from "./cuu/login/login.routes.js";
 import { atencionRouter } from "./turno/atencion/Atencion.routes.js";
+import { diagnosticoRouter } from "./turno/diagnostico/diagnostico.routes.js";
+import { tipoUrgenciaRouter } from "./turno/tipoUrgencia/tipoUrgencia.routes.js";
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +31,8 @@ app.use("/api/pacientes", pacienteRouter);
 app.use("/api/obrasSociales", obraSocialRouter);
 app.use("/api/administradores", administradorRouter);
 app.use("/api/atenciones", atencionRouter);
+app.use("/api/diagnosticos", diagnosticoRouter);
+app.use("/api/tiposUrgencia", tipoUrgenciaRouter);
 // Ruta no encontrada
 app.use((_, res) => {
     return res.status(404).json({ message: "Recurso no encontrado" });

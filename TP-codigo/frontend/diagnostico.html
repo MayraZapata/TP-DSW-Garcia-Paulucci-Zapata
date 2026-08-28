@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnósticos</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+    <button class="volver" onclick="location.href='menu.html'">  Volver  </button>
+    <div class="contenedor">
+        <h1>CRUD Diagnósticos</h1>
+        <input type="text" id="nombreDiagnostico" placeholder="Nombre del Diagnóstico">
+        <input type="text" id="tratamiento" placeholder="Tratamiento (opcional)">
+        <button onclick="crearDiagnostico()"> Guardar Diagnóstico </button>
+        <hr>
+        <h2>Diagnósticos registrados</h2>
+        <ul id="listaDiagnosticos"></ul>
+    </div>
+    <script src="js/diagnostico.js"></script>
+</body>
+
+</html>
