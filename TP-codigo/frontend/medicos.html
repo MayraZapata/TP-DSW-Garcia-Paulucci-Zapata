@@ -20,7 +20,8 @@
         <select id="idEspecialidad">
             <option value=""> General </option>
         </select>
-        <button onclick="crearMedico()"> Guardar Médico </button>
+        <button id="botonGuardar" onclick="guardarMedico()"> Guardar Médico </button>
+        <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
         <hr>
         <h2>Médicos registrados</h2>
         <ul id="listaMedicos"></ul>

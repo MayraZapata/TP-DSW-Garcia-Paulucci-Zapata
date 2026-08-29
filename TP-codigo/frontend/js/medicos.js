@@ -1,3 +1,6 @@
+let medicoEditando = null;
+let medicosCargados = [];
+
 async function cargarEspecialidades() {
   try {
     const respuesta = await fetch("/api/especialidades");
@@ -28,37 +31,139 @@ async function cargarEspecialidades() {
   }
 }
 
-async function crearMedico() {
-  const matricula = document.getElementById("matricula").value;
-  const nombre = document.getElementById("nombre").value;
-  const apellido = document.getElementById("apellido").value;
-  const nombreUsuario = document.getElementById("nombreUsuario").value;
-  const password = document.getElementById("password").value;
-  const idEspecialidad = document.getElementById("idEspecialidad").value;
 
-  const respuesta = await fetch("/api/medicos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      matricula,
-      nombre,
-      apellido,
-      nombreUsuario,
-      password,
-      idEspecialidad
-    })
-  });
+async function guardarMedico() {
 
-  const datos = await respuesta.json();
+    const matricula = document.getElementById("matricula").value;
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const nombreUsuario = document.getElementById("nombreUsuario").value;
+    const password = document.getElementById("password").value;
+    const idEspecialidad = document.getElementById("idEspecialidad").value;
 
-  if (!respuesta.ok) {
-    alert(datos.message || "Error al crear médico");
-    return;
-  }
+    // Si hay un médico en edición, hacemos PUT
+    if (medicoEditando !== null) {
 
-  alert("Médico registrado correctamente");
-  cargarMedicos();
+        const respuesta = await fetch(`/api/medicos/${medicoEditando}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre,
+                apellido,
+                nombreUsuario,
+                password,
+                idEspecialidad
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            alert(datos.message || "Error al editar médico");
+            return;
+        }
+
+        alert("Médico actualizado correctamente");
+
+        cancelarEdicion();
+        cargarMedicos();
+
+        return;
+    }
+
+    // Si no estamos editando, hacemos POST para crear
+    const respuesta = await fetch("/api/medicos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            matricula,
+            nombre,
+            apellido,
+            nombreUsuario,
+            password,
+            idEspecialidad
+        })
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+        alert(datos.message || "Error al crear médico");
+        return;
+    }
+
+    alert("Médico registrado correctamente");
+
+    limpiarFormulario();
+    cargarMedicos();
 }
+
+function editarMedico(matricula) {
+
+    const medico = medicosCargados.find(
+        medico => medico.matricula == matricula
+    );
+
+    if (!medico) {
+        alert("No se encontró el médico");
+        return;
+    }
+
+    medicoEditando = matricula;
+
+    document.getElementById("matricula").value = medico.matricula;
+    document.getElementById("nombre").value = medico.nombre || "";
+    document.getElementById("apellido").value = medico.apellido || "";
+    document.getElementById("nombreUsuario").value = medico.nombreUsuario || "";
+
+    // Por seguridad, no mostramos la contraseña actual
+    document.getElementById("password").value = "";
+
+    document.getElementById("idEspecialidad").value =
+        medico.idEspecialidad || "";
+
+    // La matrícula identifica al médico, por lo que no la modificamos
+    document.getElementById("matricula").disabled = true;
+
+    // Cambiamos el texto del botón
+    document.getElementById("botonGuardar").textContent =
+        "Guardar cambios";
+
+    // Mostramos cancelar
+    document.getElementById("botonCancelar").style.display =
+        "inline-block";
+}
+
+function cancelarEdicion() {
+
+    medicoEditando = null;
+
+    limpiarFormulario();
+
+    document.getElementById("matricula").disabled = false;
+
+    document.getElementById("botonGuardar").textContent =
+        "Guardar Médico";
+
+    document.getElementById("botonCancelar").style.display =
+        "none";
+}
+
+function limpiarFormulario() {
+
+    document.getElementById("matricula").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("apellido").value = "";
+    document.getElementById("nombreUsuario").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("idEspecialidad").value = "";
+}
+
+
 
 async function eliminarMedico(matricula) {
   if (!confirm("¿Estás seguro de eliminar este médico?")) return;
@@ -67,32 +172,11 @@ async function eliminarMedico(matricula) {
   cargarMedicos();
 }
 
-async function editarMedico(matricula) {
-  const nombre = prompt("Nuevo nombre");
-  const apellido = prompt("Nuevo apellido");
-  const password = prompt("Nueva contraseña");
-  const idEspecialidad = prompt("Nuevo ID de Especialidad");
-
-  if (!nombre || !apellido) return;
-
-  await fetch(`/api/medicos/${matricula}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      nombre,
-      apellido,
-      password,
-      idEspecialidad
-    })
-  });
-
-  cargarMedicos();
-}
-
 async function cargarMedicos() {
   try {
     const respuesta = await fetch("/api/medicos");
     const medicos = await respuesta.json();
+    medicosCargados = medicos; // Guardamos los médicos cargados para futuras ediciones
     const lista = document.getElementById("listaMedicos");
 
     lista.innerHTML = "";
