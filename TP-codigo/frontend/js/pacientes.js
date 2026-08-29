@@ -1,3 +1,27 @@
+
+function obtenerUsuarioLogueado() {
+  try {
+    return JSON.parse(localStorage.getItem("usuario")) || {};
+  } catch (e) {
+    return {};
+  }
+}
+/*
+function configurarModoMedico() {
+  const rol = localStorage.getItem("rol");
+  const usuario = obtenerUsuarioLogueado();
+
+  // Si el usuario logueado es Médico y tenemos su matrícula guardada
+  if (rol === "MEDICO" && usuario.matricula) {
+    const selectMedico = document.getElementById("filtroMedico");
+    if (selectMedico) {
+      selectMedico.value = usuario.matricula;
+      selectMedico.disabled = true; // Bloquea la selección
+    }
+  }
+}*/
+
+
 async function cargarObrasSociales() {
   try {
     const respuesta = await fetch("/api/obrasSociales");
@@ -57,6 +81,10 @@ async function crearPaciente() {
   }
 
   alert("Paciente registrado correctamente");
+
+  const rol = localStorage.getItem("rol");
+  if (rol !== "ADMIN") { volver()}
+
   cargarPacientes();
 }
 
@@ -92,12 +120,19 @@ async function editarPaciente(id) {
 }
 
 async function cargarPacientes() {
+  
+  const rol = localStorage.getItem("rol");
+  if (rol !== "ADMIN") return;
   try {
     const respuesta = await fetch("/api/pacientes");
     const pacientes = await respuesta.json();
     const lista = document.getElementById("listaPacientes");
 
-    lista.innerHTML = "";
+
+    lista.innerHTML = `
+        <hr>
+        <h2>Pacientes registrados</h2>
+        `;
 
     pacientes.forEach(paciente => {
       lista.innerHTML += `
@@ -119,8 +154,36 @@ async function cargarPacientes() {
   }
 }
 
+
+async function volver() {
+  const rol = localStorage.getItem("rol");
+  
+  // Si el objeto está vacío O si no tiene un rol válido (Admin o Paciente), 
+  // significa con total certeza que es un invitado registrándose.
+  if (rol !== "ADMIN" && rol !== "PACIENTE") {
+    localStorage.removeItem("titulo"); 
+    location.href = "login.html";
+  } else {
+    localStorage.removeItem("titulo"); 
+    location.href = "menu.html";
+  }
+} 
+
+
 // Carga inicial al estar listo el documento
 document.addEventListener("DOMContentLoaded", () => {
+  const titulo = document.getElementById("titulo");
+  const rol = localStorage.getItem("rol");
+
+  if (rol === "ADMIN") {
+    titulo.textContent = "CRUD Pacientes";
+  } else if (rol === "PACIENTE") {
+    titulo.textContent = "Editar Datos Personales";
+  } else {
+    titulo.textContent = "Registrar Usuario";
+  }
   cargarObrasSociales();
-  cargarPacientes();
+    cargarPacientes();
 });
+
+

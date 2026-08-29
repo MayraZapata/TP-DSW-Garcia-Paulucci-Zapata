@@ -43,3 +43,29 @@ button {
 .volver:hover {
     background-color: #f0f0f0;
 }
+
+
+
+/* Centra el enlace y añade separación con el botón */
+.registro {
+    text-align: center;
+    margin-top: 15px; /* Separa el bloque del botón de arriba */
+}
+
+/* Estilo normal del enlace (y visitado) */
+.reg, .reg:visited {
+    color: black;
+    text-decoration: underline;
+    font-size: 16px;                     /* Define un tamaño base claro */
+    display: inline-block;
+    transition: font-size 0.2s ease;     /* La animación ahora se aplica al tamaño de la letra */
+}
+
+/* Interacción al pasar el cursor */
+.reg:hover {
+    font-size: 17px;                     /* Agranda la letra exactamente un píxel de forma limpia */
+    color: black;
+}
+
+
+
