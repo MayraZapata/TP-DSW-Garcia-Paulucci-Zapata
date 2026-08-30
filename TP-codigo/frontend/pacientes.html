@@ -7,42 +7,28 @@
     <title>Pacientes</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-
 <body>
     <button class="volver" onclick="volver()">Volver</button>
 
-```
+
 <div class="contenedor">
     <h1 id="titulo"></h1>
-
     <input type="text" id="nombre" placeholder="Nombre">
     <input type="text" id="apellido" placeholder="Apellido">
     <input type="text" id="dni" placeholder="DNI">
     <input type="text" id="nombreUsuario" placeholder="Nombre de Usuario">
     <input type="password" id="password" placeholder="Contraseña">
-
     <label for="idObra">Obra Social</label>
-
     <select id="idObra">
         <option value="">Sin obra social</option>
     </select>
-
-    <button id="botonGuardar" onclick="guardarPaciente()">
-        Guardar Paciente
-    </button>
-
-    <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;">
-        Cancelar edición
-    </button>
-
+    <button id="botonGuardar" onclick="guardarPaciente()"> Guardar Paciente </button>
+    <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
     <ul id="listaPacientes"></ul>
 </div>
-
 <script src="js/pacientes.js"></script>
-```
 
 </body>
-
 </html>
 
 

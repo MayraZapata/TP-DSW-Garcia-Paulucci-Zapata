@@ -123,8 +123,7 @@ function editarMedico(matricula) {
     // Por seguridad, no mostramos la contraseña actual
     document.getElementById("password").value = "";
 
-    document.getElementById("idEspecialidad").value =
-        medico.idEspecialidad || "";
+    document.getElementById("idEspecialidad").value = medico.idEspecialidad || medico.especialidad?.idEspecialidad || "";
 
     // La matrícula identifica al médico, por lo que no la modificamos
     document.getElementById("matricula").disabled = true;
@@ -171,6 +170,19 @@ async function eliminarMedico(matricula) {
   await fetch(`/api/medicos/${matricula}`, { method: "DELETE" });
   cargarMedicos();
 }
+
+async function eliminarMedico(matricula) {
+    if (!confirm("¿Estás seguro de eliminar este médico?")) return;
+    const respuesta = await fetch(`/api/medicos/${matricula}`, {
+        method: "DELETE"
+    });
+    if (!respuesta.ok) {
+        alert(datos.message || "Error al eliminar médico");
+        return;
+    }
+    cargarMedicos();
+}
+
 
 async function cargarMedicos() {
   try {

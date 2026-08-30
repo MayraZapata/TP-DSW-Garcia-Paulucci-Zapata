@@ -13,7 +13,8 @@
         <h1>CRUD Diagnósticos</h1>
         <input type="text" id="nombreDiagnostico" placeholder="Nombre del Diagnóstico">
         <input type="text" id="tratamiento" placeholder="Tratamiento (opcional)">
-        <button onclick="crearDiagnostico()"> Guardar Diagnóstico </button>
+        <button id="botonGuardar" onclick="guardarDiagnostico()"> Guardar Diagnóstico </button>
+        <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
         <hr>
         <h2>Diagnósticos registrados</h2>
         <ul id="listaDiagnosticos"></ul>

@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Especialidades</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-
 <body>
-    <button class="volver" onclick="location.href='menu.html'">  Volver  </button>
+    <button class="volver" onclick="location.href='menu.html'"> Volver </button>
     <div class="contenedor">
         <h1>CRUD Especialidades</h1>
         <input type="text" id="nombreEspecialidad" placeholder="Nombre de la Especialidad">
         <input type="text" id="descripcion" placeholder="Descripción (opcional)">
-        <button onclick="crearEspecialidad()"> Guardar Especialidad </button>
+        <button id="botonGuardar" onclick="guardarEspecialidad()"> Guardar Especialidad </button>
+        <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
         <hr>
         <h2>Especialidades registradas</h2>
         <ul id="listaEspecialidades"></ul>
     </div>
     <script src="js/especialidad.js"></script>
 </body>
-
 </html>
+

@@ -13,7 +13,8 @@
         <h1>CRUD Obras Sociales</h1>
         <input type="text" id="nombreObra" placeholder="Nombre de la Obra Social">
         <input type="number" id="monto" placeholder="Monto" step="0.01" min="0">
-        <button onclick="crearObraSocial()"> Guardar Obra Social </button>
+        <button id="botonGuardar" onclick="guardarObraSocial()"> Guardar Obra Social </button>
+        <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
         <hr>
         <h2>Obras Sociales registradas</h2>
         <ul id="listaObrasSociales"></ul>

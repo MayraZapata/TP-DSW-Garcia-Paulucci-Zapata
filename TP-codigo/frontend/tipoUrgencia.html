@@ -13,7 +13,8 @@
         <h1>CRUD Tipos de Urgencia</h1>
         <input type="text" id="nombre" placeholder="Nombre del Tipo de Urgencia">
         <input type="text" id="descripcionTipo" placeholder="Descripción (opcional)">
-        <button onclick="crearTipoUrgencia()"> Guardar Tipo de Urgencia </button>
+        <button id="botonGuardar" onclick="guardarTipoUrgencia()"> Guardar Tipo de Urgencia </button>
+        <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
         <hr>
         <h2>Tipos de Urgencia registrados</h2>
         <ul id="listaTiposUrgencia"></ul>

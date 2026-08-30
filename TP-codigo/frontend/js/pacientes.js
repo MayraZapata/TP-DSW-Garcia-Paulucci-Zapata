@@ -1,5 +1,7 @@
 let pacienteEditando = null;
 let pacientesCargados = [];
+const parametros = new URLSearchParams(window.location.search);
+const esRegistro = parametros.get("origen") === "login";
 
 
 
@@ -40,68 +42,6 @@ async function cargarObrasSociales() {
     console.error("Error al cargar obras sociales:", error);
   }
 }
-
-
-/*
-async function crearPaciente() {
-  const nombre = document.getElementById("nombre").value;
-  const apellido = document.getElementById("apellido").value;
-  const dni = document.getElementById("dni").value;
-  const nombreUsuario = document.getElementById("nombreUsuario").value;
-  const password = document.getElementById("password").value;
-  const idObraVal = document.getElementById("idObra").value;
-
-  const respuesta = await fetch("/api/pacientes", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      nombre,
-      apellido,
-      dni,
-      nombreUsuario,
-      password,
-      idObra: idObraVal === "" ? null : Number(idObraVal)
-    })
-  });
-
-  const datos = await respuesta.json();
-
-  if (!respuesta.ok) {
-    alert(datos.message || "Error al crear paciente");
-    return;
-  }
-
-  alert("Paciente registrado correctamente");
-
-  const rol = localStorage.getItem("rol");
-  if (rol !== "ADMIN") { volver()}
-
-  cargarPacientes();
-}
-
-async function editarPaciente(id) {
-  const nombre = prompt("Nuevo nombre");
-  const apellido = prompt("Nuevo apellido");
-  const dni = prompt("Nuevo DNI");
-  const password = prompt("Nueva contraseña");
-  const idObra = prompt("Nuevo ID de Obra Social");
-
-  if (!nombre || !apellido) return;
-
-  await fetch(`/api/pacientes/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      nombre,
-      apellido,
-      dni,
-      password,
-      idObra: idObra === "" ? null : Number(idObra)
-    })
-  });
-
-  cargarPacientes();
-}*/
 
 
 async function guardarPaciente() {
@@ -231,46 +171,12 @@ function limpiarFormulario() {
 }
 
 
-/*
+
 async function cargarPacientes() {
-  
   const rol = localStorage.getItem("rol");
-  if (rol !== "ADMIN") return;
-  try {
-    const respuesta = await fetch("/api/pacientes");
-    const pacientes = await respuesta.json();
-    pacientesCargados = pacientes;
-    const lista = document.getElementById("listaPacientes");
-
-
-    lista.innerHTML = `
-        <hr>
-        <h2>Pacientes registrados</h2>
-        `;
-
-    pacientes.forEach(paciente => {
-      lista.innerHTML += `
-        <li>
-          <strong>ID:</strong> ${paciente.idPaciente}<br>
-          <strong>Nombre:</strong> ${paciente.nombre} ${paciente.apellido}<br>
-          <strong>DNI:</strong> ${paciente.dni || 'N/A'}<br>
-          <strong>Usuario:</strong> ${paciente.nombreUsuario}<br>
-          <strong>Obra Social:</strong> ${paciente.obraSocial?.nombreObra ?? "Sin obra social"}
-          <br><br>
-          <button onclick="eliminarPaciente(${paciente.idPaciente})">Eliminar</button>
-          <button onclick="editarPaciente(${paciente.idPaciente})">Editar</button>
-        </li>
-        <hr>
-      `;
-    });
-  } catch (error) {
-    console.error("Error al cargar pacientes:", error);
+  if (esRegistro) {
+    return;
   }
-}*/
-
-
-async function cargarPacientes() {
-  const rol = localStorage.getItem("rol");
   // PACIENTE LOGUEADO
   // ==========================================
   if (rol === "PACIENTE") {
@@ -379,31 +285,36 @@ async function cargarPacientes() {
 
 
 async function volver() {
+
+  const parametros = new URLSearchParams(window.location.search);
+  const esRegistro = parametros.get("origen") === "login";
+
+  if (esRegistro) {
+    localStorage.removeItem("titulo");
+    location.href = "login.html";
+    return;
+  }
   const rol = localStorage.getItem("rol");
-  
-  // Si el objeto está vacío O si no tiene un rol válido (Admin o Paciente), 
-  // significa con total certeza que es un invitado registrándose.
+  localStorage.removeItem("titulo");
   if (rol !== "ADMIN" && rol !== "PACIENTE") {
-    localStorage.removeItem("titulo"); 
+    localStorage.removeItem("titulo");
     location.href = "login.html";
   } else {
-    localStorage.removeItem("titulo"); 
+    localStorage.removeItem("titulo");
     location.href = "menu.html";
   }
-} 
-
+}
 
 // Carga inicial al estar listo el documento
 document.addEventListener("DOMContentLoaded", () => {
   const titulo = document.getElementById("titulo");
   const rol = localStorage.getItem("rol");
-
-  if (rol === "ADMIN") {
+  if (esRegistro) {
+    titulo.textContent = "Registrar Usuario";
+  } else if (rol === "ADMIN") {
     titulo.textContent = "CRUD Pacientes";
   } else if (rol === "PACIENTE") {
     titulo.textContent = "Editar Datos Personales";
-  } else {
-    titulo.textContent = "Registrar Usuario";
   }
   cargarObrasSociales();
     cargarPacientes();

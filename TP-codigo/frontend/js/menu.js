@@ -2,6 +2,7 @@
 const rol = localStorage.getItem("rol");
 const tituloRol = document.getElementById("tituloRol");
 const btnPacientes = document.getElementById("btnPacientes");
+const btnCambioDatos = document.getElementById("btnCambioDatos");
 const btnMedicos = document.getElementById("btnMedicos");
 const btnTurnos = document.getElementById("btnTurnos");
 const btnMisTurnos = document.getElementById("btnMisTurnos");
@@ -11,6 +12,7 @@ const btnObraSocial = document.getElementById("btnObraSocial");
 const btnEspecialidad = document.getElementById("btnEspecialidad");
 const btnDiagnostico = document.getElementById("btnDiagnostico");
 const btnTipoUrgencia = document.getElementById("btnTipoUrgencia");
+
 
 if (!rol) {
     location.href = "login.html";
