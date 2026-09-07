@@ -17,6 +17,9 @@ importers:
       '@mikro-orm/sql-highlighter':
         specifier: 1.0.1
         version: 1.0.1
+      body-parser:
+        specifier: ^2.3.0
+        version: 2.3.0
       express:
         specifier: ^5.2.1
         version: 5.2.1

@@ -1,100 +1,133 @@
-let obraEditando = null;
-let obrasSocialesCargadas = [];
+let obrasSocialesData = []; // guarda la última lista traída del servidor, para filtrar sin volver a pedirla
 
+async function crearObraSocial() {
 
+    const nombreObra = document.getElementById("nombreObra").value;
+    const monto = document.getElementById("monto").value;
 
-async function guardarObraSocial() { 
-    const nombreObra = document.getElementById("nombreObra").value; 
-    const monto = document.getElementById("monto").value; 
-    if (obraEditando !== null) { 
-        const respuesta = await fetch(
-            `/api/obrasSociales/${obraEditando}`, 
-            { method: "PUT", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nombreObra, monto: Number(monto) }) }
-        ); 
-        const datos = await respuesta.json(); 
-        if (!respuesta.ok) { 
-            alert(datos.message || "Error al editar obra social"); 
-            return; 
-        } 
-        alert("Obra social actualizada correctamente"); 
-        cancelarEdicion(); 
-        cargarObrasSociales(); 
-        return; 
-    } 
-    const respuesta = await fetch("/api/obrasSociales", 
-        { method: "POST", headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify({ nombreObra, monto: Number(monto) }) }
-        ); const datos = await respuesta.json(); 
-        if (!respuesta.ok) { 
-            alert(datos.message || "Error al crear obra social"); 
-            return; 
-        } alert("Obra social registrada correctamente"); 
-        limpiarFormulario(); 
-        cargarObrasSociales(); 
-    }
-
-
-
-
-
-async function eliminarObraSocial(id) {
-    if (!confirm("¿Estás seguro de eliminar esta obra social?")) return;
-    const respuesta = await fetch(`/api/obrasSociales/${id}`, {
-        method: "DELETE"
+    const respuesta = await fetch("/api/obrasSociales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombreObra,
+            monto: Number(monto)
+        })
     });
+
+    const datos = await respuesta.json();
+
     if (!respuesta.ok) {
-        alert(datos.message || "Error al eliminar obra social");
+        alert(datos.message);
         return;
     }
+
+    alert("Obra Social registrada correctamente");
+
+    document.getElementById("nombreObra").value = "";
+    document.getElementById("monto").value = "";
+
     cargarObrasSociales();
 }
 
 
-function editarObraSocial(id) { 
-    const obraSocial = obrasSocialesCargadas.find( obraSocial => obraSocial.idObra == id ); 
-    if (!obraSocial) { 
-        alert("No se encontró la obra social"); 
-        return; 
-    } 
-    obraEditando = id; 
-    document.getElementById("nombreObra").value = obraSocial.nombreObra || ""; 
-    document.getElementById("monto").value = obraSocial.monto ?? "";    
-    document.getElementById("botonGuardar").textContent = "Guardar cambios"; 
-    document.getElementById("botonCancelar").style.display = "inline-block"; 
+
+async function eliminarObraSocial(id) {
+
+    await fetch(`/api/obrasSociales/${id}`, { method: "DELETE" });
+
+    cargarObrasSociales();
+
 }
 
 
 
-function cancelarEdicion() { 
-    obraEditando = null; 
-    limpiarFormulario(); 
-    document.getElementById("botonGuardar").textContent = "Guardar Obra Social"; 
-    document.getElementById("botonCancelar").style.display = "none"; 
-} 
+async function editarObraSocial(id) {
 
+    const nombreObra = prompt("Nuevo nombre");
+    if (nombreObra === null) return;
 
-function limpiarFormulario() { 
-    document.getElementById("nombreObra").value = ""; 
-    document.getElementById("monto").value = ""; 
+    const monto = prompt("Nuevo monto");
+    if (monto === null) return;
+
+    const respuesta = await fetch(`/api/obrasSociales/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombreObra,
+            monto: Number(monto)
+        })
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+        alert(datos.message);
+        return;
+    }
+
+    cargarObrasSociales();
+
 }
 
 
-async function cargarObrasSociales() { 
-    const respuesta = await fetch("/api/obrasSociales"); 
-    const obrasSociales = await respuesta.json(); 
-    
-    obrasSocialesCargadas = obrasSociales; 
-    const lista = document.getElementById("listaObrasSociales"); 
-    lista.innerHTML = ""; 
-    obrasSociales.forEach(obraSocial => { 
-        lista.innerHTML += 
-        ` <li> <strong>ID:</strong> ${obraSocial.idObra} 
-            <br> <strong>Nombre:</strong> ${obraSocial.nombreObra} 
-            <br> <strong>Monto:</strong> ${obraSocial.monto ?? "—"} 
-            <br><br> <button onclick="eliminarObraSocial(${obraSocial.idObra})"> Eliminar </button> 
-            <button onclick="editarObraSocial(${obraSocial.idObra})"> Editar </button> </li> <hr> `; 
-    }); 
+
+function renderObrasSociales(obrasSociales) {
+
+    const lista = document.getElementById("listaObrasSociales");
+
+    lista.innerHTML = "";
+
+    if (obrasSociales.length === 0) {
+        lista.innerHTML = "<li>No se encontraron obras sociales.</li>";
+        return;
+    }
+
+    obrasSociales.forEach(obraSocial => {
+        lista.innerHTML += `
+            <li>
+                <strong>ID:</strong> ${obraSocial.idObra}
+                <br>
+                <strong>Nombre:</strong> ${obraSocial.nombreObra}
+                <br>
+                <strong>Monto:</strong> $${obraSocial.monto}
+                <br><br>
+                <button onclick="eliminarObraSocial(${obraSocial.idObra})">
+                    Eliminar
+                </button>
+                <button onclick="editarObraSocial(${obraSocial.idObra})">
+                    Editar
+                </button>
+            </li>
+            <hr>
+        `;
+    });
+
+}
+
+
+
+async function cargarObrasSociales() {
+    const respuesta = await fetch("/api/obrasSociales");
+
+    obrasSocialesData = await respuesta.json();
+
+    filtrarObrasSociales();
+}
+
+
+
+function filtrarObrasSociales() {
+
+    const termino = document.getElementById("buscadorObraSocial").value.trim().toLowerCase();
+
+    const filtradas = !termino
+        ? obrasSocialesData
+        : obrasSocialesData.filter(o =>
+            o.nombreObra?.toLowerCase().includes(termino)
+        );
+
+    renderObrasSociales(filtradas);
+
 }
 
 cargarObrasSociales();
