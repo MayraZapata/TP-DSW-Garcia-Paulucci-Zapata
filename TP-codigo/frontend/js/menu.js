@@ -2,7 +2,6 @@
 const rol = localStorage.getItem("rol");
 const tituloRol = document.getElementById("tituloRol");
 const btnPacientes = document.getElementById("btnPacientes");
-const btnCambioDatos = document.getElementById("btnCambioDatos");
 const btnMedicos = document.getElementById("btnMedicos");
 const btnTurnos = document.getElementById("btnTurnos");
 const btnMisTurnos = document.getElementById("btnMisTurnos");
@@ -13,7 +12,6 @@ const btnEspecialidad = document.getElementById("btnEspecialidad");
 const btnDiagnostico = document.getElementById("btnDiagnostico");
 const btnTipoUrgencia = document.getElementById("btnTipoUrgencia");
 
-
 if (!rol) {
     location.href = "login.html";
 }
@@ -22,13 +20,11 @@ if (rol === "ADMIN") {
   tituloRol.textContent = "Administrador";
   // El Admin no ve "Mis Turnos" de paciente
   if (btnMisTurnos) btnMisTurnos.style.display = "none";
-  if (btnCambioDatos) btnCambioDatos.style.display = "none";
   if (btnReporte) btnReporte.style.display = "block";
 } 
 else if (rol === "MEDICO") {
   tituloRol.textContent = "Médico";
   if (btnPacientes) btnPacientes.style.display = "none";
-  if (btnCambioDatos) btnCambioDatos.style.display = "none";
   if (btnMedicos) btnMedicos.style.display = "none";
   if (btnTurnos) btnTurnos.style.display = "none";
   if (btnMisTurnos) btnMisTurnos.style.display = "none";
@@ -42,7 +38,6 @@ else if (rol === "MEDICO") {
 else if (rol === "PACIENTE") {
   tituloRol.textContent = "Paciente";
   if (btnPacientes) btnPacientes.style.display = "none";
-  if (btnCambioDatos) btnCambioDatos.style.display = "block";
   if (btnMedicos) btnMedicos.style.display = "none";
   if (btnAgenda) btnAgenda.style.display = "none";
   if (btnReporte) btnReporte.style.display = "none";
@@ -55,6 +50,5 @@ else if (rol === "PACIENTE") {
 
 function cerrarSesion() {
     localStorage.removeItem("rol");
-    localStorage.removeItem("usuario"); 
     location.href = "login.html";
 }
