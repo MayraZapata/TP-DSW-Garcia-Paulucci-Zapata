@@ -187,29 +187,50 @@ async function eliminarMedico(matricula) {
 async function cargarMedicos() {
   try {
     const respuesta = await fetch("/api/medicos");
-    const medicos = await respuesta.json();
-    medicosCargados = medicos; // Guardamos los médicos cargados para futuras ediciones
-    const lista = document.getElementById("listaMedicos");
+    medicosCargados = await respuesta.json();
 
-    lista.innerHTML = "";
-
-    medicos.forEach(medico => {
-      lista.innerHTML += `
-        <li>
-          <strong>Matrícula:</strong> ${medico.matricula}<br>
-          <strong>Nombre:</strong> ${medico.nombre} ${medico.apellido}<br>
-          <strong>Usuario:</strong> ${medico.nombreUsuario}<br>
-          <strong>Especialidad:</strong> ${medico.especialidad?.nombreEspecialidad || medico.especialidad?.nombre || "Sin Asignar"}
-          <br><br>
-          <button onclick="eliminarMedico(${medico.matricula})">Eliminar</button>
-          <button onclick="editarMedico(${medico.matricula})">Editar</button>
-        </li>
-        <hr>
-      `;
-    });
+    filtrarMedicos();
   } catch (error) {
     console.error("Error al cargar médicos:", error);
   }
+}
+
+function renderMedicos(medicos) {
+  const lista = document.getElementById("listaMedicos");
+  lista.innerHTML = "";
+
+  medicos.forEach(medico => {
+    lista.innerHTML += `
+      <li>
+        <strong>Matrícula:</strong> ${medico.matricula}<br>
+        <strong>Nombre:</strong> ${medico.nombre} ${medico.apellido}<br>
+        <strong>Usuario:</strong> ${medico.nombreUsuario}<br>
+        <strong>Especialidad:</strong> ${medico.especialidad?.nombreEspecialidad || medico.especialidad?.nombre || "Sin Asignar"}
+        <br><br>
+        <button onclick="eliminarMedico(${medico.matricula})">Eliminar</button>
+        <button onclick="editarMedico(${medico.matricula})">Editar</button>
+      </li>
+      <hr>
+    `;
+  });
+}
+
+function filtrarMedicos() {
+  const termino = document.getElementById("buscadorMedico").value.trim().toLowerCase();
+
+  const filtrados = !termino
+    ? medicosCargados
+    : medicosCargados.filter(m => {
+        const especialidad = m.especialidad?.nombreEspecialidad || m.especialidad?.nombre || "";
+        return (
+          m.nombre?.toLowerCase().includes(termino) ||
+          m.apellido?.toLowerCase().includes(termino) ||
+          especialidad.toLowerCase().includes(termino) ||
+          String(m.matricula).includes(termino)
+        );
+      });
+
+  renderMedicos(filtrados);
 }
 
 // Inicialización

@@ -236,50 +236,70 @@ async function cargarPacientes() {
   if (rol !== "ADMIN") {
       return;
   }
-  try {
+   try {
       const respuesta = await fetch("/api/pacientes");
       const pacientes = await respuesta.json();
-      // Guardamos los pacientes para poder editarlos
+      // Guardamos los pacientes para poder editarlos (y para filtrar sin volver a pedirlos)
       pacientesCargados = pacientes;
-      const lista = document.getElementById("listaPacientes");
-      lista.innerHTML = `
-        <hr>
-        <h2>Pacientes registrados</h2>
-      `;
-      pacientes.forEach(paciente => {
-          lista.innerHTML += `
-              <li>
-                  <strong>ID:</strong>
-                  ${paciente.idPaciente}
-                  <br>
-                  <strong>Nombre:</strong>
-                  ${paciente.nombre} ${paciente.apellido}
-                  <br>
-                  <strong>DNI:</strong>
-                  ${paciente.dni || "N/A"}
-                  <br>
-                  <strong>Usuario:</strong>
-                  ${paciente.nombreUsuario}
-                  <br>
-                  <strong>Obra Social:</strong>
-                  ${
-                      paciente.obraSocial?.nombreObra ??
-                      "Sin obra social"
-                  }
-                  <br><br>
-                  <button onclick="eliminarPaciente(${paciente.idPaciente})">
-                      Eliminar
-                  </button>
-                  <button onclick="editarPaciente(${paciente.idPaciente})">
-                      Editar
-                  </button>
-              </li>
-              <hr>
-          `;
-      });
+
+      // Esta sección (título + buscador) arranca oculta en el HTML, porque esta
+      // misma pantalla también la usa un paciente logueado editando sus propios
+      // datos, y ahí no correspondía mostrar un buscador de la lista completa.
+      document.getElementById("seccionListaPacientes").style.display = "block";
+
+      filtrarPacientes();
   } catch (error) {
     console.error("Error al cargar pacientes:", error);
   }
+}
+
+function renderPacientes(pacientes) {
+    const lista = document.getElementById("listaPacientes");
+    lista.innerHTML = "";
+
+    pacientes.forEach(paciente => {
+        lista.innerHTML += `
+            <li>
+                <strong>ID:</strong>
+                ${paciente.idPaciente}
+                <br>
+                <strong>Nombre:</strong>
+                ${paciente.nombre} ${paciente.apellido}
+                <br>
+                <strong>DNI:</strong>
+                ${paciente.dni || "N/A"}
+                <br>
+                <strong>Usuario:</strong>
+                ${paciente.nombreUsuario}
+                <br>
+                <strong>Obra Social:</strong>
+                ${paciente.obraSocial?.nombreObra ?? "Sin obra social"}
+                <br><br>
+                <button onclick="eliminarPaciente(${paciente.idPaciente})">
+                    Eliminar
+                </button>
+                <button onclick="editarPaciente(${paciente.idPaciente})">
+                    Editar
+                </button>
+            </li>
+            <hr>
+        `;
+    });
+}
+
+function filtrarPacientes() {
+    const termino = document.getElementById("buscadorPaciente").value.trim().toLowerCase();
+
+    const filtrados = !termino
+        ? pacientesCargados
+        : pacientesCargados.filter(p =>
+            p.nombre?.toLowerCase().includes(termino) ||
+            p.apellido?.toLowerCase().includes(termino) ||
+            p.dni?.toLowerCase().includes(termino) ||
+            p.obraSocial?.nombreObra?.toLowerCase().includes(termino)
+        );
+
+    renderPacientes(filtrados);
 }
 
 

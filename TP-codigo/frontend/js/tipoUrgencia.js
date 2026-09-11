@@ -95,4 +95,37 @@ async function cargarTiposUrgencia() {
     }); 
 }
 
-cargarTiposUrgencia();
+async function cargarTiposUrgencia() {
+    const respuesta = await fetch("/api/tiposUrgencia");
+
+    tiposUrgenciaCargados = await respuesta.json();
+
+    filtrarTiposUrgencia();
+}
+
+function renderTiposUrgencia(tiposUrgencia) {
+    const lista = document.getElementById("listaTiposUrgencia");
+    lista.innerHTML = "";
+
+    tiposUrgencia.forEach(tipo => {
+        lista.innerHTML +=
+        ` <li> <strong>ID:</strong> ${tipo.idTipo}
+            <br> <strong>Nombre:</strong> ${tipo.nombre}
+            <br> <strong>Descripción:</strong> ${tipo.descripcionTipo ?? "—"}
+            <br><br> <button onclick="eliminarTipoUrgencia(${tipo.idTipo})"> Eliminar </button>
+            <button onclick="editarTipoUrgencia(${tipo.idTipo})"> Editar </button> </li> <hr> `;
+    });
+}
+
+function filtrarTiposUrgencia() {
+    const termino = document.getElementById("buscadorTipoUrgencia").value.trim().toLowerCase();
+
+    const filtrados = !termino
+        ? tiposUrgenciaCargados
+        : tiposUrgenciaCargados.filter(t =>
+            t.nombre?.toLowerCase().includes(termino) ||
+            t.descripcionTipo?.toLowerCase().includes(termino)
+        );
+
+    renderTiposUrgencia(filtrados);
+}

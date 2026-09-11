@@ -24,6 +24,11 @@
     </select>
     <button id="botonGuardar" onclick="guardarPaciente()"> Guardar Paciente </button>
     <button id="botonCancelar" onclick="cancelarEdicion()" style="display: none;"> Cancelar edición </button>
+<div id="seccionListaPacientes" style="display: none;">
+    <hr>
+    <h2>Pacientes registrados</h2>
+    <input type="text" id="buscadorPaciente" placeholder="Buscar por nombre, apellido, DNI u obra social..." oninput="filtrarPacientes()">
+</div> 
     <ul id="listaPacientes"></ul>
 </div>
 <script src="js/pacientes.js"></script>

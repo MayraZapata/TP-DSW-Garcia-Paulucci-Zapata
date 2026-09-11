@@ -96,4 +96,37 @@ async function cargarDiagnosticos() {
     }); 
 }
 
-cargarDiagnosticos();
+async function cargarDiagnosticos() {
+    const respuesta = await fetch("/api/diagnosticos");
+
+    diagnosticosCargados = await respuesta.json();
+
+    filtrarDiagnosticos();
+}
+
+function renderDiagnosticos(diagnosticos) {
+    const lista = document.getElementById("listaDiagnosticos");
+    lista.innerHTML = "";
+
+    diagnosticos.forEach(diagnostico => {
+        lista.innerHTML +=
+        ` <li> <strong>ID:</strong> ${diagnostico.idDiagnostico}
+            <br> <strong>Nombre:</strong> ${diagnostico.nombreDiagnostico}
+            <br> <strong>Tratamiento:</strong> ${diagnostico.tratamiento ?? "—"}
+            <br><br> <button onclick="eliminarDiagnostico(${diagnostico.idDiagnostico})"> Eliminar </button>
+            <button onclick="editarDiagnostico(${diagnostico.idDiagnostico})"> Editar </button> </li> <hr> `;
+    });
+}
+
+function filtrarDiagnosticos() {
+    const termino = document.getElementById("buscadorDiagnostico").value.trim().toLowerCase();
+
+    const filtrados = !termino
+        ? diagnosticosCargados
+        : diagnosticosCargados.filter(d =>
+            d.nombreDiagnostico?.toLowerCase().includes(termino) ||
+            d.tratamiento?.toLowerCase().includes(termino)
+        );
+
+    renderDiagnosticos(filtrados);
+}

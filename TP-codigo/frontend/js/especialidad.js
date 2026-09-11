@@ -96,5 +96,39 @@ async function cargarEspecialidades() {
             <button onclick="editarEspecialidad(${especialidad.idEspecialidad})"> Editar </button> </li> <hr> `; 
     }); 
 }
+async function cargarEspecialidades() {
+    const respuesta = await fetch("/api/especialidades");
 
+    especialidadesCargadas = await respuesta.json();
+
+    // Si ya había algo escrito en el buscador, lo respeta al recargar
+    filtrarEspecialidades();
+}
+
+function renderEspecialidades(especialidades) {
+    const lista = document.getElementById("listaEspecialidades");
+    lista.innerHTML = "";
+
+    especialidades.forEach(especialidad => {
+        lista.innerHTML +=
+        ` <li> <strong>ID:</strong> ${especialidad.idEspecialidad}
+            <br> <strong>Nombre:</strong> ${especialidad.nombreEspecialidad}
+            <br> <strong>Descripción:</strong> ${especialidad.descripcion ?? "—"}
+            <br><br> <button onclick="eliminarEspecialidad(${especialidad.idEspecialidad})"> Eliminar </button>
+            <button onclick="editarEspecialidad(${especialidad.idEspecialidad})"> Editar </button> </li> <hr> `;
+    });
+}
+
+function filtrarEspecialidades() {
+    const termino = document.getElementById("buscadorEspecialidad").value.trim().toLowerCase();
+
+    const filtradas = !termino
+        ? especialidadesCargadas
+        : especialidadesCargadas.filter(e =>
+            e.nombreEspecialidad?.toLowerCase().includes(termino) ||
+            e.descripcion?.toLowerCase().includes(termino)
+        );
+
+    renderEspecialidades(filtradas);
+}
 cargarEspecialidades();

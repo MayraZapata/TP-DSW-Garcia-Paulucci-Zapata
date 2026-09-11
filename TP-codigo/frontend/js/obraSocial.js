@@ -97,4 +97,36 @@ async function cargarObrasSociales() {
     }); 
 }
 
-cargarObrasSociales();
+async function cargarObrasSociales() {
+    const respuesta = await fetch("/api/obrasSociales");
+
+    obrasSocialesCargadas = await respuesta.json();
+
+    filtrarObrasSociales();
+}
+
+function renderObrasSociales(obrasSociales) {
+    const lista = document.getElementById("listaObrasSociales");
+    lista.innerHTML = "";
+
+    obrasSociales.forEach(obraSocial => {
+        lista.innerHTML +=
+        ` <li> <strong>ID:</strong> ${obraSocial.idObra}
+            <br> <strong>Nombre:</strong> ${obraSocial.nombreObra}
+            <br> <strong>Monto:</strong> ${obraSocial.monto ?? "—"}
+            <br><br> <button onclick="eliminarObraSocial(${obraSocial.idObra})"> Eliminar </button>
+            <button onclick="editarObraSocial(${obraSocial.idObra})"> Editar </button> </li> <hr> `;
+    });
+}
+
+function filtrarObrasSociales() {
+    const termino = document.getElementById("buscadorObraSocial").value.trim().toLowerCase();
+
+    const filtradas = !termino
+        ? obrasSocialesCargadas
+        : obrasSocialesCargadas.filter(o =>
+            o.nombreObra?.toLowerCase().includes(termino)
+        );
+
+    renderObrasSociales(filtradas);
+}
