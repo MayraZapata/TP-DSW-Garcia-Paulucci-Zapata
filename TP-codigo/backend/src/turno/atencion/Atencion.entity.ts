@@ -11,13 +11,13 @@ export class Atencion {
     @PrimaryKey({ autoincrement: true, fieldName: 'idAtencion' })
     idAtencion!: number;
 
-    @Property({ fieldName: 'fechaAtencion' }) // <-- Agregamos fieldName
+    @Property({ fieldName: 'fechaAtencion' }) 
     fechaAtencion!: Date;
 
-    @Property({ fieldName: 'horaAtencion' }) // <-- Agregamos fieldName
+    @Property({ fieldName: 'horaAtencion' }) 
     horaAtencion!: string;
 
-    @Property({ fieldName: 'nroIngreso' }) // <-- Agregamos fieldName
+    @Property({ fieldName: 'nroIngreso' }) 
     nroIngreso!: number;
 
     @Property({ nullable: true })
@@ -29,7 +29,7 @@ export class Atencion {
     @ManyToOne(() => Medico, { fieldName: 'matricula' })
     medico!: Medico;
 
-    @ManyToOne(() => Diagnostico, { nullable: true })
+    @ManyToOne(() => Diagnostico, { nullable: true, fieldName: 'idDiagnostico' })
     diagnostico?: Diagnostico;
 
     @ManyToOne(() => TipoUrgencia, { nullable: true })

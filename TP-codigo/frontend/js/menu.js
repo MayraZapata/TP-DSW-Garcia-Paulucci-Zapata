@@ -6,6 +6,7 @@ const btnCambioDatos = document.getElementById("btnCambioDatos");
 const btnMedicos = document.getElementById("btnMedicos");
 const btnTurnos = document.getElementById("btnTurnos");
 const btnMisTurnos = document.getElementById("btnMisTurnos");
+const btnHistorialClinico = document.getElementById("btnHistorialClinico");
 const btnAgenda = document.getElementById("btnAgenda");
 const btnReporte = document.getElementById("btnReporteTurnos"); 
 const btnObraSocial = document.getElementById("btnObraSocial");
@@ -24,6 +25,7 @@ if (rol === "ADMIN") {
   if (btnMisTurnos) btnMisTurnos.style.display = "none";
   if (btnCambioDatos) btnCambioDatos.style.display = "none";
   if (btnReporte) btnReporte.style.display = "block";
+  if (btnHistorialClinico) btnHistorialClinico.style.display = "block";
 } 
 else if (rol === "MEDICO") {
   tituloRol.textContent = "Médico";
@@ -37,7 +39,7 @@ else if (rol === "MEDICO") {
   if (btnEspecialidad) btnEspecialidad.style.display = "none";
   if (btnDiagnostico) btnDiagnostico.style.display = "none";
   if (btnTipoUrgencia) btnTipoUrgencia.style.display = "none";
-  // Mantiene visible sólo btnAgenda
+  if (btnHistorialClinico) btnHistorialClinico.style.display = "block";
 } 
 else if (rol === "PACIENTE") {
   tituloRol.textContent = "Paciente";
@@ -50,7 +52,7 @@ else if (rol === "PACIENTE") {
   if (btnEspecialidad) btnEspecialidad.style.display = "none";
   if (btnDiagnostico) btnDiagnostico.style.display = "none";
   if (btnTipoUrgencia) btnTipoUrgencia.style.display = "none";
-  // Mantiene visibles btnTurnos y btnMisTurnos
+  if (btnHistorialClinico) btnHistorialClinico.style.display = "block";
 }
 
 function cerrarSesion() {

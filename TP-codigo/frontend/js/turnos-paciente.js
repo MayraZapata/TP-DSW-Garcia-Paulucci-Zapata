@@ -41,7 +41,7 @@ async function cargarMisTurnos() {
         <td>${fechaStr}</td>
         <td>${turno.horaAtencion} hs</td>
         <td>Dr/a. ${turno.medico ? turno.medico.nombre + ' ' + turno.medico.apellido : 'N/A'}</td>
-        <td>${turno.medico?.especialidad?.nombre || 'General'}</td>
+        <td>${turno.medico?.especialidad?.nombreEspecialidad || 'General'}</td>
         <td><strong>${turno.estado.toUpperCase()}</strong></td>
         <td>
           ${

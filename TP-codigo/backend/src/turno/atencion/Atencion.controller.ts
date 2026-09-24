@@ -3,6 +3,7 @@ import { orm } from "../../shared/orm.js";
 import { Atencion } from "./Atencion.entity.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
+import { Diagnostico } from "../diagnostico/diagnostico.entity.js"; // Importado la entidad Diagnóstico
 
 const em = orm.em;
 
@@ -13,7 +14,7 @@ export async function findAll(req: Request, res: Response) {
     const atenciones = await em.find(
       Atencion,
       {},
-      { populate: ["paciente", "medico", "medico.especialidad"] }
+      { populate: ["paciente", "medico", "medico.especialidad", "diagnostico"] }
     );
     res.json(atenciones);
   } catch (error: any) {
@@ -54,7 +55,7 @@ export async function add(req: Request, res: Response) {
       return res.status(400).json({ message: "El médico ya posee un turno reservado en ese horario" });
     }
 
-   // 5. Crear la nueva atención
+    // 5. Crear la nueva atención
     const nuevaAtencion = new Atencion();
     nuevaAtencion.fechaAtencion = new Date(`${fechaAtencion}T00:00:00`);
     nuevaAtencion.horaAtencion = horaAtencion;
@@ -82,7 +83,7 @@ export async function findByPaciente(req: Request, res: Response) {
     const atenciones = await em.find(
       Atencion,
       { paciente: { idPaciente: Number(idPaciente) } },
-      { populate: ['medico', 'medico.especialidad'] }
+      { populate: ['medico', 'medico.especialidad', 'diagnostico'] }
     );
     res.json(atenciones);
   } catch (error: any) {
@@ -102,7 +103,6 @@ export async function cancelarTurno(req: Request, res: Response) {
 
     // Validar si la fecha y hora ya pasaron
     const ahora = new Date();
-    // Armamos un objeto Date con la fecha y hora del turno
     const fechaTurnoStr = atencion.fechaAtencion.toISOString().split('T')[0];
     const fechaHoraTurno = new Date(`${fechaTurnoStr}T${atencion.horaAtencion}`);
 
@@ -131,7 +131,7 @@ export async function findByMedico(req: Request, res: Response) {
     const atenciones = await em.find(
       Atencion,
       { medico: { matricula: Number(matricula) } },
-      { populate: ['paciente'] }
+      { populate: ['paciente', 'diagnostico'] }
     );
     res.json(atenciones);
   } catch (error: any) {
@@ -154,6 +154,36 @@ export async function cambiarEstado(req: Request, res: Response) {
     res.json({ message: `Estado actualizado a ${estado}`, atencion });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
+  }
+}
+
+// Asignar o actualizar el diagnóstico de una atención
+export async function completarAtencion(req: Request, res: Response) {
+  try {
+    const { idAtencion } = req.params;
+    const { idDiagnostico, estado } = req.body;
+
+    const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
+    if (!atencion) {
+      return res.status(404).json({ message: 'Atención no encontrada' });
+    }
+
+    if (idDiagnostico) {
+      const diagnostico = await em.findOne(Diagnostico, { idDiagnostico: Number(idDiagnostico) });
+      if (!diagnostico) {
+        return res.status(404).json({ message: 'Diagnóstico no encontrado' });
+      }
+      atencion.diagnostico = diagnostico;
+    }
+
+    if (estado) {
+      atencion.estado = estado; // Ej: "atendido"
+    }
+
+    await em.flush();
+    return res.status(200).json({ message: 'Atención completada con diagnóstico exitosamente', atencion });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -197,7 +227,7 @@ export async function buscarTurnos(req: Request, res: Response) {
     const atenciones = await em.find(
       Atencion,
       filtro,
-      { populate: ['paciente', 'medico', 'medico.especialidad'] }
+      { populate: ['paciente', 'medico', 'medico.especialidad', 'diagnostico'] }
     );
 
     res.json(atenciones);

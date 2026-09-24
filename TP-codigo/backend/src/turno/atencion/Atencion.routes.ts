@@ -6,7 +6,8 @@ import {
   findByMedico, 
   cancelarTurno, 
   cambiarEstado, 
-  buscarTurnos
+  buscarTurnos,
+  completarAtencion
 } from "./Atencion.controller.js";
 
 export const atencionRouter = Router();
@@ -17,4 +18,5 @@ atencionRouter.get("/paciente/:idPaciente", findByPaciente);
 atencionRouter.get("/medico/:matricula", findByMedico);
 atencionRouter.patch("/:idAtencion/cancelar", cancelarTurno);
 atencionRouter.patch("/:idAtencion/estado", cambiarEstado);
+atencionRouter.patch("/:idAtencion/diagnostico", completarAtencion);
 atencionRouter.get("/buscar", buscarTurnos);

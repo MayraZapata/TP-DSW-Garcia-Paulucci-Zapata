@@ -4,6 +4,51 @@
   <meta charset="UTF-8">
   <title>Agenda de Atenciones</title>
   <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    /* Estilos para el Modal de Diagnóstico */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.5); 
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto; 
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: black;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -24,6 +69,7 @@
           <th>Paciente</th>
           <th>DNI</th>
           <th>Estado</th>
+          <th>Diagnóstico</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -34,6 +80,29 @@
 
     <br>
     <button onclick="location.href='menu.html'">Volver al Menú</button>
+  </div>
+
+  <!-- MODAL PARA ASIGNAR DIAGNÓSTICO -->
+  <div id="modalDiagnostico" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="cerrarModalDiagnostico()">&times;</span>
+      <h3>Asignar Diagnóstico</h3>
+      <form id="formDiagnostico">
+        <input type="hidden" id="modalIdAtencion">
+        
+        <div class="form-group">
+          <label for="selectDiagnostico">Seleccionar Diagnóstico:</label>
+          <select id="selectDiagnostico" required>
+            <option value="">-- Seleccione un Diagnóstico --</option>
+          </select>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px;">
+          <button type="button" onclick="cerrarModalDiagnostico()">Cancelar</button>
+          <button type="submit">Guardar y Finalizar</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script src="js/agenda-medico.js"></script>
