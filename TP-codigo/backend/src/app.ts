@@ -26,7 +26,7 @@ app.use(express.json());
 // Servir los archivos del frontend
 app.use(
     express.static(
-        path.join(__dirname, "../../frontend")
+        path.join(__dirname, "../../frontend/dist")
     )
 );
 
@@ -47,6 +47,11 @@ app.use("/api/administradores", administradorRouter);
 app.use("/api/atenciones", atencionRouter);
 app.use("/api/diagnosticos", diagnosticoRouter);
 app.use("/api/tiposUrgencia", tipoUrgenciaRouter);
+
+
+app.get(/^(?!\/api).*/, (_, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+});
 
 // Ruta no encontrada
 app.use((_, res) => {

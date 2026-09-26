@@ -37,10 +37,10 @@ export async function add(req: Request, res: Response) {
     let obraSocial = null; 
     if (req.body.idObra) { 
         obraSocial = await em.findOne( ObraSocial, { idObra: req.body.idObra } );
-    }
 
-    if (!obraSocial)
-        return res.status(404).json({message: "Obra Social inexistente"});
+        if (!obraSocial)
+            return res.status(404).json({ message: "Obra Social inexistente" });
+    }
 
     const paciente = em.create( Paciente,
             {
