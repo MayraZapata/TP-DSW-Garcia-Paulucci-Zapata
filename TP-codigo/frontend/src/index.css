@@ -1,11 +1,14 @@
 body {
     font-family: Arial;
     background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    padding-top: 50px;
+    margin: 0;
 }
 
+.pagina {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
 .contenedor {
     width: 500px;
     background-color: white;

@@ -5,9 +5,13 @@ export default function useFetchList(endpoint) {
   const [items, setItems] = useState([]);
 
   const cargar = useCallback(async () => {
+  try {
     const data = await api.get(endpoint);
     setItems(data);
-  }, [endpoint]);
+  } catch {
+    setItems([]);
+  }
+}, [endpoint]);
 
   useEffect(() => {
     // eslint-disable-next-line

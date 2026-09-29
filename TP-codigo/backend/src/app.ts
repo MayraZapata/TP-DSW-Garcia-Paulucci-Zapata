@@ -11,7 +11,7 @@ import { obraSocialRouter } from "./usuarios/cualidadesUsr/obraSocial/obraSocial
 import { medicoRouter } from "./usuarios/medico/medico.routes.js";
 import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
 import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";
-import { loginRouter } from "./cuu/login/login.routes.js";
+import { loginRouter } from "./login/login.routes.js";
 import { atencionRouter } from "./turno/atencion/Atencion.routes.js";
 import { diagnosticoRouter } from "./turno/diagnostico/diagnostico.routes.js";
 import { tipoUrgenciaRouter } from "./turno/tipoUrgencia/tipoUrgencia.routes.js";

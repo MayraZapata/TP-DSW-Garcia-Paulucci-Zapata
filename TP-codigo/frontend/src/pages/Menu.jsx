@@ -1,50 +1,41 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { opciones, titulosSeccion } from "../config/opciones";
 
-const opciones = [
-    { label: "CRUD Pacientes", path: "/pacientes", roles: ["ADMIN"] },
-    { label: "Cambiar datos", path: "/pacientes", roles: ["PACIENTE"] },
-    { label: "CRUD Médicos", path: "/medicos", roles: ["ADMIN"] },
-    { label: "CRUD Obras Sociales", path: "/obra-social", roles: ["ADMIN"] },
-    { label: "CRUD Especialidades", path: "/especialidad", roles: ["ADMIN"] },
-    { label: "CRUD Diagnósticos", path: "/diagnostico", roles: ["ADMIN"] },
-    { label: "CRUD Tipos de Urgencia", path: "/tipo-urgencia", roles: ["ADMIN"] },
-    { label: "Solicitar Turno", path: "/turnos", roles: ["ADMIN", "PACIENTE"] },
-    { label: "Mis Turnos / Cancelar", path: "/turnos-paciente", roles: ["PACIENTE"] },
-    { label: "Historial Clínico", path: "/historial-clinico", roles: ["ADMIN", "MEDICO", "PACIENTE"] },
-    { label: "Agenda de Turnos", path: "/agenda-medico", roles: ["ADMIN", "MEDICO"] },
-    { label: "Consultar / Reporte de Turnos", path: "/reporte-turnos", roles: ["ADMIN", "MEDICO"] },
-];
-
-const nombresRol = {
-    ADMIN: "Administrador",
-    MEDICO: "Médico",
-    PACIENTE: "Paciente",
-};
+function saludo(rol, usuario) {
+  if (rol === "ADMIN") return "Bienvenido Administrador";
+  const nombre = usuario?.nombre ? `${usuario.nombre} ${usuario.apellido || ""}`.trim() : "";
+  if (rol === "MEDICO") return `Bienvenido Dr/a. ${nombre}`.trim();
+  return `Bienvenido ${nombre}`.trim();
+}
 
 export default function Menu() {
-    const { rol, logout } = useAuth();
-    const navigate = useNavigate();
+  const { rol, usuario } = useAuth();
+  const navigate = useNavigate();
 
-    function handleLogout() {
-        logout();
-        navigate("/login");
-    }
+  const visibles = opciones.filter((op) => op.roles.includes(rol));
+  const secciones = Object.keys(titulosSeccion).filter((s) => visibles.some((op) => op.seccion === s));
 
-    return (
-        <div className="contenedor">
-            <h1>Menú de Opciones</h1>
-            <h2>{nombresRol[rol] || rol}</h2>
+  return (
+    <div className="menu">
+      <h1>{saludo(rol, usuario)}</h1>
+      <p className="info-sub">¿Qué querés hacer hoy?</p>
 
-            {opciones
-            .filter((op) => op.roles.includes(rol))
-            .map((op) => (
-                <button key={op.label} onClick={() => navigate(op.path)}>
-                {op.label}
+      {secciones.map((s) => (
+        <section className="menu-seccion" key={s}>
+          {secciones.length > 1 && <h2>{titulosSeccion[s]}</h2>}
+          <div className="menu-grid">
+            {visibles
+              .filter((op) => op.seccion === s)
+              .map((op) => (
+                <button key={op.label} className="menu-card" onClick={() => navigate(op.path)}>
+                  <span className="icono">{op.icono}</span>
+                  {op.label}
                 </button>
-            ))}
-
-            <button onClick={handleLogout}>Cerrar Sesión</button>
-        </div>
-    );
+              ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
 }
