@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import useFetchList from "../hooks/useFetchList";
+import { unicosPor } from "../utils/unicos";
 
 export default function Turnos() {
   const navigate = useNavigate();
@@ -17,15 +18,7 @@ export default function Turnos() {
   const [fechaAtencion, setFechaAtencion] = useState("");
   const [horaAtencion, setHoraAtencion] = useState("");
 
-  const especialidades = useMemo(() => {
-    const vistos = new Set();
-    return especialidadesRaw.filter((esp) => {
-      const nombreLimpio = (esp.nombreEspecialidad || "").trim().toLowerCase();
-      if (!nombreLimpio || vistos.has(nombreLimpio)) return false;
-      vistos.add(nombreLimpio);
-      return true;
-    });
-  }, [especialidadesRaw]);
+const especialidades = unicosPor(especialidadesRaw, "nombreEspecialidad");
 
   // Cascada: al cambiar la especialidad, recargar médicos de esa especialidad
   useEffect(() => {

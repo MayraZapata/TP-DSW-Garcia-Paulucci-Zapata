@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { IconoLogo } from "../components/Iconos";
+import { IconoLogo, IconoOjo } from "../components/Iconos";
 
 export default function Login() {
   const [usuario, setUsuario] = useState("");
@@ -26,20 +26,7 @@ export default function Login() {
     }
   }
 
-function iconoOjo({ cerrado }) {
-  return cerrado ? (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 3l18 18" />
-      <path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c5 0 9 4 10 7-0.5 1.4-1.5 3-3 4.3M6.6 6.6C4.5 8 3 9.9 2 12c1 3 5 7 10 7 1.4 0 2.7-.3 3.9-.8" />
-      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
+
 
 
   return (
@@ -56,7 +43,7 @@ function iconoOjo({ cerrado }) {
           <div className="campo-clave">
             <input className="campo" type={verPassword ? "text" : "password"} placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
             <button type="button" className="ojo" onClick={() => setVerPassword(!verPassword)} aria-label={verPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>
-              {iconoOjo({ cerrado: verPassword })}
+              <IconoOjo cerrado={verPassword} />
             </button>
           </div>
           <button type="submit" className="btn btn-block" disabled={cargando}>
@@ -65,7 +52,7 @@ function iconoOjo({ cerrado }) {
         </form>
 
         <div className="login-extra">
-          ¿No tenés cuenta? <Link to="/pacientes?origen=login">Registrate</Link>
+          ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
           <br />
         </div>
       </div>

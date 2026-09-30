@@ -1,16 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { IconoLogo } from "./Iconos";
+import { IconoLogo, IconoUsuario} from "./Iconos";
 
-function IconoUsuario() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#2B1B00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-    </svg>
-  );
-}
+
 
 export default function Navbar() {
   const { rol, logout } = useAuth();
@@ -68,7 +61,7 @@ export default function Navbar() {
                   <>
                     {rol === "PACIENTE" && (
                       <>
-                        <button onClick={() => irA("/pacientes")}>Cambiar datos</button>
+                        <button onClick={() => irA("/mis-datos")}>Cambiar datos</button>
                         <hr />
                       </>
                     )}

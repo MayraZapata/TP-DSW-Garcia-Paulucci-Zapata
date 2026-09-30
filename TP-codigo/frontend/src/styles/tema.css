@@ -312,7 +312,11 @@ body {
 .menu-card .icono { width: 28px; height: 28px; }
 
 
-.gestion { width: 100%; max-width: 1000px; }
+.gestion {
+  width: 100%;
+  max-width: 1000px;
+  --alto-lista: calc(100dvh - 215px);
+}
 .gestion-header { margin-bottom: 16px; }
 .gestion-header h1 { margin: 0; font-size: 26px; }
 
@@ -344,6 +348,8 @@ body {
 }
 
 .gestion-lista {
+  max-height: max(var(--alto-lista), 380px);
+  min-height: 0;
   background: var(--superficie);
   border-radius: var(--radio);
   padding: 20px;
@@ -353,7 +359,8 @@ body {
   gap: 14px;
 }
 .gestion-lista-items {
-  max-height: 560px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -379,6 +386,7 @@ body {
 
 @media (max-width: 760px) {
   .gestion-cuerpo { grid-template-columns: 1fr; }
+  .gestion-lista { max-height: 70dvh; }
 }
 
 

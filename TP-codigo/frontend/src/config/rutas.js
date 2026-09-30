@@ -1,0 +1,18 @@
+export const RUTAS = {
+  home: "/",
+  login: "/login",
+  menu: "/menu",
+  infoEspecialidades: "/info/especialidades",
+  infoObrasSociales: "/info/obras-sociales",
+  especialidad: "/especialidad",
+  obraSocial: "/obra-social",
+  diagnostico: "/diagnostico",
+  tipoUrgencia: "/tipo-urgencia",
+  medicos: "/medicos",
+  pacientes: "/pacientes",
+  turnos: "/turnos",
+  turnosPaciente: "/turnos-paciente",
+  historialClinico: "/historial-clinico",
+  agendaMedico: "/agenda-medico",
+  reporteTurnos: "/reporte-turnos",
+};
