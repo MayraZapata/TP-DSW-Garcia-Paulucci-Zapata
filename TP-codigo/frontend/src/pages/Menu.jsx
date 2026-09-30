@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { opciones, titulosSeccion } from "../config/opciones";
+import { Icono } from "../components/Iconos";
 
 function saludo(rol, usuario) {
   if (rol === "ADMIN") return "Bienvenido Administrador";
@@ -29,7 +30,7 @@ export default function Menu() {
               .filter((op) => op.seccion === s)
               .map((op) => (
                 <button key={op.label} className="menu-card" onClick={() => navigate(op.path)}>
-                  <span className="icono">{op.icono}</span>
+                  <Icono nombre={op.icono} className="icono" />
                   {op.label}
                 </button>
               ))}

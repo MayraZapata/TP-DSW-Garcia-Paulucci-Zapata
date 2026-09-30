@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { IconoLogo } from "./Iconos";
 
 function IconoUsuario() {
   return (
@@ -15,6 +16,7 @@ export default function Navbar() {
   const { rol, logout } = useAuth();
   const navigate = useNavigate();
   const [abierto, setAbierto] = useState(false);
+  const [confirmarLogout, setConfirmarLogout] = useState(false);
   const usuarioRef = useRef(null);
 
   useEffect(() => {
@@ -30,8 +32,13 @@ export default function Navbar() {
     navigate(ruta);
   }
 
-  function handleLogout() {
+  function pedirConfirmacionLogout() {
     setAbierto(false);
+    setConfirmarLogout(true);
+  }
+
+  function confirmarYCerrarSesion() {
+    setConfirmarLogout(false);
     logout();
     navigate("/");
   }
@@ -39,40 +46,56 @@ export default function Navbar() {
   const clase = ({ isActive }) => (isActive ? "activo" : "");
 
   return (
-    <header className="nav">
-      <Link to="/" className="nav-logo">🩺 Gestión de Turnos</Link>
+    <>
+      <header className="nav">
+        <Link to="/" className="nav-logo"><IconoLogo className="nav-logo-icono" /> Gestión de Turnos</Link>
 
-      <div className="nav-derecha">
-        <nav className="nav-links">
-          {rol && <NavLink to="/menu" className={clase}>Menú</NavLink>}
-          <NavLink to="/info/especialidades" className={clase}>Especialidades</NavLink>
-          <NavLink to="/info/obras-sociales" className={clase}>Obras sociales</NavLink>
-        </nav>
+        <div className="nav-derecha">
+          <nav className="nav-links">
+            {rol && <NavLink to="/menu" className={clase}>Menú</NavLink>}
+            <NavLink to="/info/especialidades" className={clase}>Especialidades</NavLink>
+            <NavLink to="/info/obras-sociales" className={clase}>Obras sociales</NavLink>
+          </nav>
 
-        <div className="nav-usuario" ref={usuarioRef}>
-          <button className="nav-avatar" onClick={() => setAbierto(!abierto)} aria-label="Menú de usuario">
-            <IconoUsuario />
-          </button>
+          <div className="nav-usuario" ref={usuarioRef}>
+            <button className="nav-avatar" onClick={() => setAbierto(!abierto)} aria-label="Menú de usuario">
+              <IconoUsuario />
+            </button>
 
-          {abierto && (
-            <div className="nav-menu">
-              {rol ? (
-                <>
-                  {rol === "PACIENTE" && (
-                    <>
-                      <button onClick={() => irA("/pacientes")}>Cambiar datos</button>
-                      <hr />
-                    </>
-                  )}
-                  <button onClick={handleLogout}>Cerrar sesión</button>
-                </>
-              ) : (
-                <button onClick={() => irA("/login")}>Iniciar sesión</button>
-              )}
-            </div>
-          )}
+            {abierto && (
+              <div className="nav-menu">
+                {rol ? (
+                  <>
+                    {rol === "PACIENTE" && (
+                      <>
+                        <button onClick={() => irA("/pacientes")}>Cambiar datos</button>
+                        <hr />
+                      </>
+                    )}
+                    <button onClick={pedirConfirmacionLogout}>Cerrar sesión</button>
+                  </>
+                ) : (
+                  <button onClick={() => irA("/login")}>Iniciar sesión</button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {confirmarLogout && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="modal-close" onClick={() => setConfirmarLogout(false)}>&times;</span>
+            <h3>¿Cerrar sesión?</h3>
+            <p>Vas a salir de tu cuenta. ¿Querés continuar?</p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
+              <button className="btn btn-secundario" onClick={() => setConfirmarLogout(false)}>Cancelar</button>
+              <button className="btn btn-peligro" onClick={confirmarYCerrarSesion}>Cerrar sesión</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

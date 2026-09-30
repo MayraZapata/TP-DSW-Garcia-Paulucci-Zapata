@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import useFetchList from "../hooks/useFetchList";
 import { unicosPor } from "../utils/unicos";
+import { IconoCalendario, IconoFrasco, IconoHospital, IconoCandado } from "../components/Iconos";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,25 +23,27 @@ export default function Home() {
       <section className="destacados">
   {rol === "ADMIN" || rol === "PACIENTE" ? (
     <button className="destacado destacado-clicable" onClick={() => navigate("/turnos")}>
-      <h3>📅 Turnos online</h3>
+      <h3><IconoCalendario /> Turnos online</h3>
       <p>Elegí especialidad, profesional, día y horario, sin llamadas ni filas.</p>
       <span className="enlace">Solicitar turno →</span>
     </button>
   ) : (
     <article className="destacado destacado-bloqueado">
-      <h3>📅 Turnos online</h3>
+      <h3><IconoCandado /> Turnos online</h3>
       <p>Elegí especialidad, profesional, día y horario, sin llamadas ni filas.</p>
-      <span className="info-sub">🔒 Iniciá sesión para reservar tu turno.</span>
+      <span className="info-sub" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <IconoCandado width="16" height="16" /> Iniciá sesión para reservar tu turno.
+        </span>
     </article>
   )}
 
   <article className="destacado">
-    <h3>🔬 {especialidades.length > 0 ? `${especialidades.length} especialidades` : "Especialidades"}</h3>
+    <h3><IconoFrasco /> {especialidades.length > 0 ? `${especialidades.length} especialidades` : "Especialidades"}</h3>
     <p>Profesionales de distintas áreas para acompañarte.</p>
     <Link to="/info/especialidades" className="enlace">Ver especialidades →</Link>
   </article>
   <article className="destacado">
-    <h3>🏥 {obras.length > 0 ? `${obras.length} obras sociales` : "Obras sociales"}</h3>
+    <h3><IconoHospital /> {obras.length > 0 ? `${obras.length} obras sociales` : "Obras sociales"}</h3>
     <p>Trabajamos con las principales coberturas de salud.</p>
     <Link to="/info/obras-sociales" className="enlace">Ver obras sociales →</Link>
   </article>

@@ -1,9 +1,7 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import useCrud from "../hooks/useCrud";
 
 export default function ObraSocial() {
-  const navigate = useNavigate();
   const { items, editingId, guardar, eliminar, editar, cancelarEdicion } = useCrud("/obrasSociales");
 
   const [nombreObra, setNombreObra] = useState("");
@@ -51,31 +49,38 @@ export default function ObraSocial() {
   }, [items, busqueda]);
 
   return (
-    <div className="contenedor">
-      <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
-      <h1>CRUD Obras Sociales</h1>
+    <div className="gestion">
+      <div className="gestion-header"><h1>Gestión de Obras Sociales</h1></div>
 
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Nombre de la Obra Social" value={nombreObra} onChange={(e) => setNombreObra(e.target.value)} />
-        <input type="number" placeholder="Monto" step="0.01" min="0" value={monto} onChange={(e) => setMonto(e.target.value)} />
-        <button type="submit">{editingId !== null ? "Guardar cambios" : "Guardar Obra Social"}</button>
-        {editingId !== null && <button type="button" onClick={handleCancelar}>Cancelar edición</button>}
-      </form>
+      <div className="gestion-cuerpo">
+        <form className="gestion-form" onSubmit={handleSubmit}>
+          <h2>{editingId !== null ? "Editar obra social" : "Nueva obra social"}</h2>
+          <input className="campo" type="text" placeholder="Nombre de la Obra Social" value={nombreObra} onChange={(e) => setNombreObra(e.target.value)} />
+          <input className="campo" type="number" placeholder="Monto" step="0.01" min="0" value={monto} onChange={(e) => setMonto(e.target.value)} />
+          <button type="submit" className="btn">{editingId !== null ? "Guardar cambios" : "Guardar obra social"}</button>
+          {editingId !== null && <button type="button" className="btn btn-secundario" onClick={handleCancelar}>Cancelar edición</button>}
+        </form>
 
-      <hr />
-      <h2>Obras Sociales registradas</h2>
-      <input type="text" placeholder="Buscar por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-
-      <ul>
-        {filtradas.map((obra) => (
-          <li key={obra.idObra}>
-            <strong>{obra.nombreObra}</strong> — ${obra.monto}
-            <br />
-            <button onClick={() => handleEliminar(obra.idObra)}>Eliminar</button>
-            <button onClick={() => handleEditar(obra.idObra)}>Editar</button>
-          </li>
-        ))}
-      </ul>
+        <div className="gestion-lista">
+          <input className="campo" type="text" placeholder="Buscar por nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+          <div className="gestion-lista-items">
+            {filtradas.length === 0 ? (
+              <p className="info-sub">No hay obras sociales para mostrar.</p>
+            ) : (
+              filtradas.map((obra) => (
+                <div className="item-card" key={obra.idObra}>
+                  <strong>{obra.nombreObra}</strong>
+                  <p style={{ margin: "6px 0 0" }}>Monto: ${obra.monto}</p>
+                  <div className="item-card-acciones">
+                    <button className="btn btn-secundario" onClick={() => handleEditar(obra.idObra)}>Editar</button>
+                    <button className="btn btn-peligro" onClick={() => handleEliminar(obra.idObra)}>Eliminar</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import useFetchList from "../hooks/useFetchList";
+import { unicosPor } from "../utils/unicos";
 
 export default function Paciente() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function Paciente() {
   const esRegistro = searchParams.get("origen") === "login";
   const { rol, usuario } = useAuth();
 
-  const obrasSociales = useFetchList("/obrasSociales");
+  const obrasUnicas = unicosPor(useFetchList("/obrasSociales"), "nombreObra");
 
   const [pacientes, setPacientes] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -22,16 +23,6 @@ export default function Paciente() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [idObra, setIdObra] = useState("");
-
-  const obrasUnicas = useMemo(() => {
-    const vistos = new Set();
-    return obrasSociales.filter((o) => {
-      const nombreLimpio = (o.nombreObra || "").trim().toLowerCase();
-      if (!nombreLimpio || vistos.has(nombreLimpio)) return false;
-      vistos.add(nombreLimpio);
-      return true;
-    });
-  }, [obrasSociales]);
 
   function limpiarFormulario() {
     setNombre("");
@@ -85,6 +76,7 @@ export default function Paciente() {
       return;
     }
     if (rol === "ADMIN") {
+      // eslint-disable-next-line
       cargarListaAdmin();
     }
     // eslint-disable-next-line
@@ -148,7 +140,7 @@ export default function Paciente() {
     }
   }
 
-  const titulo = esRegistro ? "Registrar Usuario" : rol === "PACIENTE" ? "Editar Datos Personales" : "CRUD Pacientes";
+  const titulo = esRegistro ? "Registrar Usuario" : rol === "PACIENTE" ? "Editar Datos Personales" : "Gestión de Pacientes";
   const esAdminConLista = rol === "ADMIN" && !esRegistro;
 
   const filtrados = useMemo(() => {
@@ -164,48 +156,52 @@ export default function Paciente() {
   }, [pacientes, busqueda]);
 
   return (
-    <div className="contenedor">
-      <button className="volver" onClick={volver}>Volver</button>
-      <h1>{titulo}</h1>
+    <div className="gestion">
+      <div className="gestion-header"><h1>{titulo}</h1></div>
 
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-        <input type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
-        <input type="text" placeholder="DNI" value={dni} onChange={(e) => setDni(e.target.value)} />
-        <input type="text" placeholder="Nombre de Usuario" value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
-        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <label htmlFor="idObra">Obra Social</label>
-        <select id="idObra" value={idObra} onChange={(e) => setIdObra(e.target.value)}>
-          <option value="">Sin obra social</option>
-          {obrasUnicas.map((o) => (
-            <option key={o.idObra} value={o.idObra}>{o.nombreObra}</option>
-          ))}
-        </select>
-        <button type="submit">{editingId !== null ? "Guardar cambios" : "Guardar Paciente"}</button>
-        {esAdminConLista && editingId !== null && <button type="button" onClick={handleCancelar}>Cancelar edición</button>}
-      </form>
-
-      {esAdminConLista && (
-        <>
-          <hr />
-          <h2>Pacientes registrados</h2>
-          <input type="text" placeholder="Buscar por nombre, apellido, DNI u obra social..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-          <ul>
-            {filtrados.map((p) => (
-              <li key={p.idPaciente}>
-                <strong>ID:</strong> {p.idPaciente}<br />
-                <strong>Nombre:</strong> {p.nombre} {p.apellido}<br />
-                <strong>DNI:</strong> {p.dni || "N/A"}<br />
-                <strong>Usuario:</strong> {p.nombreUsuario}<br />
-                <strong>Obra Social:</strong> {p.obraSocial?.nombreObra ?? "Sin obra social"}
-                <br /><br />
-                <button onClick={() => handleEliminar(p.idPaciente)}>Eliminar</button>
-                <button onClick={() => handleEditar(p.idPaciente)}>Editar</button>
-              </li>
+      <div className={esAdminConLista ? "gestion-cuerpo" : "gestion-cuerpo gestion-cuerpo-solo"}>
+        <form className="gestion-form" onSubmit={handleSubmit}>
+          <input className="campo" type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input className="campo" type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
+          <input className="campo" type="text" placeholder="DNI" value={dni} onChange={(e) => setDni(e.target.value)} />
+          <input className="campo" type="text" placeholder="Nombre de Usuario" value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
+          <input className="campo" type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <select className="campo" value={idObra} onChange={(e) => setIdObra(e.target.value)}>
+            <option value="">Sin obra social</option>
+            {obrasUnicas.map((o) => (
+              <option key={o.idObra} value={o.idObra}>{o.nombreObra}</option>
             ))}
-          </ul>
-        </>
-      )}
+          </select>
+          <button type="submit" className="btn">{editingId !== null ? "Guardar cambios" : "Guardar paciente"}</button>
+          {esAdminConLista && editingId !== null && <button type="button" className="btn btn-secundario" onClick={handleCancelar}>Cancelar edición</button>}
+        </form>
+
+        {esAdminConLista && (
+          <div className="gestion-lista">
+            <input className="campo" type="text" placeholder="Buscar por nombre, apellido, DNI u obra social..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+            <div className="gestion-lista-items">
+              {filtrados.length === 0 ? (
+                <p className="info-sub">No hay pacientes para mostrar.</p>
+              ) : (
+                filtrados.map((p) => (
+                  <div className="item-card" key={p.idPaciente}>
+                    <strong>{p.nombre} {p.apellido}</strong>
+                    <p style={{ margin: "6px 0 0" }}>
+                      DNI: {p.dni || "N/A"}<br />
+                      Usuario: {p.nombreUsuario}<br />
+                      Obra Social: {p.obraSocial?.nombreObra ?? "Sin obra social"}
+                    </p>
+                    <div className="item-card-acciones">
+                      <button className="btn btn-secundario" onClick={() => handleEditar(p.idPaciente)}>Editar</button>
+                      <button className="btn btn-peligro" onClick={() => handleEliminar(p.idPaciente)}>Eliminar</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import useFetchList from "../hooks/useFetchList";
 import { unicosPor } from "../utils/unicos";
+import { IconoHospital } from "../components/Iconos";
+
 
 export default function ObrasSociales() {
   const obras = unicosPor(useFetchList("/obrasSociales"), "nombreObra");
@@ -15,7 +17,7 @@ export default function ObrasSociales() {
         <div className="tarjetas">
           {obras.map((o) => (
             <article key={o.idObra} className="tarjeta">
-              <h3>🏥 {o.nombreObra}</h3>
+              <h3><IconoHospital /> {o.nombreObra}</h3>
             </article>
           ))}
         </div>

@@ -120,8 +120,8 @@ export default function AgendaMedico() {
                   <td>
                     {t.estado === "pendiente" ? (
                       <>
-                        <button style={{ color: "green" }} onClick={() => abrirModal(t.idAtencion)}>Marcar Atendido</button>
-                        <button style={{ color: "orange" }} onClick={() => cambiarEstado(t.idAtencion, "ausente")}>Marcar Ausente</button>
+                        <button style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => abrirModal(t.idAtencion)}>Marcar Atendido</button>                        
+                        <button style={{ backgroundColor: "#fff3cd", color: "#856404", border: "1px solid #ffeeba", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => cambiarEstado(t.idAtencion, "ausente")}>Marcar Ausente</button>
                       </>
                     ) : t.estado === "atendido" ? (
                       <button style={{ color: "blue" }} onClick={() => abrirModal(t.idAtencion)}>Editar Diagnóstico</button>

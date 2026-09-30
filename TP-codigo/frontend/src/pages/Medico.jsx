@@ -1,12 +1,11 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import useCrud from "../hooks/useCrud";
 import useFetchList from "../hooks/useFetchList";
+import { unicosPor } from "../utils/unicos";
 
 export default function Medico() {
-  const navigate = useNavigate();
   const { items, editingId, guardar, eliminar, editar, cancelarEdicion } = useCrud("/medicos");
-  const especialidades = useFetchList("/especialidades");
+  const especialidades = unicosPor(useFetchList("/especialidades"), "nombreEspecialidad");
 
   const [matricula, setMatricula] = useState("");
   const [nombre, setNombre] = useState("");
@@ -65,16 +64,6 @@ export default function Medico() {
     }
   }
 
-  const especialidadesUnicas = useMemo(() => {
-    const vistos = new Set();
-    return especialidades.filter((esp) => {
-      const nombreLimpio = (esp.nombreEspecialidad || "").trim().toLowerCase();
-      if (!nombreLimpio || vistos.has(nombreLimpio)) return false;
-      vistos.add(nombreLimpio);
-      return true;
-    });
-  }, [especialidades]);
-
   const filtrados = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
     if (!termino) return items;
@@ -90,44 +79,51 @@ export default function Medico() {
   }, [items, busqueda]);
 
   return (
-    <div className="contenedor">
-      <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
-      <h1>CRUD Médicos</h1>
+    <div className="gestion">
+      <div className="gestion-header"><h1>Gestión de Médicos</h1></div>
 
-      <form onSubmit={handleSubmit}>
-        <input type="number" placeholder="Matrícula" value={matricula} disabled={editingId !== null} onChange={(e) => setMatricula(e.target.value)} />
-        <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-        <input type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
-        <input type="text" placeholder="Nombre de Usuario" value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
-        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <label htmlFor="idEspecialidad">Especialidad</label>
-        <select id="idEspecialidad" value={idEspecialidad} onChange={(e) => setIdEspecialidad(e.target.value)}>
-          <option value="">General</option>
-          {especialidadesUnicas.map((esp) => (
-            <option key={esp.idEspecialidad} value={esp.idEspecialidad}>{esp.nombreEspecialidad}</option>
-          ))}
-        </select>
-        <button type="submit">{editingId !== null ? "Guardar cambios" : "Guardar Médico"}</button>
-        {editingId !== null && <button type="button" onClick={handleCancelar}>Cancelar edición</button>}
-      </form>
+      <div className="gestion-cuerpo">
+        <form className="gestion-form" onSubmit={handleSubmit}>
+          <h2>{editingId !== null ? "Editar médico" : "Nuevo médico"}</h2>
+          <input className="campo" type="number" placeholder="Matrícula" value={matricula} disabled={editingId !== null} onChange={(e) => setMatricula(e.target.value)} />
+          <input className="campo" type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input className="campo" type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
+          <input className="campo" type="text" placeholder="Nombre de Usuario" value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
+          <input className="campo" type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <select className="campo" value={idEspecialidad} onChange={(e) => setIdEspecialidad(e.target.value)}>
+            <option value="">General</option>
+            {especialidades.map((esp) => (
+              <option key={esp.idEspecialidad} value={esp.idEspecialidad}>{esp.nombreEspecialidad}</option>
+            ))}
+          </select>
+          <button type="submit" className="btn">{editingId !== null ? "Guardar cambios" : "Guardar médico"}</button>
+          {editingId !== null && <button type="button" className="btn btn-secundario" onClick={handleCancelar}>Cancelar edición</button>}
+        </form>
 
-      <hr />
-      <h2>Médicos registrados</h2>
-      <input type="text" placeholder="Buscar por nombre, apellido o especialidad..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-
-      <ul>
-        {filtrados.map((medico) => (
-          <li key={medico.matricula}>
-            <strong>Matrícula:</strong> {medico.matricula}<br />
-            <strong>Nombre:</strong> {medico.nombre} {medico.apellido}<br />
-            <strong>Usuario:</strong> {medico.nombreUsuario}<br />
-            <strong>Especialidad:</strong> {medico.especialidad?.nombreEspecialidad || "Sin Asignar"}
-            <br /><br />
-            <button onClick={() => handleEliminar(medico.matricula)}>Eliminar</button>
-            <button onClick={() => handleEditar(medico.matricula)}>Editar</button>
-          </li>
-        ))}
-      </ul>
+        <div className="gestion-lista">
+          <input className="campo" type="text" placeholder="Buscar por nombre, apellido o especialidad..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+          <div className="gestion-lista-items">
+            {filtrados.length === 0 ? (
+              <p className="info-sub">No hay médicos para mostrar.</p>
+            ) : (
+              filtrados.map((medico) => (
+                <div className="item-card" key={medico.matricula}>
+                  <strong>Dr/a. {medico.nombre} {medico.apellido}</strong>
+                  <p style={{ margin: "6px 0 0" }}>
+                    Matrícula: {medico.matricula}<br />
+                    Usuario: {medico.nombreUsuario}<br />
+                    Especialidad: {medico.especialidad?.nombreEspecialidad || "Sin asignar"}
+                  </p>
+                  <div className="item-card-acciones">
+                    <button className="btn btn-secundario" onClick={() => handleEditar(medico.matricula)}>Editar</button>
+                    <button className="btn btn-peligro" onClick={() => handleEliminar(medico.matricula)}>Eliminar</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
