@@ -22,10 +22,15 @@ export async function findAll(req: Request, res: Response) {
   }
 }
 
+
+
+
+
 // Para crear un nuevo turno (Solicitado por el cliente)
 export async function add(req: Request, res: Response) {
   try {
-    const { idPaciente, matriculaMedico, fechaAtencion, horaAtencion } = req.body;
+    const { matriculaMedico, fechaAtencion, horaAtencion } = req.body;
+    const idPaciente = req.auth!.rol === "PACIENTE" ? req.auth!.id : req.body.idPaciente;
 
     // 1. Validar que vengan los datos obligatorios
     if (!idPaciente || !matriculaMedico || !fechaAtencion || !horaAtencion) {
@@ -75,6 +80,10 @@ export async function add(req: Request, res: Response) {
   }
 }
 
+
+
+
+
 // Obtener turnos de un paciente específico
 export async function findByPaciente(req: Request, res: Response) {
   try {
@@ -91,6 +100,11 @@ export async function findByPaciente(req: Request, res: Response) {
   }
 }
 
+
+
+
+
+
 // Cancelar turno si no ha pasado la fecha/hora
 export async function cancelarTurno(req: Request, res: Response) {
   try {
@@ -99,6 +113,9 @@ export async function cancelarTurno(req: Request, res: Response) {
 
     if (!atencion) {
       return res.status(404).json({ message: "El turno no existe" });
+    }
+    if (atencion.paciente.idPaciente !== req.auth!.id) {
+      return res.status(403).json({ message: "Ese turno no es tuyo" });
     }
 
     // Validar si la fecha y hora ya pasaron
@@ -123,6 +140,10 @@ export async function cancelarTurno(req: Request, res: Response) {
   }
 }
 
+
+
+
+
 // Turnos de un médico específico
 export async function findByMedico(req: Request, res: Response) {
   try {
@@ -139,6 +160,11 @@ export async function findByMedico(req: Request, res: Response) {
   }
 }
 
+
+
+
+
+
 // Cambiar estado (atendido / ausente / pendiente)
 export async function cambiarEstado(req: Request, res: Response) {
   try {
@@ -147,6 +173,9 @@ export async function cambiarEstado(req: Request, res: Response) {
 
     const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
     if (!atencion) return res.status(404).json({ message: "Turno no encontrado" });
+    if (req.auth!.rol === "MEDICO" && atencion.medico.matricula !== req.auth!.id) {
+      return res.status(403).json({ message: "Ese turno pertenece a otro médico" });
+    }
 
     atencion.estado = estado;
     await em.flush();
@@ -157,6 +186,9 @@ export async function cambiarEstado(req: Request, res: Response) {
   }
 }
 
+
+
+
 // Asignar o actualizar el diagnóstico de una atención
 export async function completarAtencion(req: Request, res: Response) {
   try {
@@ -166,6 +198,9 @@ export async function completarAtencion(req: Request, res: Response) {
     const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
     if (!atencion) {
       return res.status(404).json({ message: 'Atención no encontrada' });
+    }
+    if (req.auth!.rol === "MEDICO" && atencion.medico.matricula !== req.auth!.id) {
+      return res.status(403).json({ message: "Ese turno pertenece a otro médico" });
     }
 
     if (idDiagnostico) {
@@ -186,6 +221,11 @@ export async function completarAtencion(req: Request, res: Response) {
     return res.status(500).json({ message: error.message });
   }
 }
+
+
+
+
+
 
 // Función auxiliar para pasar a 'ausente' los turnos pendientes cuya fecha/hora ya pasó
 async function actualizarTurnosVencidos() {
@@ -208,6 +248,10 @@ async function actualizarTurnosVencidos() {
   }
 }
 
+
+
+
+
 // Buscar turnos filtrando por fecha y/o médico
 export async function buscarTurnos(req: Request, res: Response) {
   try {
@@ -222,6 +266,10 @@ export async function buscarTurnos(req: Request, res: Response) {
 
     if (matricula) {
       filtro.medico = { matricula: Number(matricula) };
+    }
+
+    if (req.auth!.rol === "MEDICO") {
+      filtro.medico = { matricula: req.auth!.id }; // un médico solo ve sus turnos
     }
 
     const atenciones = await em.find(

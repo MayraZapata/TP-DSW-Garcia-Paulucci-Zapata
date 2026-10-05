@@ -6,7 +6,7 @@ export abstract class Usuario {
     nombreUsuario!: string;
     
 
-    @Property()
+    @Property({ hidden: true })
     password!: string;
 
 }

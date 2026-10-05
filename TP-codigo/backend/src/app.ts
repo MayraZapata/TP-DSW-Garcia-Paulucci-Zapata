@@ -1,10 +1,12 @@
 import "reflect-metadata";
 import express from "express";
+import cookieParser from "cookie-parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { RequestContext } from "@mikro-orm/core";
 import { orm } from "./shared/orm.js";
+
 
 import { especialidadRouter } from "./usuarios/cualidadesUsr/especialidad/especialidad.routes.js";
 import { obraSocialRouter } from "./usuarios/cualidadesUsr/obraSocial/obraSocial.routes.js";
@@ -22,6 +24,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Servir los archivos del frontend
 app.use(

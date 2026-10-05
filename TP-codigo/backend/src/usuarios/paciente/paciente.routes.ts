@@ -1,15 +1,14 @@
 import { Router } from "express";
-
-import { findAll, findOne, add, update, remove,} from "./paciente.controller.js";
+import { findAll, findOne, add, update, remove } from "./paciente.controller.js";
+import { autenticar, autorizar, soloPropio } from "../../shared/auth.middleware.js";
 
 export const pacienteRouter = Router();
 
-pacienteRouter.get("/", findAll);
+const soloAdmin = [autenticar, autorizar("ADMIN")];
+const adminOPropio = [autenticar, autorizar("ADMIN", "PACIENTE"), soloPropio("PACIENTE", "id")];
 
-pacienteRouter.get("/:id", findOne);
-
-pacienteRouter.post("/", add);
-
-pacienteRouter.put("/:id", update);
-
-pacienteRouter.delete("/:id", remove);
+pacienteRouter.get("/", soloAdmin, findAll);
+pacienteRouter.get("/:id", adminOPropio, findOne);
+pacienteRouter.post("/", add); // público: es el registro
+pacienteRouter.put("/:id", adminOPropio, update);
+pacienteRouter.delete("/:id", soloAdmin, remove);

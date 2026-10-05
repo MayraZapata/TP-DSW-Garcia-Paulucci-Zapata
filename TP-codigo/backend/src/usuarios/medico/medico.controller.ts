@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { orm } from "../../shared/orm.js";
+import { hashPassword } from "../../shared/password.js";
+
 
 import { Medico } from "./medico.entity.js";
 import { Especialidad } from "../cualidadesUsr/especialidad/especialidad.entity.js";
@@ -58,6 +60,10 @@ export async function findByEspecialidad(req: Request, res: Response) {
   }
 }
 
+
+
+
+
 export async function add(req: Request, res: Response) {
 
     const medicoExistente = await em.findOne(Medico, { matricula: Number(req.body.matricula) });
@@ -66,6 +72,11 @@ export async function add(req: Request, res: Response) {
     if (medicoExistente) {
         return res.status(400).json({ message: "La matrícula ya existe"});
     }
+
+
+    if (!req.body.password) 
+        return res.status(400).json({ message: "La contraseña es obligatoria" });
+    
 
 
     if (await existeUsuario(req.body.nombreUsuario)) {
@@ -87,7 +98,7 @@ export async function add(req: Request, res: Response) {
                 nombre: req.body.nombre,
                 apellido: req.body.apellido,
                 nombreUsuario: req.body.nombreUsuario,
-                password: req.body.password,
+                password: await hashPassword(req.body.password),
                 especialidad
             }
         );
@@ -95,8 +106,12 @@ export async function add(req: Request, res: Response) {
     await em.persistAndFlush(medico);
 
     res.status(201).json(medico);
-
 }
+
+
+
+
+
 
 export async function update(req: Request, res: Response) {
 
@@ -105,7 +120,14 @@ export async function update(req: Request, res: Response) {
     if (!medico)
         return res.sendStatus(404);
 
-    em.assign(medico, req.body);
+
+
+    /*manda la contraseña vacía al editar. Así, vacía no toca nada, 
+    y si el admin escribe una nueva, se hashea. 
+    Eso le permite resetearle la clave a un médico.*/ 
+    const { password, ...datos } = req.body;
+    em.assign(medico, datos);
+    if (password) medico.password = await hashPassword(password);
 
     if (req.body.idEspecialidad) {
 

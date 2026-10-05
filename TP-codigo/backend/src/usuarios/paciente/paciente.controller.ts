@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { orm } from "../../shared/orm.js";
+import { hashPassword } from "../../shared/password.js";
 
 import { Paciente } from "./paciente.entity.js";
 import { ObraSocial } from "../cualidadesUsr/obraSocial/obraSocial.entity.js";
@@ -14,6 +15,10 @@ export async function findAll(req: Request, res: Response) {
 
 }
 
+
+
+
+
 export async function findOne(req: Request, res: Response) {
 
     const paciente = await em.findOne(Paciente, 
@@ -27,11 +32,17 @@ export async function findOne(req: Request, res: Response) {
     res.json(paciente);
 }
 
+
+
+
 export async function add(req: Request, res: Response) {
 
     if (await existeUsuario(req.body.nombreUsuario)) {
         return res.status(400).json({ message: "El nombre de usuario ya existe"});
     }
+    
+    if (!req.body.password) 
+        return res.status(400).json({ message: "La contraseña es obligatoria" });
     
     
     let obraSocial = null; 
@@ -48,7 +59,7 @@ export async function add(req: Request, res: Response) {
                 apellido: req.body.apellido,
                 dni: req.body.dni,
                 nombreUsuario: req.body.nombreUsuario,
-                password: req.body.password,
+                password: await hashPassword(req.body.password),
                 obraSocial
             }
         );
@@ -59,6 +70,11 @@ export async function add(req: Request, res: Response) {
 
 }
 
+
+
+
+
+
 export async function update(req: Request, res: Response) {
 
     const paciente = await em.findOne( Paciente,{ idPaciente: Number(req.params.id) } );
@@ -66,7 +82,8 @@ export async function update(req: Request, res: Response) {
     if (!paciente)
         return res.sendStatus(404);
 
-    em.assign(paciente, req.body);
+    const { password, ...datos } = req.body;
+    em.assign(paciente, datos);
 
     if (req.body.idObra) {
 
@@ -81,6 +98,9 @@ export async function update(req: Request, res: Response) {
 
     res.json(paciente);
 }
+
+
+
 
 
 export async function remove(req: Request, res: Response) {
