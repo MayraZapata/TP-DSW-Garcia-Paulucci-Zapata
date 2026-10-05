@@ -30,9 +30,9 @@ export default function Navbar() {
     setConfirmarLogout(true);
   }
 
-  function confirmarYCerrarSesion() {
+  async function confirmarYCerrarSesion() {
     setConfirmarLogout(false);
-    logout();
+    await logout();
     navigate("/");
   }
 
@@ -60,11 +60,10 @@ export default function Navbar() {
                 {rol ? (
                   <>
                     {rol === "PACIENTE" && (
-                      <>
-                        <button onClick={() => irA("/mis-datos")}>Cambiar datos</button>
-                        <hr />
-                      </>
+                      <button onClick={() => irA("/mis-datos")}>Cambiar datos</button>
                     )}
+                    <button onClick={() => irA("/cambiar-password")}>Cambiar contraseña</button>
+                    <hr />
                     <button onClick={pedirConfirmacionLogout}>Cerrar sesión</button>
                   </>
                 ) : (

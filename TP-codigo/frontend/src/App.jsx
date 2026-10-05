@@ -20,6 +20,7 @@ import AgendaMedico from "./pages/AgendaMedico";
 import ReporteTurnos from "./pages/ReporteTurnos";
 import Registro from "./pages/Registro";
 import MisDatos from "./pages/MisDatos";
+import CambiarPassword from "./pages/CambiarPassword";
 
 import { RUTAS } from "./config/rutas";
 
@@ -44,6 +45,7 @@ function App() {
             <Route path={RUTAS.medicos} element={ <ProtectedRoute rolesPermitidos={["ADMIN"]}> <Medico /> </ProtectedRoute> }/>
             <Route path="/pacientes" element={ <ProtectedRoute rolesPermitidos={["ADMIN"]}> <Paciente /> </ProtectedRoute> }/>
             <Route path="/mis-datos" element={ <ProtectedRoute rolesPermitidos={["PACIENTE"]}> <MisDatos /> </ProtectedRoute> }/>
+            <Route path="/cambiar-password" element={ <ProtectedRoute> <CambiarPassword /> </ProtectedRoute> }/>
             <Route path={RUTAS.turnos} element={ <ProtectedRoute rolesPermitidos={["ADMIN", "PACIENTE"]}> <Turnos /> </ProtectedRoute> }/>
             <Route path={RUTAS.turnosPaciente} element={ <ProtectedRoute rolesPermitidos={["PACIENTE"]}> <TurnosPaciente /> </ProtectedRoute> }/>
             <Route path={RUTAS.historialClinico} element={ <ProtectedRoute rolesPermitidos={["ADMIN", "MEDICO", "PACIENTE"]}> <HistorialClinico /> </ProtectedRoute> }/>

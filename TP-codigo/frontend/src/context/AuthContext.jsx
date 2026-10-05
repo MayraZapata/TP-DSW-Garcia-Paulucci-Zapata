@@ -1,41 +1,60 @@
-import { createContext, useContext, useState } from "react";
-import { api } from "../api/client";
+import { createContext, useContext, useState, useEffect } from "react";
+import { api, registrarAlExpirarSesion } from "../api/client";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [rol, setRol] = useState(() => localStorage.getItem("rol"));
-    const [usuario, setUsuario] = useState(() => {
-        try {
-            return JSON.parse(localStorage.getItem("usuario")) || null;
-        } catch {
-            return null;
-        }
-    });
+    const [rol, setRol] = useState(null);
+    const [usuario, setUsuario] = useState(null);
+    // true hasta que sepamos si hay sesión: evita que al recargar te mande al login por error
+    const [cargando, setCargando] = useState(true);
+
+    useEffect(() => {
+        // Restos de la versión anterior: ya no se guarda nada en localStorage
+        localStorage.removeItem("rol");
+        localStorage.removeItem("usuario");
+
+        registrarAlExpirarSesion(() => {
+            setRol(null);
+            setUsuario(null);
+        });
+
+        (async () => {
+            try {
+                const datos = await api.get("/login/me");
+                setRol(datos.rol);
+                setUsuario(datos.usuario || {});
+            } catch {
+                setRol(null);
+                setUsuario(null);
+            } finally {
+                setCargando(false);
+            }
+        })();
+    }, []);
 
     async function login(nombreUsuario, password) {
         const datos = await api.post("/login", { usuario: nombreUsuario, password });
-        localStorage.setItem("rol", datos.rol);
-        localStorage.setItem("usuario", JSON.stringify(datos.usuario || {}));
         setRol(datos.rol);
         setUsuario(datos.usuario || {});
     }
 
-    function logout() {
-        localStorage.removeItem("rol");
-        localStorage.removeItem("usuario");
+    async function logout() {
+        try {
+            await api.post("/login/logout");
+        } catch {
+            // aunque falle el aviso al servidor, cerramos la sesión de este lado
+        }
         setRol(null);
         setUsuario(null);
     }
 
     function actualizarUsuario(parcial) {
-    const nuevo = { ...usuario, ...parcial };
-    localStorage.setItem("usuario", JSON.stringify(nuevo));
-    setUsuario(nuevo);
+        setUsuario((u) => ({ ...u, ...parcial }));
     }
 
     return (
-        <AuthContext.Provider value={{ rol, usuario, login, logout, actualizarUsuario }}>
+        <AuthContext.Provider value={{ rol, usuario, cargando, login, logout, actualizarUsuario }}>
             {children}
         </AuthContext.Provider>
     );
