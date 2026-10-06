@@ -14,7 +14,7 @@ dist-ssr
 *.tsbuildinfo
 
 
-backend/.env
+TP-codigo/backend/.env
 
 
 # Editor directories and files
