@@ -18,7 +18,7 @@ export class Medico extends Usuario {
     apellido!: string;
 
     @ManyToOne(() => Especialidad, { fieldName: "idEspecialidad"})
-    especialidad Especialidad;
+    especialidad!: Especialidad;
 
 
 }

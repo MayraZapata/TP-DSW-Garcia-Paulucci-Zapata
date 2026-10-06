@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS paciente (
         REFERENCES ObraSocial(idObra)
 );
 /*Cargar paciente*/
-INSERT INTO paciente (nombre, apellido, dni, nombreUsuario, password, idObra) VALUES ('Juan', 'Perez', '20154984','user1','uno111', 1), ('Marcelo', 'Tinelli', '47065948','user2','dos222', null), ('Roberto', 'Musso', '20154984','user3','tres333', 2), ('Maria', 'Ferreyra', '47065948','user4','cuatro444', 3), ('Tim', 'Payne', '20154984','user5','cinco555', 4), ('Thomas ', 'Holland', '47065948','user6','seis666', 2), ('Stanley', 'Pines', '20154984','user7','siete777', null);
+INSERT INTO paciente (nombre, apellido, dni, nombreUsuario, password, idObra) VALUES ('Juan', 'Perez', '47076568','user1','uno111', 1), ('Marcelo', 'Tinelli', '7248513','user2','dos222', null), ('Roberto', 'Musso', ' 7915420','user3','tres333', 2), ('Juanito', 'Alcachofa', '39135893','user4','cuatro444', 3), ('Tim', 'Payne', '26156284','user5','cinco555', 4), ('Thomas ', 'Holland', '39641855','user6','seis666', 2), ('Stanley', 'Pines', '20154984','user7','siete777', null);
 
 
 /*Crear tabla Medico*/
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS medico (
         REFERENCES Especialidad(idEspecialidad)
 );
 /*Cargar medico*/
-INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES ('Gregory', 'House', 'drHouse','uno111', 1), ('Stephen', 'Strange', 'drStrange','dos222', 4), ('Meredith', 'Grey', 'drGrey','tres333', 4), ('John', 'Watson', 'drWatson','cuatro444', null), ('James', 'Wilson', 'drWilson','cinco555', 3);
+INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES ('Gregory', 'House', 'drHouse','uno111', 1), ('Stephen', 'Strange', 'drStrange','dos222', 4), ('Meredith', 'Grey', 'drGrey','tres333', 4), ('John', 'Watson', 'drWatson','cuatro444', 2), ('James', 'Wilson', 'drWilson','cinco555', 3);
 
 
 /*Crear tabla Administrador*/
@@ -92,6 +92,13 @@ CREATE TABLE IF NOT EXISTS diagnostico (
     nombreDiagnostico VARCHAR(100) NOT NULL ,
     tratamiento VARCHAR(300) NOT NULL
 );
+INSERT INTO diagnostico (nombreDiagnostico, tratamiento) VALUES 
+('Gripe Común', 'Reposo, hidratación constante y paracetamol cada 8 horas si hay fiebre.'),
+('Hipertensión Arterial', 'Dieta baja en sodio, ejercicio moderado y enalapril 10mg diario.'),
+('Migraña Severa', 'Evitar estímulos luminosos, reposo en habitación oscura y sumatriptán 50mg.'),
+('Infección Urinaria', 'Tomar abundante agua y tratamiento con antibiótico (Amoxicilina) por 7 días.'),
+('Esguince de Tobillo', 'Inmovilización relativa, aplicación de hielo local y antiinflamatorios.');
+
 
 
 
@@ -102,6 +109,11 @@ CREATE TABLE IF NOT EXISTS tipoUrgencia (
     nombre VARCHAR(50) NOT NULL,
     descripcionTipo VARCHAR(100)
 );
+INSERT INTO tipoUrgencia (nombre, descripcionTipo) VALUES 
+('Verde / No Urgente', 'Condiciones menores que pueden esperar atención sin riesgo de empeorar.'),
+('Amarillo / Urgencia', 'Requiere atención médica rápida pero la vida del paciente no peligra inmediatamente.'),
+('Rojo / Emergencia', 'Riesgo vital inminente. Requiere atención médica e intervención inmediata.');
+
 
 
 
@@ -127,6 +139,15 @@ CREATE TABLE IF NOT EXISTS atencion (
     FOREIGN KEY(idTipo)
         REFERENCES TipoUrgencia(idTipo)
 );
+INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente, matricula, idDiagnostico, idTipo, estado) VALUES 
+('2026-10-01', '08:30:00', 1001, 1, 1, 4, 2, 'atendido'),
+('2026-10-01', '09:15:00', 1002, 2, 4, 2, 2, 'atendido'),
+('2026-10-02', '14:00:00', 1003, 3, 2, 3, 1, 'atendido'),
+('2026-10-02', '23:45:00', 1004, 4, 3, 5, 3, 'atendido'),
+('2026-10-03', '11:00:00', 1005, 5, 5, 1, 1, 'atendido'),
+('2026-10-04', '10:30:00', 1006, 6, 2, NULL, 1, 'Pendiente'),
+('2026-10-04', '17:20:00', 1007, 7, 1, NULL, 3, 'Ausente');
+
 
 
 
