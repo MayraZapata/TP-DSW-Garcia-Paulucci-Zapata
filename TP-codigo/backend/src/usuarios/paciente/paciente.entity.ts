@@ -9,7 +9,6 @@ export class Paciente extends Usuario {
 
     @PrimaryKey({ fieldName: "idPaciente" })
     idPaciente?: number;     
-    //la razón de que sea opcional es que se autogenera en la base de datos, por lo que no es necesario pasarla al crear un paciente
 
     @Property()
     nombre!: string;
@@ -21,9 +20,7 @@ export class Paciente extends Usuario {
     dni!: string;
 
     @ManyToOne(() => ObraSocial, { fieldName: "idObra", nullable: true })
-    obraSocial?: ObraSocial;
+    obraSocial?: ObraSocial | null;
 
-    /*@OneToMany(() => Atencion, atencion => atencion.paciente)
-    atenciones = new Collection<Atencion>(this);*/
 
 }

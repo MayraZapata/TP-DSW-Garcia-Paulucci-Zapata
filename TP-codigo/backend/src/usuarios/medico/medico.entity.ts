@@ -17,11 +17,8 @@ export class Medico extends Usuario {
     @Property()
     apellido!: string;
 
-    @ManyToOne(() => Especialidad, { fieldName: "idEspecialidad",  nullable: true })
-    especialidad?: Especialidad;
+    @ManyToOne(() => Especialidad, { fieldName: "idEspecialidad"})
+    especialidad Especialidad;
 
-    /*@OneToMany(() => Atencion, atencion => atencion.medico)
-    atenciones = new Collection<Atencion>(this);
-    */
 
 }

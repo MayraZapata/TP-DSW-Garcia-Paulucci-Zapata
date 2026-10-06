@@ -1,19 +1,23 @@
 import { useState, useMemo } from "react";
 import useCrud from "../hooks/useCrud";
 import PacienteForm from "../components/PacienteForm";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function Paciente() {
   const { items, editingId, guardar, eliminar, editar, cancelarEdicion } = useCrud("/pacientes");
   const [busqueda, setBusqueda] = useState("");
+  const aviso = useMensaje();
 
   const enEdicion = items.find((p) => p.idPaciente === editingId);
 
   async function handleEliminar(id) {
     if (!confirm("¿Estás seguro de eliminar este paciente?")) return;
+    aviso.limpiar();
     try {
       await eliminar(id);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -32,6 +36,7 @@ export default function Paciente() {
   return (
     <div className="gestion">
       <div className="gestion-header"><h1>Gestión de Pacientes</h1></div>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <div className="gestion-cuerpo">
         <PacienteForm

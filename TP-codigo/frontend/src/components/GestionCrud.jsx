@@ -1,8 +1,11 @@
 import { useState, useMemo } from "react";
 import useCrud from "../hooks/useCrud";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "./Mensaje";
 
 export default function GestionCrud({ endpoint, idField, titulo, tituloNuevo, tituloEditar, campos, placeholderBusqueda, filtrarPor, renderItem, mensajeConfirmarEliminar, mensajeVacio }) {
   const { items, editingId, guardar, eliminar, editar, cancelarEdicion } = useCrud(endpoint);
+  const aviso = useMensaje();
   const valoresIniciales = useMemo(() => Object.fromEntries(campos.map((c) => [c.name, ""])), [campos]);
   const [valores, setValores] = useState(valoresIniciales);
   const [busqueda, setBusqueda] = useState("");
@@ -28,6 +31,7 @@ export default function GestionCrud({ endpoint, idField, titulo, tituloNuevo, ti
 
   async function handleSubmit(e) {
     e.preventDefault();
+    aviso.limpiar();
     const datos = Object.fromEntries(
       campos.map((c) => [c.name, c.toEnvio ? c.toEnvio(valores[c.name]) : valores[c.name] || undefined])
     );
@@ -35,16 +39,17 @@ export default function GestionCrud({ endpoint, idField, titulo, tituloNuevo, ti
       await guardar(datos);
       setValores(valoresIniciales);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
   async function handleEliminar(id) {
     if (!confirm(mensajeConfirmarEliminar)) return;
+    aviso.limpiar();
     try {
       await eliminar(id);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -57,6 +62,7 @@ export default function GestionCrud({ endpoint, idField, titulo, tituloNuevo, ti
   return (
     <div className="gestion">
       <div className="gestion-header"><h1>{titulo}</h1></div>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <div className="gestion-cuerpo">
         <form className="gestion-form" onSubmit={handleSubmit}>

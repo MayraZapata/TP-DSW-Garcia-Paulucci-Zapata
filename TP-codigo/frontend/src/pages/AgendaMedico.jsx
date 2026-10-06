@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import useFetchList from "../hooks/useFetchList";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function AgendaMedico() {
   const navigate = useNavigate();
   const { rol, usuario } = useAuth();
   const medicosLista = useFetchList("/medicos");
   const diagnosticos = useFetchList("/diagnosticos");
+  const aviso = useMensaje();           // avisos de la pantalla
+  const avisoModal = useMensaje();      // avisos dentro de la ventana de diagnóstico
 
   const [matriculaSeleccionada, setMatriculaSeleccionada] = useState("");
   const [turnos, setTurnos] = useState([]);
@@ -40,6 +44,7 @@ export default function AgendaMedico() {
   }
 
   function abrirModal(idAtencion) {
+    avisoModal.limpiar();
     setModalIdAtencion(idAtencion);
     setSelectDiagnostico("");
   }
@@ -52,7 +57,7 @@ export default function AgendaMedico() {
   async function handleGuardarDiagnostico(e) {
     e.preventDefault();
     if (!selectDiagnostico) {
-      alert("Por favor seleccione un diagnóstico.");
+      avisoModal.error("Por favor seleccione un diagnóstico.");
       return;
     }
     try {
@@ -60,21 +65,21 @@ export default function AgendaMedico() {
         idDiagnostico: Number(selectDiagnostico),
         estado: "atendido",
       });
-      alert(data.message || "Atención y diagnóstico guardados con éxito.");
       cerrarModal();
+      aviso.exito(data.message || "Atención y diagnóstico guardados con éxito.");
       cargarAgenda(matriculaSeleccionada);
     } catch (error) {
-      alert(error.message);
+      avisoModal.error(error.message);
     }
   }
 
   async function cambiarEstado(idAtencion, nuevoEstado) {
     try {
       await api.patch(`/atenciones/${idAtencion}/estado`, { estado: nuevoEstado });
-      alert(`Estado del turno actualizado a: ${nuevoEstado}`);
+      aviso.exito(`Estado del turno actualizado a: ${nuevoEstado}`);
       cargarAgenda(matriculaSeleccionada);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -82,6 +87,7 @@ export default function AgendaMedico() {
     <div>
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
       <h2>Agenda de Turnos</h2>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <div style={{ marginBottom: 20 }}>
         <label htmlFor="selectMedico">Médico:</label>
@@ -120,11 +126,11 @@ export default function AgendaMedico() {
                   <td>
                     {t.estado === "pendiente" ? (
                       <>
-                        <button style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => abrirModal(t.idAtencion)}>Marcar Atendido</button>                        
+                        <button style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => abrirModal(t.idAtencion)}>Marcar Atendido</button>
                         <button style={{ backgroundColor: "#fff3cd", color: "#856404", border: "1px solid #ffeeba", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => cambiarEstado(t.idAtencion, "ausente")}>Marcar Ausente</button>
                       </>
                     ) : t.estado === "atendido" ? (
-                      <button style={{ color: "blue" }} onClick={() => abrirModal(t.idAtencion)}>Editar Diagnóstico</button>
+                      <button style={{ color: "Black" }} onClick={() => abrirModal(t.idAtencion)}>Editar Diagnóstico</button>
                     ) : (
                       <span style={{ color: "gray" }}>Finalizado</span>
                     )}
@@ -141,6 +147,7 @@ export default function AgendaMedico() {
           <div className="modal-content">
             <span className="modal-close" onClick={cerrarModal}>&times;</span>
             <h3>Asignar Diagnóstico</h3>
+            <Mensaje mensaje={avisoModal.mensaje} />
             <form onSubmit={handleGuardarDiagnostico}>
               <div className="form-group">
                 <label htmlFor="selectDiagnostico">Seleccionar Diagnóstico:</label>
@@ -151,7 +158,7 @@ export default function AgendaMedico() {
                   ))}
                 </select>
               </div>
-              <div style={{ textAlign: "right", marginTop: 20 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: 20 }}>
                 <button type="button" onClick={cerrarModal}>Cancelar</button>
                 <button type="submit">Guardar y Finalizar</button>
               </div>

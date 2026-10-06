@@ -1,5 +1,7 @@
 import { useState } from "react";
 import useFetchList from "../hooks/useFetchList";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "./Mensaje";
 import { unicosPor } from "../utils/unicos";
 
 const VACIO = { nombre: "", apellido: "", dni: "", nombreUsuario: "", password: "", idObra: "" };
@@ -16,14 +18,16 @@ function desdePaciente(p) {
   };
 }
 
-export default function PacienteForm({ paciente, titulo, textoGuardar = "Guardar", className = "form-col", onSubmit, onCancelar }) {
+export default function PacienteForm({ paciente, titulo, textoGuardar = "Guardar", mensajeExito, className = "form-col", onSubmit, onCancelar }) {
   const editando = Boolean(paciente);
+  const aviso = useMensaje();
   const obras = unicosPor(useFetchList("/obrasSociales"), "nombreObra");
   const [v, setV] = useState(() => desdePaciente(paciente));
   const set = (campo) => (e) => setV((x) => ({ ...x, [campo]: e.target.value }));
 
   async function handleSubmit(e) {
     e.preventDefault();
+    aviso.limpiar();
     const datos = {
       nombre: v.nombre,
       apellido: v.apellido,
@@ -35,14 +39,16 @@ export default function PacienteForm({ paciente, titulo, textoGuardar = "Guardar
     try {
       await onSubmit(datos);
       if (!editando) setV(VACIO);
+      if (mensajeExito) aviso.exito(mensajeExito);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
   return (
     <form className={className} onSubmit={handleSubmit}>
       {titulo && <h2>{titulo}</h2>}
+      <Mensaje mensaje={aviso.mensaje} />
       <input className="campo" type="text" placeholder="Nombre" value={v.nombre} onChange={set("nombre")} />
       <input className="campo" type="text" placeholder="Apellido" value={v.apellido} onChange={set("apellido")} />
       <input className="campo" type="text" placeholder="DNI" value={v.dni} onChange={set("dni")} />

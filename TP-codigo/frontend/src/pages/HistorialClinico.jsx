@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function HistorialClinico() {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ export default function HistorialClinico() {
   const [infoPaciente, setInfoPaciente] = useState("");
   const [atenciones, setAtenciones] = useState([]);
   const [modalAtencion, setModalAtencion] = useState(null);
+  const aviso = useMensaje();
 
   async function cargarPorId(idPaciente) {
     try {
@@ -34,9 +37,10 @@ export default function HistorialClinico() {
   }, [rol]);
 
   async function buscarPorDni() {
+    aviso.limpiar();
     const dniInput = dni.trim();
     if (!dniInput) {
-      alert("Por favor, ingrese un DNI.");
+      aviso.error("Por favor, ingrese un DNI.");
       return;
     }
     try {
@@ -53,7 +57,7 @@ export default function HistorialClinico() {
       setInfoPaciente(`Historial de: ${p.nombre} ${p.apellido} (DNI: ${p.dni})`);
       setAtenciones(delPaciente);
     } catch {
-      alert("Ocurrió un error al consultar el historial por DNI.");
+      aviso.error("Ocurrió un error al consultar el historial por DNI.");
     }
   }
 
@@ -61,6 +65,7 @@ export default function HistorialClinico() {
     <div>
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
       <h2>Historial Clínico</h2>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <div className="buscador-box">
         <label htmlFor="inputDni"><strong>DNI Paciente:</strong></label>
@@ -83,7 +88,7 @@ export default function HistorialClinico() {
             atenciones.map((atencion) => {
               const fechaStr = atencion.fechaAtencion ? atencion.fechaAtencion.split("T")[0] : "N/A";
               const medicoNombre = atencion.medico ? `Dr/a. ${atencion.medico.nombre} ${atencion.medico.apellido}` : "N/A";
-              const especialidad = atencion.medico?.especialidad?.nombreEspecialidad || "General";
+              const especialidad = atencion.medico?.especialidad?.nombreEspecialidad;
               return (
                 <tr key={atencion.idAtencion}>
                   <td>{fechaStr}</td>

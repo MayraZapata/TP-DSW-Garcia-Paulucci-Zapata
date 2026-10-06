@@ -78,18 +78,17 @@ export async function add(req: Request, res: Response) {
         return res.status(400).json({ message: "La contraseña es obligatoria" });
     
 
+    if (!req.body.idEspecialidad) 
+        return res.status(400).json({ message: "La especialidad es obligatoria" });
+
 
     if (await existeUsuario(req.body.nombreUsuario)) {
             return res.status(400).json({ message: "El nombre de usuario ya existe"});
     }
 
-    let especialidad = null;
-    if (req.body.idEspecialidad) {
-        especialidad = await em.findOne( Especialidad, { idEspecialidad: Number(req.body.idEspecialidad) });
-        
-        if (!especialidad) {
-            return res.status(404).json({ message: "Especialidad inexistente"});
-        }
+    const especialidad = await em.findOne( Especialidad, { idEspecialidad: Number(req.body.idEspecialidad) });        
+    if (!especialidad) {
+        return res.status(404).json({ message: "Especialidad inexistente"});
     }
     
     const medico = em.create( Medico,
@@ -121,10 +120,6 @@ export async function update(req: Request, res: Response) {
         return res.sendStatus(404);
 
 
-
-    /*manda la contraseña vacía al editar. Así, vacía no toca nada, 
-    y si el admin escribe una nueva, se hashea. 
-    Eso le permite resetearle la clave a un médico.*/ 
     const { password, ...datos } = req.body;
     em.assign(medico, datos);
     if (password) medico.password = await hashPassword(password);

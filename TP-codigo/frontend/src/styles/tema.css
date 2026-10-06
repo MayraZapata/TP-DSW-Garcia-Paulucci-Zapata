@@ -452,3 +452,15 @@ td button {
   margin: 2px 6px 2px 0;
 }
 td button:last-child { margin-right: 0; }
+
+
+/* ---------- Mensajes en pantalla ---------- */
+.mensaje {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+.mensaje-error { background: #FDECEA; color: var(--peligro); border-color: #F5C6C0; }
+.mensaje-exito { background: #E8F5E9; color: #2E7D32; border-color: #C3E2C6; }

@@ -48,7 +48,6 @@ export async function add(req: Request, res: Response) {
     let obraSocial = null; 
     if (req.body.idObra) { 
         obraSocial = await em.findOne( ObraSocial, { idObra: req.body.idObra } );
-
         if (!obraSocial)
             return res.status(404).json({ message: "Obra Social inexistente" });
     }
@@ -85,14 +84,13 @@ export async function update(req: Request, res: Response) {
     const { password, ...datos } = req.body;
     em.assign(paciente, datos);
 
+    let obraSocial = null; 
     if (req.body.idObra) {
-
-        const obraSocial = await em.findOne(ObraSocial,{idObra: req.body.idObra});
-
-        if (obraSocial)
-            paciente.obraSocial = obraSocial;
-
+        obraSocial = await em.findOne(ObraSocial,{idObra: req.body.idObra});
+        if (!obraSocial)
+            return res.status(404).json({ message: "Obra Social inexistente" });
     }
+    paciente.obraSocial = obraSocial;
 
     await em.flush();
 

@@ -2,11 +2,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function TurnosPaciente() {
   const navigate = useNavigate();
   const { usuario } = useAuth();
   const [turnos, setTurnos] = useState([]);
+  const aviso = useMensaje();
 
   const cargarMisTurnos = useCallback(async () => {
     const idPaciente = usuario?.idPaciente;
@@ -28,10 +31,10 @@ export default function TurnosPaciente() {
     if (!confirm("¿Estás seguro de que querés cancelar este turno?")) return;
     try {
       await api.patch(`/atenciones/${idAtencion}/cancelar`, {});
-      alert("Turno cancelado con éxito");
+      aviso.exito("Turno cancelado con éxito");
       cargarMisTurnos();
     } catch (error) {
-      alert("Error: " + error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -40,6 +43,7 @@ export default function TurnosPaciente() {
   return (
     <div>
       <h2>Mis Turnos Reservados</h2>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <table>
         <thead>

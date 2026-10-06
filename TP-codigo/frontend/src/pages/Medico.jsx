@@ -2,6 +2,8 @@ import { useState, useMemo } from "react";
 import useCrud from "../hooks/useCrud";
 import useFetchList from "../hooks/useFetchList";
 import { unicosPor } from "../utils/unicos";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function Medico() {
   const { items, editingId, guardar, eliminar, editar, cancelarEdicion } = useCrud("/medicos");
@@ -14,6 +16,7 @@ export default function Medico() {
   const [password, setPassword] = useState("");
   const [idEspecialidad, setIdEspecialidad] = useState("");
   const [busqueda, setBusqueda] = useState("");
+  const aviso = useMensaje();
 
   function limpiarFormulario() {
     setMatricula("");
@@ -43,6 +46,7 @@ export default function Medico() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    aviso.limpiar();
     try {
       if (editingId !== null) {
         await guardar({ nombre, apellido, nombreUsuario, password, idEspecialidad });
@@ -51,16 +55,17 @@ export default function Medico() {
       }
       limpiarFormulario();
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
   async function handleEliminar(matriculaMedico) {
     if (!confirm("¿Estás seguro de eliminar este médico?")) return;
+    aviso.limpiar();
     try {
       await eliminar(matriculaMedico);
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -81,6 +86,7 @@ export default function Medico() {
   return (
     <div className="gestion">
       <div className="gestion-header"><h1>Gestión de Médicos</h1></div>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <div className="gestion-cuerpo">
         <form className="gestion-form" onSubmit={handleSubmit}>
@@ -91,7 +97,7 @@ export default function Medico() {
           <input className="campo" type="text" placeholder="Nombre de Usuario" value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
           <input className="campo" type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
           <select className="campo" value={idEspecialidad} onChange={(e) => setIdEspecialidad(e.target.value)}>
-            <option value="">General</option>
+            <option value="">--Seleccione especialidad--</option>
             {especialidades.map((esp) => (
               <option key={esp.idEspecialidad} value={esp.idEspecialidad}>{esp.nombreEspecialidad}</option>
             ))}
@@ -112,7 +118,7 @@ export default function Medico() {
                   <p style={{ margin: "6px 0 0" }}>
                     Matrícula: {medico.matricula}<br />
                     Usuario: {medico.nombreUsuario}<br />
-                    Especialidad: {medico.especialidad?.nombreEspecialidad || "Sin asignar"}
+                    Especialidad: {medico.especialidad?.nombreEspecialidad}
                   </p>
                   <div className="item-card-acciones">
                     <button className="btn btn-secundario" onClick={() => handleEditar(medico.matricula)}>Editar</button>

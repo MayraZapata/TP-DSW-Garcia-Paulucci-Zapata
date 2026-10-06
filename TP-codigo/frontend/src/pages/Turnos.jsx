@@ -4,11 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import useFetchList from "../hooks/useFetchList";
 import { unicosPor } from "../utils/unicos";
+import useMensaje from "../hooks/useMensaje";
+import Mensaje from "../components/Mensaje";
 
 export default function Turnos() {
   const navigate = useNavigate();
   const { rol, usuario } = useAuth();
   const especialidadesRaw = useFetchList("/especialidades");
+  const aviso = useMensaje();
 
   const [idEspecialidad, setIdEspecialidad] = useState("");
   const [medicos, setMedicos] = useState([]);
@@ -56,7 +59,7 @@ const especialidades = unicosPor(especialidadesRaw, "nombreEspecialidad");
     const idPacienteFinal = rol === "PACIENTE" ? usuario?.idPaciente : idPaciente;
 
     if (!idPacienteFinal || !matriculaMedico || !fechaAtencion || !horaAtencion) {
-      alert("Por favor complete todos los campos obligatorios");
+      aviso.error("Por favor complete todos los campos obligatorios");
       return;
     }
 
@@ -67,10 +70,14 @@ const especialidades = unicosPor(especialidadesRaw, "nombreEspecialidad");
         fechaAtencion,
         horaAtencion,
       });
-      alert("¡Turno reservado con éxito!");
-      navigate("/menu");
+      aviso.exito("¡Turno reservado con éxito!");
+      setIdEspecialidad("");
+      setMatriculaMedico("");
+      setIdPaciente("");
+      setFechaAtencion("");
+      setHoraAtencion("");
     } catch (error) {
-      alert(error.message);
+      aviso.error(error.message);
     }
   }
 
@@ -78,6 +85,7 @@ const especialidades = unicosPor(especialidadesRaw, "nombreEspecialidad");
     <div className="contenedor">
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
       <h1>Solicitar Turno Médico</h1>
+      <Mensaje mensaje={aviso.mensaje} />
 
       <form onSubmit={handleReservar}>
         <label htmlFor="idEspecialidad">Especialidad:</label>
