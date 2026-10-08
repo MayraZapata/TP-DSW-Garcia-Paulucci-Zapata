@@ -15,4 +15,5 @@ export const RUTAS = {
   historialClinico: "/historial-clinico",
   agendaMedico: "/agenda-medico",
   reporteTurnos: "/reporte-turnos",
+  listadoPacientes: "/listado-pacientes",
 };

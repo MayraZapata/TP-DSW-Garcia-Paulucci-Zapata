@@ -445,6 +445,7 @@ tr:last-child td { border-bottom: none; }
 }
 .modal-close { color: var(--texto-suave); }
 .modal-close:hover { color: var(--texto); }
+.modal-ancho { max-width: 800px; max-height: 85vh; overflow-y: auto; }
 
 td button {
   width: auto;

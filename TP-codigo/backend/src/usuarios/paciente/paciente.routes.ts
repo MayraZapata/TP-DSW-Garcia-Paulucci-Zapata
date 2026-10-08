@@ -9,6 +9,6 @@ const adminOPropio = [autenticar, autorizar("ADMIN", "PACIENTE"), soloPropio("PA
 
 pacienteRouter.get("/", soloAdmin, findAll);
 pacienteRouter.get("/:id", adminOPropio, findOne);
-pacienteRouter.post("/", add); // público: es el registro
+pacienteRouter.post("/", add); 
 pacienteRouter.put("/:id", adminOPropio, update);
 pacienteRouter.delete("/:id", soloAdmin, remove);

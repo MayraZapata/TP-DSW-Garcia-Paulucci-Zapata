@@ -3,6 +3,7 @@ export const opciones = [
   { label: "Mis Turnos", path: "/turnos-paciente", icono: "calendarioCheck", seccion: "atencion", roles: ["PACIENTE"] },
   { label: "Agenda de Turnos", path: "/agenda-medico", icono: "portapapeles", seccion: "atencion", roles: ["ADMIN", "MEDICO"] },
   { label: "Consultar Reportes", path: "/reporte-turnos", icono: "grafico", seccion: "atencion", roles: ["ADMIN", "MEDICO"] },
+  { label: "Turnos por Paciente", path: "/listado-pacientes", icono: "calendarioCheck", seccion: "atencion", roles: ["ADMIN"] },
   { label: "Historial Clínico", path: "/historial-clinico", icono: "historial", seccion: "atencion", roles: ["ADMIN", "MEDICO", "PACIENTE"] },
   { label: "Gestión de Pacientes", path: "/pacientes", icono: "persona", seccion: "gestion", roles: ["ADMIN"] },
   { label: "Gestión de Médicos", path: "/medicos", icono: "medico", seccion: "gestion", roles: ["ADMIN"] },
