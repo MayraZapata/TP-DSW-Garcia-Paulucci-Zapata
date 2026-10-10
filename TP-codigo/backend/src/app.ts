@@ -3,9 +3,11 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import swaggerUi from "swagger-ui-express";
 
 import { RequestContext } from "@mikro-orm/core";
 import { orm } from "./shared/orm.js";
+import { swaggerSpec } from "./shared/swagger.js";
 
 
 import { especialidadRouter } from "./usuarios/cualidadesUsr/especialidad/especialidad.routes.js";
@@ -32,6 +34,9 @@ app.use(
         path.join(__dirname, "../../frontend/dist")
     )
 );
+
+// Documentación Swagger: http://localhost:PUERTO/api/docs
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Crear un RequestContext para cada petición
 app.use((req, res, next) => {
