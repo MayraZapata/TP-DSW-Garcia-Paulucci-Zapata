@@ -15,9 +15,17 @@ export const swaggerSpec = swaggerJsdoc({
         // Todas las rutas documentadas cuelgan de /api (en el mismo servidor que sirve esta página)
         servers: [{ url: "/api", description: "Servidor actual" }],
 
+        // El orden de esta lista es el orden en que aparecen los grupos en la página
         tags: [
             { name: "Login", description: "Sesión y contraseña" },
             { name: "Pacientes", description: "ABM de pacientes y registro" },
+            { name: "Médicos", description: "ABM de médicos" },
+            { name: "Administradores", description: "Consulta de administradores" },
+            { name: "Especialidades", description: "Catálogo de especialidades" },
+            { name: "Obras Sociales", description: "Catálogo de obras sociales" },
+            { name: "Atenciones", description: "Turnos y atenciones médicas" },
+            { name: "Diagnósticos", description: "Catálogo de diagnósticos" },
+            { name: "Tipos de Urgencia", description: "Catálogo de tipos de urgencia" },
         ],
 
         components: {
@@ -48,8 +56,22 @@ export const swaggerSpec = swaggerJsdoc({
                         "application/json": { schema: { $ref: "#/components/schemas/Error" } },
                     },
                 },
+                // 404 sin cuerpo (el controller responde solo con el código)
                 NoEncontrado: {
                     description: "El recurso no existe",
+                },
+                // 404 con { message }
+                NoEncontradoMensaje: {
+                    description: "El recurso no existe",
+                    content: {
+                        "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+                    },
+                },
+                SolicitudInvalida: {
+                    description: "Datos inválidos o repetidos (por ejemplo, un nombre que ya existe)",
+                    content: {
+                        "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+                    },
                 },
             },
         },
