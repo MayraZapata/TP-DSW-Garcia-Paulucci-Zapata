@@ -17,6 +17,7 @@ import { loginRouter } from "./login/login.routes.js";
 import { atencionRouter } from "./turno/atencion/Atencion.routes.js";
 import { diagnosticoRouter } from "./turno/diagnostico/diagnostico.routes.js";
 import { tipoUrgenciaRouter } from "./turno/tipoUrgencia/tipoUrgencia.routes.js";
+import { urgenciaRouter } from "./turno/urgencia/urgencia.routes.js";
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use("/api/administradores", administradorRouter);
 app.use("/api/atenciones", atencionRouter);
 app.use("/api/diagnosticos", diagnosticoRouter);
 app.use("/api/tiposUrgencia", tipoUrgenciaRouter);
+app.use("/api/urgencias", urgenciaRouter);
 
 
 app.get(/^(?!\/api).*/, (_, res) => {

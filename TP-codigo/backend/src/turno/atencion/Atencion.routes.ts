@@ -7,7 +7,9 @@ import {
   cancelarTurno,
   cambiarEstado,
   buscarTurnos,
-  completarAtencion
+  completarAtencion,
+  historialPorPaciente,
+  historialPorDni
 } from "./Atencion.controller.js";
 import { autenticar, autorizar, soloPropio } from "../../shared/auth.middleware.js";
 
@@ -23,3 +25,6 @@ atencionRouter.patch("/:idAtencion/cancelar", [autenticar, autorizar("PACIENTE")
 atencionRouter.patch("/:idAtencion/estado", adminOMedico, cambiarEstado);
 atencionRouter.patch("/:idAtencion/diagnostico", adminOMedico, completarAtencion);
 atencionRouter.get("/buscar", adminOMedico, buscarTurnos);
+// Historial clínico: turnos + urgencias juntos (el resto de las rutas de este archivo ve solo turnos)
+atencionRouter.get("/historial/paciente/:idPaciente",[autenticar, autorizar("ADMIN", "MEDICO", "PACIENTE"), soloPropio("PACIENTE", "idPaciente")],historialPorPaciente);
+atencionRouter.get("/historial/dni/:dni", adminOMedico, historialPorDni);

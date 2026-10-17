@@ -1,4 +1,7 @@
 
+/*Evita que los acentos se rompan según la consola desde la que se corra el script*/
+SET NAMES utf8mb4;
+
 /*Creación y uso de la Base de datos*/
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `gestion_turnos` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 USE gestion_turnos;
@@ -23,10 +26,11 @@ CREATE TABLE IF NOT EXISTS especialidad (
 
     idEspecialidad INT AUTO_INCREMENT PRIMARY KEY,
     nombreEspecialidad VARCHAR(50) NOT NULL,
-    descripcion VARCHAR(300)
+    descripcion VARCHAR(300),
+    atiendeUrgencias TINYINT(1) NOT NULL DEFAULT 0   /*1 = sus médicos pueden atender la guardia*/
 );
 /*Cargar especialidad*/
-INSERT INTO especialidad (nombreEspecialidad, descripcion) VALUES ('infectologia', 'Especialidad en enfermedades infecciosas'), ('Cardiologia', 'Especialidad en enfermedades del corazón'), ('oncología', 'Especialidad en enfermedades oncológicas'), ('Neurologia', 'Especialidad en enfermedades del sistema nervioso');
+INSERT INTO especialidad (nombreEspecialidad, descripcion, atiendeUrgencias) VALUES ('infectologia', 'Especialidad en enfermedades infecciosas', 0), ('Cardiologia', 'Especialidad en enfermedades del corazón', 0), ('oncología', 'Especialidad en enfermedades oncológicas', 0), ('Neurologia', 'Especialidad en enfermedades del sistema nervioso', 0), ('Medicina General', 'Atención médica general y de guardia', 1);
 
 
 
@@ -50,6 +54,9 @@ CREATE TABLE IF NOT EXISTS paciente (
     nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     idObra INT,
+    /*El DNI sin puntos ni espacios (lo calcula MySQL solo). El índice único impide dos pacientes con el mismo DNI*/
+    dniNormalizado VARCHAR(20) GENERATED ALWAYS AS (REPLACE(REPLACE(dni, '.', ''), ' ', '')) STORED,
+    UNIQUE KEY uq_paciente_dni (dniNormalizado),
     FOREIGN KEY(idObra)
         REFERENCES ObraSocial(idObra)
 );
@@ -69,7 +76,7 @@ CREATE TABLE IF NOT EXISTS medico (
         REFERENCES Especialidad(idEspecialidad)
 );
 /*Cargar medico*/
-INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES ('Gregory', 'House', 'drHouse','uno111', 1), ('Stephen', 'Strange', 'drStrange','dos222', 4), ('Meredith', 'Grey', 'drGrey','tres333', 4), ('John', 'Watson', 'drWatson','cuatro444', 2), ('James', 'Wilson', 'drWilson','cinco555', 3);
+INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES ('Gregory', 'House', 'drHouse','uno111', 1), ('Stephen', 'Strange', 'drStrange','dos222', 4), ('Meredith', 'Grey', 'drGrey','tres333', 4), ('John', 'Watson', 'drWatson','cuatro444', 2), ('James', 'Wilson', 'drWilson','cinco555', 3), ('Lisa', 'Cuddy', 'drCuddy','seis666', 5), ('Eric', 'Foreman', 'drForeman','siete777', 5);
 
 
 /*Crear tabla Administrador*/
@@ -90,7 +97,8 @@ CREATE TABLE IF NOT EXISTS diagnostico (
 
     idDiagnostico INT AUTO_INCREMENT PRIMARY KEY,
     nombreDiagnostico VARCHAR(100) NOT NULL ,
-    tratamiento VARCHAR(300) NOT NULL
+    tratamiento VARCHAR(300) NOT NULL,
+    UNIQUE KEY uq_diagnostico_nombre (nombreDiagnostico)   /*no se duplican nombres*/
 );
 INSERT INTO diagnostico (nombreDiagnostico, tratamiento) VALUES 
 ('Gripe Común', 'Reposo, hidratación constante y paracetamol cada 8 horas si hay fiebre.'),
@@ -109,10 +117,16 @@ CREATE TABLE IF NOT EXISTS tipoUrgencia (
     nombre VARCHAR(50) NOT NULL,
     descripcionTipo VARCHAR(100)
 );
+/*El tipo describe QUÉ le pasa al paciente. La prioridad (rojo / amarillo / verde) NO se deduce del tipo:
+  la elige una persona al ingresar la urgencia (un "Corte" puede ser leve o gravísimo).*/
 INSERT INTO tipoUrgencia (nombre, descripcionTipo) VALUES 
-('Verde / No Urgente', 'Condiciones menores que pueden esperar atención sin riesgo de empeorar.'),
-('Amarillo / Urgencia', 'Requiere atención médica rápida pero la vida del paciente no peligra inmediatamente.'),
-('Rojo / Emergencia', 'Riesgo vital inminente. Requiere atención médica e intervención inmediata.');
+('Convulsiones', 'Crisis convulsivas o pérdida de conciencia.'),
+('Corte', 'Heridas cortantes o punzantes.'),
+('Dolor torácico', 'Dolor u opresión en el pecho.'),
+('Dificultad respiratoria', 'Falta de aire o respiración dificultosa.'),
+('Fractura / Traumatismo', 'Golpes, caídas o sospecha de fractura.'),
+('Quemadura', 'Quemaduras por calor, químicos o electricidad.'),
+('Fiebre alta', 'Fiebre persistente o mayor a 39 °C.');
 
 
 
@@ -126,10 +140,13 @@ CREATE TABLE IF NOT EXISTS atencion (
     horaAtencion TIME NOT NULL,
     nroIngreso INT NOT NULL,
     idPaciente INT NOT NULL,
-    matricula INT NOT NULL,
+    matricula INT NULL,                                 /*NULL = urgencia en espera que todavía no tomó ningún médico*/
     idDiagnostico INT,
-    idTipo INT,
+    idTipo INT,                                         /*tipo de urgencia: solo para urgencias*/
     estado VARCHAR(20),
+    tipoAtencion VARCHAR(10) NOT NULL DEFAULT 'consulta', /*'consulta' (turno) o 'urgencia' (guardia)*/
+    prioridad VARCHAR(10) NULL,                         /*solo urgencias: rojo / amarillo / verde*/
+    motivo VARCHAR(255) NULL,                           /*solo urgencias*/
     FOREIGN KEY(idPaciente)
         REFERENCES paciente(idPaciente),
     FOREIGN KEY(matricula)
@@ -137,16 +154,21 @@ CREATE TABLE IF NOT EXISTS atencion (
     FOREIGN KEY(idDiagnostico)
         REFERENCES Diagnostico(idDiagnostico),
     FOREIGN KEY(idTipo)
-        REFERENCES TipoUrgencia(idTipo)
+        REFERENCES TipoUrgencia(idTipo),
+    INDEX idx_atencion_tipo_estado (tipoAtencion, estado),
+    CONSTRAINT chk_atencion_tipo CHECK (tipoAtencion IN ('consulta', 'urgencia')),
+    CONSTRAINT chk_atencion_prioridad CHECK (prioridad IS NULL OR prioridad IN ('rojo', 'amarillo', 'verde')),
+    CONSTRAINT chk_urgencia_prioridad CHECK (tipoAtencion <> 'urgencia' OR prioridad IS NOT NULL)
 );
-INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente, matricula, idDiagnostico, idTipo, estado) VALUES 
-('2026-10-01', '08:30:00', 1001, 1, 1, 4, 2, 'atendido'),
-('2026-10-01', '09:15:00', 1002, 2, 4, 2, 2, 'atendido'),
-('2026-10-02', '14:00:00', 1003, 3, 2, 3, 1, 'atendido'),
-('2026-10-02', '23:45:00', 1004, 4, 3, 5, 3, 'atendido'),
-('2026-10-03', '11:00:00', 1005, 5, 5, 1, 1, 'atendido'),
-('2026-10-04', '10:30:00', 1006, 6, 2, NULL, 1, 'Pendiente'),
-('2026-10-04', '17:20:00', 1007, 7, 1, NULL, 3, 'Ausente');
+/*Turnos de ejemplo = Consultas. No llevan tipo de urgencia (idTipo NULL): ese dato es solo de las urgencias*/
+INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente, matricula, idDiagnostico, idTipo, estado, tipoAtencion) VALUES 
+('2026-10-01', '08:30:00', 1001, 1, 1, 4, NULL, 'atendido', 'consulta'),
+('2026-10-01', '09:15:00', 1002, 2, 4, 2, NULL, 'atendido', 'consulta'),
+('2026-10-02', '14:00:00', 1003, 3, 2, 3, NULL, 'atendido', 'consulta'),
+('2026-10-02', '23:45:00', 1004, 4, 3, 5, NULL, 'atendido', 'consulta'),
+('2026-10-03', '11:00:00', 1005, 5, 5, 1, NULL, 'atendido', 'consulta'),
+('2026-10-04', '10:30:00', 1006, 6, 2, NULL, NULL, 'Pendiente', 'consulta'),
+('2026-10-04', '17:20:00', 1007, 7, 1, NULL, NULL, 'Ausente', 'consulta');
 
 
 

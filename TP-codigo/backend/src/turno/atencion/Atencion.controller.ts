@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
+import { wrap } from "@mikro-orm/core";
 import { orm } from "../../shared/orm.js";
 import { Atencion } from "./Atencion.entity.js";
+import { Consulta } from "./Consulta.entity.js";
+import { Urgencia } from "../urgencia/Urgencia.entity.js";
+import { normalizarDni, dniEsValido, buscarPacientePorDni, MENSAJE_DNI_INVALIDO } from "../../usuarios/paciente/dni.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js"; // Importado la entidad Diagnóstico
@@ -12,7 +16,7 @@ export async function findAll(req: Request, res: Response) {
   try {
     await actualizarTurnosVencidos();
     const atenciones = await em.find(
-      Atencion,
+      Consulta,
       {},
       { populate: ["paciente", "medico", "medico.especialidad", "diagnostico"] }
     );
@@ -50,7 +54,7 @@ export async function add(req: Request, res: Response) {
     }
 
     // 4. Validar que el médico NO tenga un turno ocupado en esa misma fecha y hora
-    const turnoExistente = await em.findOne(Atencion, {
+    const turnoExistente = await em.findOne(Consulta, {
       medico,
       fechaAtencion: new Date(`${fechaAtencion}T00:00:00`),
       horaAtencion,
@@ -61,7 +65,7 @@ export async function add(req: Request, res: Response) {
     }
 
     // 5. Crear la nueva atención
-    const nuevaAtencion = new Atencion();
+    const nuevaAtencion = new Consulta();
     nuevaAtencion.fechaAtencion = new Date(`${fechaAtencion}T00:00:00`);
     nuevaAtencion.horaAtencion = horaAtencion;
     nuevaAtencion.nroIngreso = Math.floor(100000 + Math.random() * 900000);
@@ -90,7 +94,7 @@ export async function findByPaciente(req: Request, res: Response) {
     await actualizarTurnosVencidos();
     const { idPaciente } = req.params;
     const atenciones = await em.find(
-      Atencion,
+      Consulta,
       { paciente: { idPaciente: Number(idPaciente) } },
       { populate: ['medico', 'medico.especialidad', 'diagnostico'] }
     );
@@ -109,7 +113,7 @@ export async function findByPaciente(req: Request, res: Response) {
 export async function cancelarTurno(req: Request, res: Response) {
   try {
     const { idAtencion } = req.params;
-    const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
+    const atencion = await em.findOne(Consulta, { idAtencion: Number(idAtencion) });
 
     if (!atencion) {
       return res.status(404).json({ message: "El turno no existe" });
@@ -150,7 +154,7 @@ export async function findByMedico(req: Request, res: Response) {
     await actualizarTurnosVencidos();
     const { matricula } = req.params;
     const atenciones = await em.find(
-      Atencion,
+      Consulta,
       { medico: { matricula: Number(matricula) } },
       { populate: ['paciente', 'diagnostico'] }
     );
@@ -171,7 +175,7 @@ export async function cambiarEstado(req: Request, res: Response) {
     const { idAtencion } = req.params;
     const { estado } = req.body; // 'atendido' o 'ausente'
 
-    const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
+    const atencion = await em.findOne(Consulta, { idAtencion: Number(idAtencion) });
     if (!atencion) return res.status(404).json({ message: "Turno no encontrado" });
     if (req.auth!.rol === "MEDICO" && atencion.medico.matricula !== req.auth!.id) {
       return res.status(403).json({ message: "Ese turno pertenece a otro médico" });
@@ -195,7 +199,7 @@ export async function completarAtencion(req: Request, res: Response) {
     const { idAtencion } = req.params;
     const { idDiagnostico, estado } = req.body;
 
-    const atencion = await em.findOne(Atencion, { idAtencion: Number(idAtencion) });
+    const atencion = await em.findOne(Consulta, { idAtencion: Number(idAtencion) });
     if (!atencion) {
       return res.status(404).json({ message: 'Atención no encontrada' });
     }
@@ -232,7 +236,7 @@ async function actualizarTurnosVencidos() {
   try {
     const ahora = new Date();
     // Buscamos todas las atenciones pendientes
-    const pendientes = await em.find(Atencion, { estado: 'pendiente' });
+    const pendientes = await em.find(Consulta, { estado: 'pendiente' });
 
     for (const atencion of pendientes) {
       const fechaStr = atencion.fechaAtencion.toISOString().split('T')[0];
@@ -273,12 +277,81 @@ export async function buscarTurnos(req: Request, res: Response) {
     }
 
     const atenciones = await em.find(
-      Atencion,
+      Consulta,
       filtro,
       { populate: ['paciente', 'medico', 'medico.especialidad', 'diagnostico'] }
     );
 
     res.json(atenciones);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
+
+
+
+// ---------------------------------------------------------------------------
+// HISTORIAL CLÍNICO
+// A diferencia del resto de este archivo (que trabaja solo con Consulta = turnos),
+// el historial junta TODAS las atenciones del paciente: turnos y urgencias.
+// Cada una viaja con `tipoAtencion` ("consulta" | "urgencia") para identificarla en pantalla.
+// ---------------------------------------------------------------------------
+async function armarHistorial(paciente: Paciente) {
+  await actualizarTurnosVencidos();
+
+  const consultas = await em.find(
+    Consulta,
+    { paciente },
+    { populate: ['medico', 'medico.especialidad', 'diagnostico'] }
+  );
+  const urgencias = await em.find(
+    Urgencia,
+    { paciente },
+    { populate: ['medico', 'medico.especialidad', 'diagnostico', 'tipoUrgencia'] }
+  );
+
+  // De la más reciente a la más antigua (fecha, hora y, si empatan, el orden de carga)
+  const todas: Atencion[] = [...consultas, ...urgencias].sort((a, b) =>
+    b.fechaAtencion.getTime() - a.fechaAtencion.getTime() ||
+    (a.horaAtencion < b.horaAtencion ? 1 : a.horaAtencion > b.horaAtencion ? -1 : 0) ||
+    b.idAtencion - a.idAtencion
+  );
+
+  return {
+    paciente: {
+      idPaciente: paciente.idPaciente,
+      nombre: paciente.nombre,
+      apellido: paciente.apellido,
+      dni: paciente.dni,
+    },
+    atenciones: todas.map((a) => wrap(a).toJSON()),
+  };
+}
+
+// Historial de un paciente por su id (lo usa el propio paciente; admin y médico también pueden)
+export async function historialPorPaciente(req: Request, res: Response) {
+  try {
+    const paciente = await em.findOne(Paciente, { idPaciente: Number(req.params.idPaciente) });
+    if (!paciente) return res.status(404).json({ message: "El paciente indicado no existe" });
+
+    res.json(await armarHistorial(paciente));
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// Historial buscando por DNI (admin y médico). El DNI se compara sin puntos ni espacios en el servidor.
+export async function historialPorDni(req: Request, res: Response) {
+  try {
+    const dni = normalizarDni(req.params.dni);
+    if (!dniEsValido(dni)) return res.status(400).json({ message: MENSAJE_DNI_INVALIDO });
+
+    const paciente = await buscarPacientePorDni(dni);
+    if (!paciente) return res.status(404).json({ message: "No hay ningún paciente registrado con ese DNI" });
+
+    res.json(await armarHistorial(paciente));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
