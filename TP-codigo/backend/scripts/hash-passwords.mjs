@@ -1,7 +1,9 @@
 import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
 
-const db = await mysql.createConnection("mysql://UsuarioBD:SqlPassword-DSW@localhost:3306/gestion_turnos");
+if (!process.env.DB_URL) {throw new Error("Falta DB_URL. Ejecutalo con: pnpm hash-passwords");}
+
+const db = await mysql.createConnection(process.env.DB_URL);
 
 const tablas = [
     { tabla: "paciente", id: "idPaciente" },

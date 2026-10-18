@@ -6,10 +6,10 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --env-file=.env dist/server.js",
+    "start": "node --env-file=.env.production dist/server.js",
     "build": "tsc -p ./tsconfig.json",
-    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env ./dist/server.js\"",
-    "hash-passwords": "node scripts/hash-passwords.mjs"
+    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env.development ./dist/server.js\"",
+    "hash-passwords": "node --env-file=.env.development scripts/hash-passwords.mjs"
   },
   "keywords": [],
   "author": "Garcia, Miqueas Cristián - Paulucci, Gino - Zapata, Mayra Belén",

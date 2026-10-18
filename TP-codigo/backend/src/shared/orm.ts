@@ -1,19 +1,25 @@
 import { MikroORM } from "@mikro-orm/mysql";
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 
+
+const DB_URL = process.env.DB_URL;
+const DB_NAME = process.env.DB_NAME;
+if (!DB_URL || !DB_NAME) {
+    throw new Error("Faltan DB_URL o DB_NAME en el archivo .env");
+}
+
 export const orm = await MikroORM.init({
 
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
 
-    dbName: 'gestion_turnos',
+    dbName: DB_NAME,
 
-    clientUrl:
-        'mysql://UsuarioBD:SqlPassword-DSW@localhost:3306/gestion_turnos',
+    clientUrl: DB_URL,
 
     highlighter: new SqlHighlighter(),
 
-    debug: true,
+    debug: process.env.NODE_ENV !== "production",
 
 });
 
