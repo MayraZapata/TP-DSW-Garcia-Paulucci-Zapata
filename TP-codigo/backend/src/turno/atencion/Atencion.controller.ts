@@ -54,6 +54,7 @@ export async function add(req: Request, res: Response) {
       medico,
       fechaAtencion: new Date(`${fechaAtencion}T00:00:00`),
       horaAtencion,
+      estado: { $ne: "cancelado" },
     });
 
     if (turnoExistente) {
@@ -227,27 +228,31 @@ export async function completarAtencion(req: Request, res: Response) {
 
 
 
-// Función auxiliar para pasar a 'ausente' los turnos pendientes cuya fecha/hora ya pasó
+// Función auxiliar para pasar a 'ausente' los turnos pendientes cuyo día ya terminó
 async function actualizarTurnosVencidos() {
   try {
     const ahora = new Date();
     // Buscamos todas las atenciones pendientes
-    const pendientes = await em.find(Atencion, { estado: 'pendiente' });
+    const pendientes = await em.find(Atencion, { estado: "pendiente" });
 
     for (const atencion of pendientes) {
-      const fechaStr = atencion.fechaAtencion.toISOString().split('T')[0];
-      const fechaHoraTurno = new Date(`${fechaStr}T${atencion.horaAtencion}`);
+      const fechaStr = atencion.fechaAtencion.toISOString().split("T")[0];
 
-      if (fechaHoraTurno < ahora) {
-        atencion.estado = 'ausente';
+      // Fecha límite: 00:00:00 hs del día posterior al turno
+      const fechaExpiracion = new Date(`${fechaStr}T00:00:00`);
+      fechaExpiracion.setDate(fechaExpiracion.getDate() + 1);
+
+      // Recién pasa a ausente si ya cambió el día (ahora >= medianoche del día siguiente)
+      if (ahora >= fechaExpiracion) {
+        atencion.estado = "ausente";
       }
     }
-    await em.flush(); // Guarda los cambios masivamente en MySQL
+
+    await em.flush(); // Guarda los cambios en la base de datos
   } catch (error) {
     console.error("Error al actualizar turnos vencidos:", error);
   }
 }
-
 
 
 
@@ -281,5 +286,34 @@ export async function buscarTurnos(req: Request, res: Response) {
     res.json(atenciones);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
+  }
+}
+
+
+
+// Obtener horarios ocupados de un médico en una fecha específica
+export async function getHorariosOcupados(req: Request, res: Response) {
+  try {
+    const { matricula, fecha } = req.query;
+
+    if (!matricula || !fecha) {
+      return res.status(400).json({ message: "Se requiere matrícula y fecha." });
+    }
+
+    const atenciones = await em.find(
+      Atencion,
+      {
+        medico: { matricula: Number(matricula) },
+        fechaAtencion: new Date(`${fecha as string}T00:00:00`),
+        estado: { $ne: "cancelado" }, // Los turnos cancelados liberan el horario
+      },
+      { fields: ["horaAtencion"] }
+    );
+
+    // Devolvemos solo una lista simple de strings: ["08:00", "09:30", ...]
+    const horariosOcupados = atenciones.map((a) => a.horaAtencion);
+    return res.json(horariosOcupados);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 }

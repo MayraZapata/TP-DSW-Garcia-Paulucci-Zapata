@@ -41,11 +41,11 @@ export default function TurnosPaciente() {
   const ahora = new Date();
 
   return (
-    <div>
+    <div className="contenedor-pagina">
       <h2>Mis Turnos Reservados</h2>
       <Mensaje mensaje={aviso.mensaje} />
 
-      <table>
+      <table className="tabla-cards">
         <thead>
           <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Acción</th></tr>
         </thead>
@@ -61,12 +61,12 @@ export default function TurnosPaciente() {
 
               return (
                 <tr key={turno.idAtencion}>
-                  <td>{fechaStr}</td>
-                  <td>{turno.horaAtencion} hs</td>
-                  <td>Dr/a. {turno.medico ? `${turno.medico.nombre} ${turno.medico.apellido}` : "N/A"}</td>
-                  <td>{turno.medico?.especialidad?.nombreEspecialidad || "General"}</td>
-                  <td><strong>{turno.estado.toUpperCase()}</strong></td>
-                  <td>
+                  <td data-label="Fecha">{fechaStr}</td>
+                  <td data-label="Hora">{turno.horaAtencion} hs</td>
+                  <td data-label="Médico">Dr/a. {turno.medico ? `${turno.medico.nombre} ${turno.medico.apellido}` : "N/A"}</td>
+                  <td data-label="Especialidad">{turno.medico?.especialidad?.nombreEspecialidad || "General"}</td>
+                  <td data-label="Estado"><strong>{turno.estado.toUpperCase()}</strong></td>
+                  <td data-label="Acción">
                     {esCancelable ? (
                       <button style={{ color: "red" }} onClick={() => handleCancelar(turno.idAtencion)}>Cancelar</button>
                     ) : (

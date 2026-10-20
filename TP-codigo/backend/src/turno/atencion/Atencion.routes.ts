@@ -7,7 +7,8 @@ import {
   cancelarTurno,
   cambiarEstado,
   buscarTurnos,
-  completarAtencion
+  completarAtencion,
+  getHorariosOcupados,
 } from "./Atencion.controller.js";
 import { autenticar, autorizar, soloPropio } from "../../shared/auth.middleware.js";
 
@@ -252,6 +253,11 @@ atencionRouter.get("/medico/:matricula",[autenticar, autorizar("ADMIN", "MEDICO"
  *       404:
  *         $ref: '#/components/responses/NoEncontradoMensaje'
  */
+
+
+atencionRouter.get("/horarios-ocupados", [autenticar, autorizar("ADMIN", "PACIENTE")], getHorariosOcupados);
+
+
 atencionRouter.patch("/:idAtencion/cancelar", [autenticar, autorizar("PACIENTE")], cancelarTurno);
 
 /**

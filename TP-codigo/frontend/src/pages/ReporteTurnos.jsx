@@ -45,11 +45,12 @@ export default function ReporteTurnos() {
   }
 
   return (
-    <div>
+    <div className="contenedor-pagina">
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
       <h2>Consulta y Filtro de Turnos</h2>
 
-      <div style={{ display: "flex", gap: 15, marginBottom: 20 }}>
+      {/* Reemplazamos los estilos inline por la clase .filtros-barra */}
+      <div className="filtros-barra">
         <div>
           <label>Fecha:</label>
           <input type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
@@ -64,12 +65,19 @@ export default function ReporteTurnos() {
           </select>
         </div>
         <button onClick={() => filtrarTurnos(filtroFecha, filtroMedico)}>Filtrar</button>
-        <button onClick={handleLimpiar}>Limpiar Filtros</button>
+        <button className="btn-secundario" onClick={handleLimpiar}>Limpiar Filtros</button>
       </div>
 
-      <table>
+      <table className="tabla-cards">
         <thead>
-          <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Paciente</th><th>Estado</th><th>Acción</th></tr>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Médico</th>
+            <th>Paciente</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
         </thead>
         <tbody>
           {turnos.length === 0 ? (
@@ -79,12 +87,14 @@ export default function ReporteTurnos() {
               const fechaStr = t.fechaAtencion ? t.fechaAtencion.split("T")[0] : "";
               return (
                 <tr key={t.idAtencion}>
-                  <td>{fechaStr}</td>
-                  <td>{t.horaAtencion} hs</td>
-                  <td>Dr/a. {t.medico ? `${t.medico.nombre} ${t.medico.apellido}` : "N/A"}</td>
-                  <td>{t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : "N/A"}</td>
-                  <td><strong>{t.estado ? t.estado.toUpperCase() : ""}</strong></td>
-                  <td><button onClick={() => setDetalle(t)}>Ver Detalle</button></td>
+                  <td data-label="Fecha">{fechaStr}</td>
+                  <td data-label="Hora">{t.horaAtencion} hs</td>
+                  <td data-label="Médico">Dr/a. {t.medico ? `${t.medico.nombre} ${t.medico.apellido}` : "N/A"}</td>
+                  <td data-label="Paciente">{t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : "N/A"}</td>
+                  <td data-label="Estado"><strong>{t.estado ? t.estado.toUpperCase() : ""}</strong></td>
+                  <td data-label="Acción">
+                    <button onClick={() => setDetalle(t)}>Ver Detalle</button>
+                  </td>
                 </tr>
               );
             })

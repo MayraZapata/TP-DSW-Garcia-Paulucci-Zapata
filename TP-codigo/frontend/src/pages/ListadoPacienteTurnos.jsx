@@ -45,40 +45,37 @@ function TurnosPacienteModal({ paciente, onCerrar }) {
         <div className="modal" onClick={onCerrar}>
             {}
         <div className="modal-content modal-ancho" onClick={(e) => e.stopPropagation()}>
-        <span className="modal-close" onClick={onCerrar}>&times;</span>
-
+            <span className="modal-close" onClick={onCerrar}>&times;</span>
             <h3>Turnos de {paciente.nombre} {paciente.apellido}</h3>
             <p className="info-sub">DNI: {paciente.dni || "N/A"}</p>
-
             {cargando && <p>Cargando turnos...</p>}
             {error && <p className="mensaje mensaje-error">{error}</p>}
-
             {!cargando && !error && (
                 ordenados.length === 0 ? (
-                    <p className="info-sub">Este paciente no tiene turnos.</p>
+                <p className="info-sub">Este paciente no tiene turnos.</p>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Diagnóstico</th></tr>
-                        </thead>
-                        <tbody>
-                            {ordenados.map((t) => (
+                <table className="tabla-cards">
+                    <thead>
+                    <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Diagnóstico</th></tr>
+                    </thead>
+                    <tbody>
+                    {ordenados.map((t) => (
                         <tr key={t.idAtencion}>
-                            <td>{t.fechaAtencion.split("T")[0]}</td>
-                            <td>{t.horaAtencion} hs</td>
-                            <td>{t.medico ? `Dr/a. ${t.medico.nombre} ${t.medico.apellido}` : "N/A"}</td>
-                            <td>{t.medico?.especialidad?.nombreEspecialidad || "General"}</td>
-                            <td>
-                                <strong style={{ color: COLOR_ESTADO[t.estado] }}>{t.estado?.toUpperCase()}</strong>
-                            </td>
-                            <td>{t.diagnostico?.nombreDiagnostico || "—"}</td>
+                        <td data-label="Fecha">{t.fechaAtencion.split("T")[0]}</td>
+                        <td data-label="Hora">{t.horaAtencion} hs</td>
+                        <td data-label="Médico">{t.medico ? `Dr/a. ${t.medico.nombre} ${t.medico.apellido}` : "N/A"}</td>
+                        <td data-label="Especialidad">{t.medico?.especialidad?.nombreEspecialidad || "General"}</td>
+                        <td data-label="Estado">
+                            <strong style={{ color: COLOR_ESTADO[t.estado] }}>{t.estado?.toUpperCase()}</strong>
+                        </td>
+                        <td data-label="Diagnóstico">{t.diagnostico?.nombreDiagnostico || "—"}</td>
                         </tr>
-                ))}
-              </tbody>
-            </table>
-          )
-        )}
-      </div>
+                    ))}
+                    </tbody>
+                </table>
+                )
+            )}
+            </div>
     </div>
   );
 }
