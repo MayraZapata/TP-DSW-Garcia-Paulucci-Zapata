@@ -62,28 +62,27 @@ export default function HistorialClinico() {
   }
 
   return (
-    <div>
+    <div className="contenedor-pagina">
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
       <h2>Historial Clínico</h2>
       <Mensaje mensaje={aviso.mensaje} />
-
       <div className="buscador-box">
         <label htmlFor="inputDni"><strong>DNI Paciente:</strong></label>
         <input type="text" id="inputDni" placeholder="Ingrese DNI del paciente" value={dni} disabled={rol === "PACIENTE"} onChange={(e) => setDni(e.target.value)} />
         {rol !== "PACIENTE" && <button onClick={buscarPorDni}>Buscar Historial</button>}
       </div>
-
       <div style={{ marginBottom: 15, fontWeight: "bold", color: "#333" }}>{infoPaciente}</div>
-
-      <table>
+      <table className="tabla-cards">
         <thead>
           <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Acción</th></tr>
         </thead>
         <tbody>
           {atenciones.length === 0 ? (
-            <tr><td colSpan="6" style={{ textAlign: "center" }}>
-              {rol === "PACIENTE" ? "No posee atenciones registradas." : "Ingrese un DNI de paciente para consultar."}
-            </td></tr>
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center" }}>
+                {rol === "PACIENTE" ? "No posee atenciones registradas." : "Ingrese un DNI de paciente para consultar."}
+              </td>
+            </tr>
           ) : (
             atenciones.map((atencion) => {
               const fechaStr = atencion.fechaAtencion ? atencion.fechaAtencion.split("T")[0] : "N/A";
@@ -91,12 +90,12 @@ export default function HistorialClinico() {
               const especialidad = atencion.medico?.especialidad?.nombreEspecialidad;
               return (
                 <tr key={atencion.idAtencion}>
-                  <td>{fechaStr}</td>
-                  <td>{atencion.horaAtencion || ""} hs</td>
-                  <td>{medicoNombre}</td>
-                  <td>{especialidad}</td>
-                  <td><strong>{atencion.estado ? atencion.estado.toUpperCase() : "DESCONOCIDO"}</strong></td>
-                  <td>
+                  <td data-label="Fecha">{fechaStr}</td>
+                  <td data-label="Hora">{atencion.horaAtencion || ""} hs</td>
+                  <td data-label="Médico">{medicoNombre}</td>
+                  <td data-label="Especialidad">{especialidad}</td>
+                  <td data-label="Estado"><strong>{atencion.estado ? atencion.estado.toUpperCase() : "DESCONOCIDO"}</strong></td>
+                  <td data-label="Acción">
                     {atencion.estado === "atendido" && atencion.diagnostico ? (
                       <button onClick={() => setModalAtencion(atencion)}>Ver Diagnóstico</button>
                     ) : (

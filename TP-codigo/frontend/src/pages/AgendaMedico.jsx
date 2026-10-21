@@ -83,89 +83,107 @@ export default function AgendaMedico() {
     }
   }
 
-  return (
-    <div>
-      <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
-      <h2>Agenda de Turnos</h2>
-      <Mensaje mensaje={aviso.mensaje} />
+    return (
+      <div className="contenedor-pagina">
+        <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
+        <h2>Agenda de Turnos</h2>
+        <Mensaje mensaje={aviso.mensaje} />
 
-      <div style={{ marginBottom: 20 }}>
-        <label htmlFor="selectMedico">Médico:</label>
-        {rol === "MEDICO" ? (
-          <select id="selectMedico" disabled>
-            <option>Dr/a. {usuario?.nombre} {usuario?.apellido}</option>
-          </select>
-        ) : (
-          <select id="selectMedico" value={matriculaSeleccionada} onChange={(e) => handleSeleccionMedico(e.target.value)}>
-            <option value="">-- Seleccione Médico --</option>
-            {medicosLista.map((m) => (
-              <option key={m.matricula} value={m.matricula}>Dr/a. {m.nombre} {m.apellido}</option>
-            ))}
-          </select>
+        <div style={{ marginBottom: 20 }}>
+          <label htmlFor="selectMedico">Médico:</label>
+          {rol === "MEDICO" ? (
+            <select id="selectMedico" disabled>
+              <option>Dr/a. {usuario?.nombre} {usuario?.apellido}</option>
+            </select>
+          ) : (
+            <select id="selectMedico" value={matriculaSeleccionada} onChange={(e) => handleSeleccionMedico(e.target.value)}>
+              <option value="">-- Seleccione Médico --</option>
+              {medicosLista.map((m) => (
+                <option key={m.matricula} value={m.matricula}>Dr/a. {m.nombre} {m.apellido}</option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        <table className="tabla-cards">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>DNI</th>
+              <th>Estado</th>
+              <th>Diagnóstico</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {turnos.length === 0 ? (
+              <tr><td colSpan="7">No hay turnos registrados para este médico.</td></tr>
+            ) : (
+              turnos.map((t) => {
+                const fechaStr = t.fechaAtencion ? t.fechaAtencion.split("T")[0] : "N/A";
+                return (
+                  <tr key={t.idAtencion}>
+                    <td data-label="Fecha">{fechaStr}</td>
+                    <td data-label="Hora">{t.horaAtencion} hs</td>
+                    <td data-label="Paciente">{t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : "N/A"}</td>
+                    <td data-label="DNI">{t.paciente?.dni || "N/A"}</td>
+                    <td data-label="Estado"><strong>{t.estado ? t.estado.toUpperCase() : "PENDIENTE"}</strong></td>
+                    <td data-label="Diagnóstico">{t.diagnostico?.nombreDiagnostico || <em style={{ color: "gray" }}>Sin diagnóstico</em>}</td>
+                    <td data-label="Acciones">
+                      {t.estado === "pendiente" ? (
+                        <>
+                          <button 
+                            style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb", padding: "6px 12px", borderRadius: "999px", cursor: "pointer" }} 
+                            onClick={() => abrirModal(t.idAtencion)}
+                          >
+                            Marcar Atendido
+                          </button>
+                          <button 
+                            style={{ backgroundColor: "#fff3cd", color: "#856404", border: "1px solid #ffeeba", padding: "6px 12px", borderRadius: "999px", cursor: "pointer" }} 
+                            onClick={() => cambiarEstado(t.idAtencion, "ausente")}
+                          >
+                            Marcar Ausente
+                          </button>
+                        </>
+                      ) : t.estado === "atendido" ? (
+                        <button style={{ color: "black", padding: "6px 12px" }} onClick={() => abrirModal(t.idAtencion)}>Editar Diagnóstico</button>
+                      ) : (
+                        <span style={{ color: "gray" }}>Finalizado</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+
+        {modalIdAtencion !== null && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="modal-close" onClick={cerrarModal}>&times;</span>
+              <h3>Asignar Diagnóstico</h3>
+              <Mensaje mensaje={avisoModal.mensaje} />
+              <form onSubmit={handleGuardarDiagnostico}>
+                <div className="form-group">
+                  <label htmlFor="selectDiagnostico">Seleccionar Diagnóstico:</label>
+                  <select id="selectDiagnostico" value={selectDiagnostico} onChange={(e) => setSelectDiagnostico(e.target.value)} required>
+                    <option value="">-- Seleccione un Diagnóstico --</option>
+                    {diagnosticos.map((d) => (
+                      <option key={d.idDiagnostico} value={d.idDiagnostico}>{d.nombreDiagnostico}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: 20 }}>
+                  <button type="button" onClick={cerrarModal}>Cancelar</button>
+                  <button type="submit">Guardar y Finalizar</button>
+                </div>
+              </form>
+            </div>
+          </div>
         )}
       </div>
-
-      <table>
-        <thead>
-          <tr><th>Fecha</th><th>Hora</th><th>Paciente</th><th>DNI</th><th>Estado</th><th>Diagnóstico</th><th>Acciones</th></tr>
-        </thead>
-        <tbody>
-          {turnos.length === 0 ? (
-            <tr><td colSpan="7">No hay turnos registrados para este médico.</td></tr>
-          ) : (
-            turnos.map((t) => {
-              const fechaStr = t.fechaAtencion ? t.fechaAtencion.split("T")[0] : "N/A";
-              return (
-                <tr key={t.idAtencion}>
-                  <td>{fechaStr}</td>
-                  <td>{t.horaAtencion} hs</td>
-                  <td>{t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : "N/A"}</td>
-                  <td>{t.paciente?.dni || "N/A"}</td>
-                  <td><strong>{t.estado ? t.estado.toUpperCase() : "PENDIENTE"}</strong></td>
-                  <td>{t.diagnostico?.nombreDiagnostico || <em style={{ color: "gray" }}>Sin diagnóstico</em>}</td>
-                  <td>
-                    {t.estado === "pendiente" ? (
-                      <>
-                        <button style={{ backgroundColor: "#d4edda", color: "#155724", border: "1px solid #c3e6cb", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => abrirModal(t.idAtencion)}>Marcar Atendido</button>
-                        <button style={{ backgroundColor: "#fff3cd", color: "#856404", border: "1px solid #ffeeba", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }} onClick={() => cambiarEstado(t.idAtencion, "ausente")}>Marcar Ausente</button>
-                      </>
-                    ) : t.estado === "atendido" ? (
-                      <button style={{ color: "Black" }} onClick={() => abrirModal(t.idAtencion)}>Editar Diagnóstico</button>
-                    ) : (
-                      <span style={{ color: "gray" }}>Finalizado</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
-
-      {modalIdAtencion !== null && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="modal-close" onClick={cerrarModal}>&times;</span>
-            <h3>Asignar Diagnóstico</h3>
-            <Mensaje mensaje={avisoModal.mensaje} />
-            <form onSubmit={handleGuardarDiagnostico}>
-              <div className="form-group">
-                <label htmlFor="selectDiagnostico">Seleccionar Diagnóstico:</label>
-                <select id="selectDiagnostico" value={selectDiagnostico} onChange={(e) => setSelectDiagnostico(e.target.value)} required>
-                  <option value="">-- Seleccione un Diagnóstico --</option>
-                  {diagnosticos.map((d) => (
-                    <option key={d.idDiagnostico} value={d.idDiagnostico}>{d.nombreDiagnostico}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: 20 }}>
-                <button type="button" onClick={cerrarModal}>Cancelar</button>
-                <button type="submit">Guardar y Finalizar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
