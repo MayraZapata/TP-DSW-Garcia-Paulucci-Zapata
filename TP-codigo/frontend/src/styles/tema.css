@@ -561,11 +561,11 @@ td button:last-child { margin-right: 0; }
   }
 }
 
-/* Barra de filtros responsiva para Reportes */
+/* Barra de filtros responsiva para Reportes (Compacta) */
 .filtros-barra {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   align-items: flex-end;
   margin-bottom: 20px;
   background: var(--superficie);
@@ -575,7 +575,21 @@ td button:last-child { margin-right: 0; }
 }
 
 .filtros-barra > div {
-  flex: 1 1 200px; /* En PC se alinean lado a lado, en mobile se adaptan */
+  flex: 1 1 200px;
+}
+
+.filtros-barra label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--texto);
+}
+
+/* Quitamos el margin-bottom global para que la separación la maneje el gap */
+.filtros-barra input,
+.filtros-barra select {
+  margin-bottom: 0;
 }
 
 .filtros-barra button {
@@ -587,10 +601,16 @@ td button:last-child { margin-right: 0; }
   .filtros-barra {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px; /* Espaciado compacto de 12px entre fecha, médico y botones */
+    padding: 14px;
   }
 
-  .filtros-barra > div,
+  .filtros-barra > div {
+    width: 100%;
+    flex: none; /* Elimina la altura forzada de 200px en mobile */
+  }
+
   .filtros-barra button {
-    width: 100%; /* Botones táctiles cómodos a ancho completo */
+    width: 100%;
   }
 }
