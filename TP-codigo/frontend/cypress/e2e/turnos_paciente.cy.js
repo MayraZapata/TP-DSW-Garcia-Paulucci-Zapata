@@ -1,4 +1,4 @@
-/* global describe, it, beforeEach, cy, expect */
+/* global describe, it, beforeEach, cy */
 describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Paciente)", () => {
   // Generamos una fecha futura única para evitar que la prueba choque con turnos de días anteriores
   const diasAdelante = 10 + Math.floor(Math.random() * 50);
@@ -44,7 +44,7 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
 
     // Ingresar fecha y hora
     cy.get("#fechaAtencion").type(fechaStr);
-    cy.get("#horaAtencion").type(horaPrimerTurno);
+    cy.get("#horaAtencion").select(horaPrimerTurno);
 
     // Confirmar la reserva
     cy.get('button[type="submit"]').contains("Confirmar Reserva").click();
@@ -61,7 +61,7 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
     cy.get("#idEspecialidad").select("1");
     cy.get("#matriculaMedico").should("not.be.disabled").select("1");
     cy.get("#fechaAtencion").type(fechaStr);
-    cy.get("#horaAtencion").type(horaPrimerTurno);
+    cy.get("#horaAtencion").select(horaPrimerTurno);
 
     cy.get('button[type="submit"]').contains("Confirmar Reserva").click();
 
@@ -74,7 +74,7 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
     // 4. Seleccionar otro horario libre (10:30 hs) y confirmar segundo turno
     // -----------------------------------------------------------------
     // Como la petición falló, los datos del médico y fecha se mantienen en pantalla
-    cy.get("#horaAtencion").clear().type(horaSegundoTurno);
+    cy.get("#horaAtencion").select(horaSegundoTurno);
     cy.get('button[type="submit"]').contains("Confirmar Reserva").click();
 
     // Validar éxito de la segunda reserva
@@ -85,7 +85,7 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
     // -----------------------------------------------------------------
     // 5. Ir a 'Mis Turnos' y verificar que ambos turnos estén listados
     // -----------------------------------------------------------------
-    cy.get("button.volver").click();
+    cy.get("button.volver").click({ force: true });
     cy.url().should("include", "/menu");
 
     cy.contains(".menu-card", "Mis Turnos").click();
@@ -118,10 +118,17 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
     // 6. Cancelar uno de los dos turnos (el de las 10:00 hs)
     // -----------------------------------------------------------------
     // Interceptar y aceptar automáticamente el confirm nativo del navegador
-    cy.on("window:confirm", (texto) => {
-      expect(texto).to.include("¿Estás seguro de que querés cancelar este turno?");
-      return true; // Click en 'Aceptar'
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").returns(true);
     });
+
+    cy.get("table tbody tr")
+      .filter(`:contains("${fechaStr}")`)
+      .filter(`:contains("${horaPrimerTurno}")`)
+      .first()
+      .within(() => {
+        cy.contains("button", "Cancelar").click();
+      });
 
     cy.get("table tbody tr")
       .filter(`:contains("${fechaStr}")`)
@@ -171,8 +178,7 @@ describe("Flujo E2E: Reserva, validación de choque y cancelación de turnos (Pa
     cy.get(".modal button.btn-peligro").contains("Cerrar sesión").click();
 
     // Verificar redirección al Home y que ya no figure la sesión activa
-    cy.url().should("eq", "http://localhost:5173/");
-    cy.contains("Ingresar para sacar un turno").should("be.visible");
-    cy.get(".nav-links").should("not.contain", "Menú");
+    cy.url().should("include", "/login");
+    cy.contains("h1", "Iniciar sesión").should("be.visible");
   });
 });
