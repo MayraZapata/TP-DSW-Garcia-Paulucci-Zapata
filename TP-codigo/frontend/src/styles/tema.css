@@ -465,3 +465,91 @@ td button:last-child { margin-right: 0; }
 }
 .mensaje-error { background: #FDECEA; color: var(--peligro); border-color: #F5C6C0; }
 .mensaje-exito { background: #E8F5E9; color: #2E7D32; border-color: #C3E2C6; }
+
+
+
+/* ---------- Guardia / Urgencias ---------- */
+
+/* Cada prioridad define sus colores en variables; las usan el chip, la tarjeta, el selector y la fila del historial.
+   Se eligieron pares de color de texto y fondo con buen contraste (el amarillo lleva texto oscuro). */
+.prioridad-rojo     { --prio: #C62828; --prio-texto: #FFFFFF; --prio-suave: #FDECEA; --prio-borde: #C62828; }
+.prioridad-amarillo { --prio: #FFC928; --prio-texto: #3B2F1E; --prio-suave: #FFF6D6; --prio-borde: #B38600; }
+.prioridad-verde    { --prio: #2E7D32; --prio-texto: #FFFFFF; --prio-suave: #E8F5E9; --prio-borde: #2E7D32; }
+
+.prioridad-chip {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--prio);
+  color: var(--prio-texto);
+  border: 1px solid var(--prio-borde);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Selector de prioridad del formulario: tres opciones grandes con su color */
+.prioridad-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.prioridad-selector legend { padding: 0; margin-bottom: 6px; font-size: 14px; font-weight: 700; color: var(--texto-suave); }
+.prioridad-opcion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 2px solid var(--prio-borde);
+  border-left-width: 10px;
+  border-radius: 10px;
+  background: var(--prio-suave);
+  color: var(--texto-oscuro);
+  cursor: pointer;
+}
+.prioridad-opcion span { font-size: 13px; }
+/* el círculo de selección se oculta pero sigue siendo accesible con el teclado */
+.prioridad-opcion input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+.prioridad-opcion:hover { filter: brightness(0.97); }
+.prioridad-opcion:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(242, 154, 31, 0.45); }
+.prioridad-opcion.seleccionada { background: var(--prio); color: var(--prio-texto); }
+
+/* Tarjeta de cada urgencia en la lista */
+.item-card.urgencia-card {
+  border-left: 8px solid var(--prio);
+  background: var(--prio-suave);
+}
+.urgencia-cabecera { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.urgencia-posicion { min-width: 28px; font-weight: 800; color: var(--texto-oscuro); }
+.urgencia-detalle { margin: 8px 0 0; line-height: 1.5; font-size: 14px; }
+.guardia-subtitulo { margin: 6px 0 0; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--texto-suave); }
+.guardia-resumen { display: flex; flex-wrap: wrap; gap: 8px; }
+.guardia-solo-lista { grid-template-columns: 1fr; }
+
+/* Formulario de ingreso */
+.fila-dni { display: flex; gap: 8px; align-items: center; }
+.fila-dni .btn { flex-shrink: 0; padding: 11px 18px; }
+textarea.campo { resize: vertical; }
+.ayuda-paciente { margin: 0; padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
+.ayuda-ok { background: #E8F5E9; color: #1B5E20; }
+.ayuda-nuevo { background: #FFF6D6; color: #5D4300; }
+
+/* Ventana de finalizar */
+.selector-modo { display: flex; gap: 8px; margin-top: 8px; }
+.selector-modo .btn { flex: 1; padding: 9px 12px; font-size: 14px; }
+.acciones-modal { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+
+/* Casilla "atiende la guardia" en Gestión de Especialidades */
+.campo-check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+.campo-check input { width: auto; margin: 0; }
+.etiqueta-guardia { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #E8F5E9; color: #1B5E20; font-size: 12px; font-weight: 700; }
+
+/* Fila de una urgencia en el Historial Clínico */
+tr.fila-urgencia td:first-child { border-left: 8px solid var(--prio); }
+tr.fila-urgencia td { background: var(--prio-suave); }

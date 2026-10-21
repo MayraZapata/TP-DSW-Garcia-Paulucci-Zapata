@@ -67,19 +67,30 @@ export default function GestionCrud({ endpoint, idField, titulo, tituloNuevo, ti
       <div className="gestion-cuerpo">
         <form className="gestion-form" onSubmit={handleSubmit}>
           <h2>{editingId !== null ? tituloEditar : tituloNuevo}</h2>
-          {campos.map((c) => (
-            <input
-              key={c.name}
-              className="campo"
-              type={c.type || "text"}
-              placeholder={c.placeholder}
-              value={valores[c.name]}
-              disabled={c.disabledAlEditar && editingId !== null}
-              step={c.step}
-              min={c.min}
-              onChange={(e) => setCampo(c.name, e.target.value)}
-            />
-          ))}
+          {campos.map((c) =>
+            c.type === "checkbox" ? (
+              <label key={c.name} className="campo-check">
+                <input
+                  type="checkbox"
+                  checked={Boolean(valores[c.name])}
+                  onChange={(e) => setCampo(c.name, e.target.checked)}
+                />
+                {c.placeholder}
+              </label>
+            ) : (
+              <input
+                key={c.name}
+                className="campo"
+                type={c.type || "text"}
+                placeholder={c.placeholder}
+                value={valores[c.name]}
+                disabled={c.disabledAlEditar && editingId !== null}
+                step={c.step}
+                min={c.min}
+                onChange={(e) => setCampo(c.name, e.target.value)}
+              />
+            )
+          )}
           <button type="submit" className="btn">{editingId !== null ? "Guardar cambios" : `Guardar`}</button>
           {editingId !== null && <button type="button" className="btn btn-secundario" onClick={handleCancelar}>Cancelar edición</button>}
         </form>

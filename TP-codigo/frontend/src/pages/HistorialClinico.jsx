@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import useMensaje from "../hooks/useMensaje";
 import Mensaje from "../components/Mensaje";
+import PrioridadChip from "../components/PrioridadChip";
+import { ESTADOS_URGENCIA } from "../config/prioridades";
 
 export default function HistorialClinico() {
   const navigate = useNavigate();
@@ -17,8 +19,9 @@ export default function HistorialClinico() {
 
   async function cargarPorId(idPaciente) {
     try {
-      const data = await api.get(`/atenciones/paciente/${idPaciente}`);
-      setAtenciones(data);
+      // Historial = consultas (por turno) + urgencias (por guardia). Cada una trae `tipoAtencion`.
+      const data = await api.get(`/atenciones/historial/paciente/${idPaciente}`);
+      setAtenciones(data.atenciones);
     } catch {
       setAtenciones([]);
     }
@@ -44,20 +47,22 @@ export default function HistorialClinico() {
       return;
     }
     try {
-      const todas = await api.get("/atenciones");
-      const delPaciente = todas.filter((a) => a.paciente && String(a.paciente.dni) === String(dniInput));
+      const data = await api.get(`/atenciones/historial/dni/${encodeURIComponent(dniInput)}`);
+      const p = data.paciente;
 
-      if (delPaciente.length === 0) {
-        setInfoPaciente(`No se encontraron atenciones para el DNI: ${dniInput}`);
+      if (data.atenciones.length === 0) {
+        setInfoPaciente(`${p.nombre} ${p.apellido} (DNI: ${p.dni}) todavía no tiene atenciones registradas.`);
         setAtenciones([]);
         return;
       }
 
-      const p = delPaciente[0].paciente;
       setInfoPaciente(`Historial de: ${p.nombre} ${p.apellido} (DNI: ${p.dni})`);
-      setAtenciones(delPaciente);
-    } catch {
-      aviso.error("Ocurrió un error al consultar el historial por DNI.");
+      setAtenciones(data.atenciones);
+    } catch (error) {
+      // Por ejemplo: "No existe un paciente con el DNI ..."
+      setInfoPaciente("Ingrese el DNI de un paciente y presione Buscar.");
+      setAtenciones([]);
+      aviso.error(error.message);
     }
   }
 
@@ -77,27 +82,43 @@ export default function HistorialClinico() {
 
       <table>
         <thead>
-          <tr><th>Fecha</th><th>Hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Acción</th></tr>
+          <tr><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th>Acción</th></tr>
         </thead>
         <tbody>
           {atenciones.length === 0 ? (
-            <tr><td colSpan="6" style={{ textAlign: "center" }}>
+            <tr><td colSpan="7" style={{ textAlign: "center" }}>
               {rol === "PACIENTE" ? "No posee atenciones registradas." : "Ingrese un DNI de paciente para consultar."}
             </td></tr>
           ) : (
             atenciones.map((atencion) => {
               const fechaStr = atencion.fechaAtencion ? atencion.fechaAtencion.split("T")[0] : "N/A";
-              const medicoNombre = atencion.medico ? `Dr/a. ${atencion.medico.nombre} ${atencion.medico.apellido}` : "N/A";
+              const esUrgencia = atencion.tipoAtencion === "urgencia";
+              // Una urgencia en espera todavía no tiene médico asignado
+              const medicoNombre = atencion.medico ? `Dr/a. ${atencion.medico.nombre} ${atencion.medico.apellido}` : esUrgencia ? "Sin asignar" : "N/A";
               const especialidad = atencion.medico?.especialidad?.nombreEspecialidad;
+              const estadoTexto = esUrgencia ? ESTADOS_URGENCIA[atencion.estado] ?? atencion.estado : atencion.estado;
+              // El turno se da por atendido con "atendido"; la urgencia, con "finalizada"
+              const tieneDiagnostico = (atencion.estado === "atendido" || atencion.estado === "finalizada") && atencion.diagnostico;
               return (
-                <tr key={atencion.idAtencion}>
+                <tr key={atencion.idAtencion} className={esUrgencia ? `fila-urgencia prioridad-${atencion.prioridad}` : undefined}>
                   <td>{fechaStr}</td>
                   <td>{atencion.horaAtencion || ""} hs</td>
+                  <td>
+                    {esUrgencia ? (
+                      <>
+                        <strong>Urgencia</strong> <PrioridadChip prioridad={atencion.prioridad} />
+                        <br />
+                        <small>{atencion.tipoUrgencia?.nombre}</small>
+                      </>
+                    ) : (
+                      "Consulta"
+                    )}
+                  </td>
                   <td>{medicoNombre}</td>
                   <td>{especialidad}</td>
-                  <td><strong>{atencion.estado ? atencion.estado.toUpperCase() : "DESCONOCIDO"}</strong></td>
+                  <td><strong>{estadoTexto ? estadoTexto.toUpperCase() : "DESCONOCIDO"}</strong></td>
                   <td>
-                    {atencion.estado === "atendido" && atencion.diagnostico ? (
+                    {tieneDiagnostico ? (
                       <button onClick={() => setModalAtencion(atencion)}>Ver Diagnóstico</button>
                     ) : (
                       <span style={{ color: "gray" }}>Sin detalle</span>
@@ -115,6 +136,13 @@ export default function HistorialClinico() {
           <div className="modal-content">
             <span className="modal-close" onClick={() => setModalAtencion(null)}>&times;</span>
             <h3>Detalle del Diagnóstico</h3>
+            {modalAtencion.tipoAtencion === "urgencia" && (
+              <>
+                <p><strong>Atención:</strong> Urgencia (guardia) <PrioridadChip prioridad={modalAtencion.prioridad} /></p>
+                <p><strong>Tipo de urgencia:</strong> {modalAtencion.tipoUrgencia?.nombre || "Sin especificar"}</p>
+                <p><strong>Motivo:</strong> {modalAtencion.motivo || "Sin especificar"}</p>
+              </>
+            )}
             <p><strong>Fecha:</strong> {modalAtencion.fechaAtencion ? modalAtencion.fechaAtencion.split("T")[0] : "N/A"}</p>
             <p><strong>Médico:</strong> {modalAtencion.medico ? `Dr/a. ${modalAtencion.medico.nombre} ${modalAtencion.medico.apellido}` : "N/A"}</p>
             <p><strong>Diagnóstico:</strong> {modalAtencion.diagnostico?.nombreDiagnostico || "Sin especificar"}</p>

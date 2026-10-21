@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findAll, findOne, add, update, remove } from "./paciente.controller.js";
+import { findAll, findOne, findByDni, add, update, remove } from "./paciente.controller.js";
 import { autenticar, autorizar, soloPropio } from "../../shared/auth.middleware.js";
 
 export const pacienteRouter = Router();
@@ -200,6 +200,56 @@ pacienteRouter.post("/", add);
  *       404:
  *         $ref: '#/components/responses/NoEncontrado'
  */
+/**
+ * @openapi
+ * /pacientes/dni/{dni}:
+ *   get:
+ *     tags: [Pacientes]
+ *     summary: Buscar un paciente por DNI
+ *     description: >
+ *       Solo ADMIN. Ignora puntos y espacios ("47.076.568" es igual a "47076568").
+ *       Siempre responde 200: si no existe devuelve existe = false (en la guardia significa
+ *       "hay que registrarlo ahora"). La pantalla de guardia lo usa para rellenar los datos solos.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dni
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "47.076.568"
+ *     responses:
+ *       200:
+ *         description: Resultado de la búsqueda
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 existe:
+ *                   type: boolean
+ *                   example: true
+ *                 paciente:
+ *                   $ref: '#/components/schemas/Paciente'
+ *                 dni:
+ *                   type: string
+ *                   description: DNI normalizado (solo cuando existe = false)
+ *                   example: "47076568"
+ *       400:
+ *         description: DNI con formato inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/NoAutenticado'
+ *       403:
+ *         $ref: '#/components/responses/Prohibido'
+ */
+// Va ANTES de "/:id" para que "dni" no se confunda con un id
+pacienteRouter.get("/dni/:dni", soloAdmin, findByDni);
+
 pacienteRouter.get("/:id", adminOPropio, findOne);
 pacienteRouter.put("/:id", adminOPropio, update);
 pacienteRouter.delete("/:id", soloAdmin, remove);

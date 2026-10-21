@@ -1,8 +1,12 @@
 import open from "open";
 import app from "./app.js";
+import { verificarEsquema } from "./shared/verificarEsquema.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const URL_BASE = `http://localhost:${PORT}`;
+
+// Antes de aceptar pedidos: la base tiene que tener los cambios de migracion_guardia.sql
+await verificarEsquema();
 
 app.listen(PORT, () => {
 
