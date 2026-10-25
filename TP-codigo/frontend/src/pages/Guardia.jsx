@@ -109,11 +109,11 @@ export default function Guardia() {
         </div>
 
         <p className="urgencia-detalle">
-          <strong>{u.tipoUrgencia?.nombre}</strong> — {u.motivo}
+          <strong>{u.tipoUrgencia?.nombre}</strong>{u.detalleTipo ? ` (${u.detalleTipo})` : ""} — {u.motivo}
           <br />
           DNI {u.paciente.dni} · {u.paciente.obraSocial?.nombreObra ?? "Sin obra social"}
           <br />
-          Llegó a las {horaCorta(u.horaAtencion)} ({haceCuanto(u.fechaAtencion, u.horaAtencion, ultimaActualizacion)}) · Ingreso Nº {u.nroIngreso}
+          Llegó a las {horaCorta(u.horaAtencion)} ({haceCuanto(u.fechaAtencion, u.horaAtencion, ultimaActualizacion)})
           {u.estado === "en_atencion" && u.medico && (
             <>
               <br />

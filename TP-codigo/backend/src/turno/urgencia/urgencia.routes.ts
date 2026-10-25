@@ -47,6 +47,11 @@ const soloMedico = [autenticar, autorizar("MEDICO")];
  *         motivo:
  *           type: string
  *           example: Corte profundo en el antebrazo
+ *         detalleTipo:
+ *           type: string
+ *           nullable: true
+ *           description: Descripción opcional. Solo tiene valor cuando el tipo de urgencia es "Otro"
+ *           example: Picadura de insecto con hinchazón
  *         paciente:
  *           $ref: '#/components/schemas/Paciente'
  *         tipoUrgencia:
@@ -71,6 +76,10 @@ const soloMedico = [autenticar, autorizar("MEDICO")];
  *         motivo:
  *           type: string
  *           example: Corte profundo en el antebrazo
+ *         detalleTipo:
+ *           type: string
+ *           description: Opcional. Solo se guarda si el tipo de urgencia es "Otro" (máximo 150 caracteres); con otro tipo se ignora
+ *           example: Picadura de insecto con hinchazón
  *         idTipo:
  *           type: integer
  *           description: Tipo de urgencia (tabla TipoUrgencia)
@@ -98,6 +107,9 @@ const soloMedico = [autenticar, autorizar("MEDICO")];
  *       properties:
  *         motivo:
  *           type: string
+ *         detalleTipo:
+ *           type: string
+ *           description: Solo tiene efecto si el tipo resultante es "Otro". Si se cambia a otro tipo, la descripción se borra sola
  *         idTipo:
  *           type: integer
  *         prioridad:

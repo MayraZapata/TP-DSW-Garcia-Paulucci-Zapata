@@ -540,6 +540,10 @@ textarea.campo { resize: vertical; }
 .ayuda-ok { background: #E8F5E9; color: #1B5E20; }
 .ayuda-nuevo { background: #FFF6D6; color: #5D4300; }
 
+/* Campo que aparece solo si el tipo de urgencia es "Otro" */
+.campo-condicional { display: flex; flex-direction: column; gap: 6px; }
+.etiqueta-campo { font-size: 14px; font-weight: 700; color: var(--texto-suave); }
+
 /* Ventana de finalizar */
 .selector-modo { display: flex; gap: 8px; margin-top: 8px; }
 .selector-modo .btn { flex: 1; padding: 9px 12px; font-size: 14px; }

@@ -108,7 +108,7 @@ export default function HistorialClinico() {
                       <>
                         <strong>Urgencia</strong> <PrioridadChip prioridad={atencion.prioridad} />
                         <br />
-                        <small>{atencion.tipoUrgencia?.nombre}</small>
+                        <small>{atencion.tipoUrgencia?.nombre}{atencion.detalleTipo ? `: ${atencion.detalleTipo}` : ""}</small>
                       </>
                     ) : (
                       "Consulta"
@@ -140,6 +140,7 @@ export default function HistorialClinico() {
               <>
                 <p><strong>Atención:</strong> Urgencia (guardia) <PrioridadChip prioridad={modalAtencion.prioridad} /></p>
                 <p><strong>Tipo de urgencia:</strong> {modalAtencion.tipoUrgencia?.nombre || "Sin especificar"}</p>
+                {modalAtencion.detalleTipo && <p><strong>Descripción:</strong> {modalAtencion.detalleTipo}</p>}
                 <p><strong>Motivo:</strong> {modalAtencion.motivo || "Sin especificar"}</p>
               </>
             )}

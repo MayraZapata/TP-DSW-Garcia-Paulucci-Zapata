@@ -81,7 +81,7 @@ before(async () => {
     assert.equal((await house.login("drHouse", "uno111")).status, 200);
 
     const t = (await admin.get("/tiposUrgencia")).data;
-    for (const n of ["Corte", "Convulsiones", "Fractura"]) {
+    for (const n of ["Corte", "Convulsiones", "Fractura", "Otro"]) {
         tipos[n] = t.find((x) => x.nombre === n)?.idTipo;
         assert.ok(tipos[n], `Falta el tipo de urgencia "${n}" en la base`);
     }
@@ -482,6 +482,95 @@ describe("Cancelar", () => {
         assert.equal((await ross.patch(`/urgencias/${a}/cancelar`)).status, 403);
         assert.equal((await cuddy.patch(`/urgencias/${a}/cancelar`)).data.urgencia.estado, "cancelada");
         assert.deepEqual(await esperaComo(), []);
+    });
+});
+
+
+// ================================================================ 4b) Tipo «Otro» con descripción opcional
+describe("Tipo «Otro»: descripción opcional que solo vive con ese tipo", () => {
+    const fila = async (id) => (await filas("SELECT idTipo, detalleTipo, motivo FROM atencion WHERE idAtencion = ?", [id]))[0];
+    const nuevo = async (extra) => {
+        const r = await ingreso("47076568", { motivo: "otro-test", prioridad: "verde", ...extra });
+        assert.equal(r.status, 201, JSON.stringify(r.data));
+        return r.data.urgencia;
+    };
+    before(async () => {
+        for (const u of (await admin.get("/urgencias/guardia")).data) await admin.patch(`/urgencias/${u.idAtencion}/cancelar`);
+    });
+
+    it("«Otro» con descripción: se guarda la descripción y el tipo sigue siendo «Otro»", async () => {
+        const u = await nuevo({ idTipo: tipos["Otro"], detalleTipo: "  Picadura de insecto con hinchazón  " });
+        assert.equal(u.tipoUrgencia.nombre, "Otro");
+        assert.equal(u.detalleTipo, "Picadura de insecto con hinchazón", "se guarda sin espacios sobrantes");
+        const f = await fila(u.idAtencion);
+        assert.equal(f.idTipo, tipos["Otro"], "el tipo no fue reemplazado por la descripción");
+        assert.equal(f.motivo, "otro-test", "el motivo tampoco se tocó");
+    });
+
+    it("«Otro» SIN descripción (omitida, vacía o solo espacios): se registra igual, con detalleTipo = null", async () => {
+        for (const extra of [{}, { detalleTipo: "" }, { detalleTipo: "    " }, { detalleTipo: null }]) {
+            const u = await nuevo({ idTipo: tipos["Otro"], ...extra });
+            assert.equal((await fila(u.idAtencion)).detalleTipo, null, JSON.stringify(extra));
+        }
+    });
+
+    it("con cualquier OTRO tipo, una descripción que llegue por error NO se guarda", async () => {
+        const u = await nuevo({ idTipo: tipos["Corte"], detalleTipo: "no debería quedar" });
+        assert.equal((await fila(u.idAtencion)).detalleTipo, null);
+        assert.equal(u.detalleTipo ?? null, null);
+    });
+
+    it("máximo 150 caracteres: con «Otro» pasarse da 400; con otro tipo se ignora y no molesta", async () => {
+        const largo = "x".repeat(151);
+        const r = await ingreso("47076568", { motivo: "x", prioridad: "verde", idTipo: tipos["Otro"], detalleTipo: largo });
+        assert.equal(r.status, 400);
+        assert.match(r.data.message, /150/);
+        const justo = await nuevo({ idTipo: tipos["Otro"], detalleTipo: "x".repeat(150) });
+        assert.equal((await fila(justo.idAtencion)).detalleTipo.length, 150);
+        assert.equal((await ingreso("47076568", { motivo: "x", prioridad: "verde", idTipo: tipos["Corte"], detalleTipo: largo })).status, 201);
+    });
+
+    it("EDITAR: de «Otro» a otro tipo la descripción se borra, y al volver a «Otro» no reaparece", async () => {
+        const u = await nuevo({ idTipo: tipos["Otro"], detalleTipo: "descripción original" });
+        const r1 = await admin.put(`/urgencias/${u.idAtencion}`, { idTipo: tipos["Corte"] });
+        assert.equal(r1.status, 200);
+        assert.equal((await fila(u.idAtencion)).detalleTipo, null, "se borró al cambiar de tipo");
+        const r2 = await admin.put(`/urgencias/${u.idAtencion}`, { idTipo: tipos["Otro"] });
+        assert.equal(r2.status, 200);
+        assert.equal((await fila(u.idAtencion)).detalleTipo, null, "no resucita al volver a «Otro»");
+        const r3 = await admin.put(`/urgencias/${u.idAtencion}`, { idTipo: tipos["Otro"], detalleTipo: "descripción nueva" });
+        assert.equal(r3.data.detalleTipo, "descripción nueva");
+    });
+
+    it("EDITAR: cambiar solo el motivo o la prioridad conserva la descripción; vaciarla la borra", async () => {
+        const u = await nuevo({ idTipo: tipos["Otro"], detalleTipo: "se conserva" });
+        await admin.put(`/urgencias/${u.idAtencion}`, { motivo: "motivo nuevo", prioridad: "amarillo" });
+        assert.equal((await fila(u.idAtencion)).detalleTipo, "se conserva");
+        await admin.put(`/urgencias/${u.idAtencion}`, { detalleTipo: "" });
+        assert.equal((await fila(u.idAtencion)).detalleTipo, null);
+    });
+
+    it("EDITAR: una descripción para una urgencia que NO es «Otro» se ignora", async () => {
+        const u = await nuevo({ idTipo: tipos["Fractura"] });
+        const r = await admin.put(`/urgencias/${u.idAtencion}`, { detalleTipo: "no corresponde" });
+        assert.equal(r.status, 200);
+        assert.equal((await fila(u.idAtencion)).detalleTipo, null);
+    });
+
+    it("la lista de la guardia y el historial devuelven la descripción", async () => {
+        const dni = dniNuevo();
+        const u = await ingreso(dni, { nombre: "Otra", apellido: "Urgencia", idTipo: tipos["Otro"], detalleTipo: "visible en listas", prioridad: "rojo", motivo: "para-listas" });
+        const enLista = (await admin.get("/urgencias/guardia")).data.find((x) => x.idAtencion === u.data.urgencia.idAtencion);
+        assert.equal(enLista.detalleTipo, "visible en listas");
+        const h = (await admin.get(`/atenciones/historial/dni/${dni}`)).data.atenciones[0];
+        assert.equal(h.detalleTipo, "visible en listas");
+        assert.equal(h.tipoUrgencia.nombre, "Otro");
+    });
+
+    it("las consultas (turnos) no tienen descripción de tipo: el campo no aparece", async () => {
+        const consultas = (await admin.get("/atenciones")).data;
+        assert.ok(consultas.length > 0);
+        assert.ok(consultas.every((c) => c.detalleTipo === undefined));
     });
 });
 

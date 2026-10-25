@@ -26,4 +26,9 @@ export class Urgencia extends Atencion {
     @ManyToOne(() => TipoUrgencia, { fieldName: "idTipo" })
     tipoUrgencia!: TipoUrgencia;
 
+    // Descripción breve y OPCIONAL que solo existe cuando el tipo de urgencia es "Otro".
+    // Complementa al tipo (no lo reemplaza) y queda en null para cualquier otro tipo.
+    @Property({ fieldName: "detalleTipo", length: 150, nullable: true })
+    detalleTipo?: string | null;
+
 }

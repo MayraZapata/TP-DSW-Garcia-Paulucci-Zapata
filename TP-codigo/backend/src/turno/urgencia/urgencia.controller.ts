@@ -76,6 +76,20 @@ function validarPrioridad(valor: unknown): Prioridad {
     return prioridad as Prioridad;
 }
 
+// TIPO "OTRO": permite agregar una descripción breve y OPCIONAL (detalleTipo).
+// Es un tipo más de la tabla TipoUrgencia y se reconoce por su nombre (igual que hace la pantalla).
+// La descripción solo se guarda si el tipo ES "Otro": con cualquier otro tipo se ignora y queda en null,
+// así nunca queda una descripción asociada a un tipo que no corresponde.
+const NOMBRE_TIPO_OTRO = "otro";
+const esTipoOtro = (tipo: TipoUrgencia) => tipo.nombre.trim().toLowerCase() === NOMBRE_TIPO_OTRO;
+
+function validarDetalleTipo(valor: unknown): string | null {
+    const detalle = String(valor ?? "").trim();
+    if (!detalle) return null;   // es opcional: vacío = sin descripción
+    if (detalle.length > 150) throw new ErrorNegocio(400, "La descripción de la urgencia no puede superar los 150 caracteres");
+    return detalle;
+}
+
 // Hora de llegada: la pone el SERVIDOR (nunca viene del navegador). Se arma igual que en los turnos
 // (fecha a medianoche local + hora "HH:MM:SS") para que se guarde y se lea con el mismo criterio.
 function llegadaAhora() {
@@ -144,7 +158,8 @@ export async function findOne(req: Request, res: Response) {
 
 // ---------------------------------------------------------------------------
 // INGRESO (lo registra el ADMIN: no hay recepcionista)
-//   Body: { dni, motivo, idTipo, prioridad, nombre?, apellido?, idObra? }
+//   Body: { dni, motivo, idTipo, prioridad, nombre?, apellido?, idObra?, detalleTipo? }
+//   (detalleTipo: descripción opcional, solo se guarda si el tipo es "Otro")
 //   - Si el DNI ya es de un paciente, se usa ese paciente (nombre/apellido/idObra se ignoran).
 //   - Si no existe, se REGISTRA ahí mismo (nombre, apellido, DNI, obra social) y se le crea la cuenta:
 //     usuario = DNI y contraseña inicial = DNI (guardada encriptada, como todas).
@@ -207,6 +222,7 @@ export async function add(req: Request, res: Response) {
             urgencia.tipoUrgencia = tipoUrgencia;
             urgencia.prioridad = prioridad;
             urgencia.motivo = motivo;
+            urgencia.detalleTipo = esTipoOtro(tipoUrgencia) ? validarDetalleTipo(req.body.detalleTipo) : null;
             tx.persist(urgencia);
 
             await tx.flush();
@@ -235,7 +251,7 @@ export async function update(req: Request, res: Response) {
         const idAtencion = Number(req.params.idAtencion);
 
         await em.transactional(async (tx) => {
-            const urgencia = await tx.findOne(Urgencia, { idAtencion }, { lockMode: LockMode.PESSIMISTIC_WRITE });
+            const urgencia = await tx.findOne(Urgencia, { idAtencion }, { lockMode: LockMode.PESSIMISTIC_WRITE, populate: ["tipoUrgencia"] });
             if (!urgencia) throw new ErrorNegocio(404, "Urgencia inexistente");
             if (urgencia.estado !== "en_espera") {
                 throw new ErrorNegocio(400, "Solo se pueden editar las urgencias que están en espera");
@@ -247,6 +263,14 @@ export async function update(req: Request, res: Response) {
                 const tipo = await tx.findOne(TipoUrgencia, { idTipo: Number(req.body.idTipo) });
                 if (!tipo) throw new ErrorNegocio(404, "Tipo de urgencia inexistente");
                 urgencia.tipoUrgencia = tipo;
+            }
+
+            // Coherencia del detalle: solo existe si el tipo (el nuevo o el que ya tenía) es "Otro".
+            // Si se cambió a otro tipo, la descripción se borra; si sigue siendo "Otro", se actualiza solo si vino en el pedido.
+            if (!esTipoOtro(urgencia.tipoUrgencia)) {
+                urgencia.detalleTipo = null;
+            } else if (req.body.detalleTipo !== undefined) {
+                urgencia.detalleTipo = validarDetalleTipo(req.body.detalleTipo);
             }
         });
 
