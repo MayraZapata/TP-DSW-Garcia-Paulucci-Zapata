@@ -6,6 +6,7 @@ import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js"; // Importado la entidad Diagnóstico
 import { normalizarDni, validarDni, buscarPacientePorDni } from "../../usuarios/paciente/dni.js";
+import { generarNroIngreso } from "./nroIngreso.js";
 
 const em = orm.em;
 
@@ -71,7 +72,7 @@ export async function add(req: Request, res: Response) {
     const nuevaAtencion = new Consulta();
     nuevaAtencion.fechaAtencion = new Date(`${fechaAtencion}T00:00:00`);
     nuevaAtencion.horaAtencion = horaAtencion;
-    nuevaAtencion.nroIngreso = Math.floor(100000 + Math.random() * 900000);
+    nuevaAtencion.nroIngreso = await generarNroIngreso(em);
     nuevaAtencion.estado = "pendiente";
     nuevaAtencion.paciente = paciente;
     nuevaAtencion.medico = medico;

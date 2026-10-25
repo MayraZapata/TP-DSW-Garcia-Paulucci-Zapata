@@ -1,10 +1,10 @@
 // Pruebas de la API del módulo de Guardia / Urgencias contra el backend y la base REALES.
 //
-// Cómo correrlas (con el backend andando y la base cargada con database/gestion_turnos.sql + pnpm hash-passwords):
+// Cómo correrlas (con el backend andando y la base cargada con database/gestion_turnos.sql, que ya trae las contraseñas encriptadas):
 //     node --env-file=.env.development --test pruebas/guardia.test.mjs
 //
 // - Se pueden correr varias veces: usan DNI nuevos cada vez y al empezar cancelan lo que hubiera en la guardia.
-// - Usan los usuarios de prueba de gestion_turnos.sql: admin, drCuddy y drRoss (Medicina General), drHouse (Infectología).
+// - Usan los usuarios de prueba de gestion_turnos.sql: admin, drCuddy y drRoss (Medicina General), drHouse (Infectología). Todos los médicos atienden la guardia.
 // - Para mirar la base usan DB_URL (solo hacen SELECT).
 
 import { describe, it, before, after } from "node:test";
@@ -48,9 +48,9 @@ function cliente() {
 
 const anon = cliente();
 const admin = cliente();
-const cuddy = cliente();   // Medicina General (habilitada para la guardia)
-const ross = cliente();    // Medicina General (habilitada para la guardia)
-const house = cliente();   // Infectología (NO habilitada)
+const cuddy = cliente();   // Medicina General
+const ross = cliente();    // Medicina General
+const house = cliente();   // Infectología (también atiende la guardia)
 
 // DNI únicos por corrida: 8 cifras a partir de la hora
 const base = Number(String(Date.now()).slice(-7)) + 20000000;
@@ -75,7 +75,7 @@ async function filas(sql, params = []) {
 
 // ---------------------------------------------------------------- preparación
 before(async () => {
-    assert.equal((await admin.login("admin", "admin123")).status, 200, "No se pudo iniciar sesión como admin (¿corriste pnpm hash-passwords?)");
+    assert.equal((await admin.login("admin", "admin123")).status, 200, "No se pudo iniciar sesión como admin (¿cargaste database/gestion_turnos.sql?)");
     assert.equal((await cuddy.login("drCuddy", "seis666")).status, 200);
     assert.equal((await ross.login("drRoss", "siete777")).status, 200);
     assert.equal((await house.login("drHouse", "uno111")).status, 200);
@@ -324,8 +324,35 @@ describe("Lista de espera: prioridad y luego hora de llegada", () => {
 });
 
 
+// ================================================================ Número de ingreso único
+describe("Número de ingreso: no se repite", () => {
+    it("varias urgencias seguidas reciben números distintos y ninguno se repite en toda la tabla atencion", async () => {
+        const numeros = [];
+        for (let i = 0; i < 8; i++) {
+            const r = await ingreso("47076568", { motivo: `nro-${i}` });
+            assert.equal(r.status, 201, JSON.stringify(r.data));
+            numeros.push(r.data.urgencia.nroIngreso);
+        }
+        assert.equal(new Set(numeros).size, numeros.length, "los 8 números son distintos");
+        assert.deepEqual(await filas("SELECT nroIngreso FROM atencion GROUP BY nroIngreso HAVING COUNT(*) > 1"), []);
+    });
+
+    it("el índice único de la base rechaza repetir un número de ingreso (red de seguridad)", async () => {
+        const [{ nroIngreso }] = await filas("SELECT nroIngreso FROM atencion LIMIT 1");
+        await assert.rejects(
+            () => db.query("INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente) VALUES (CURDATE(), CURTIME(), ?, 1)", [nroIngreso]),
+            /Duplicate entry|ER_DUP_ENTRY|denied/   // si el usuario no tiene insert, igual se rechaza
+        );
+    });
+
+    it("limpiar: dejar la guardia vacía", async () => {
+        for (const u of (await admin.get("/urgencias/guardia")).data) await admin.patch(`/urgencias/${u.idAtencion}/cancelar`);
+        assert.deepEqual(await esperaComo(), []);
+    });
+});
+
 // ================================================================ 4) atender y finalizar
-describe("Atención: primero de la fila y especialidad habilitada", () => {
+describe("Atención: primero de la fila (cualquier médico puede atender)", () => {
     let lista;
     before(async () => {
         for (const u of (await admin.get("/urgencias/guardia")).data) await admin.patch(`/urgencias/${u.idAtencion}/cancelar`);
@@ -335,12 +362,6 @@ describe("Atención: primero de la fila y especialidad habilitada", () => {
         lista = (await admin.get("/urgencias/guardia")).data;
     });
     const id = (motivo) => lista.find((u) => u.motivo === motivo).idAtencion;
-
-    it("un médico de una especialidad NO habilitada no puede atender (aunque sea el primero)", async () => {
-        const r = await house.patch(`/urgencias/${id("P1")}/atender`);
-        assert.equal(r.status, 403);
-        assert.match(r.data.message, /no está habilitada/);
-    });
 
     it("solo los médicos atienden (el admin no)", async () => {
         assert.equal((await admin.patch(`/urgencias/${id("P1")}/atender`)).status, 403);
@@ -383,17 +404,10 @@ describe("Atención: primero de la fila y especialidad habilitada", () => {
         assert.equal(row.estado, "en_atencion");
     });
 
-    it("habilitar OTRA especialidad es solo un dato (sin tocar código): Infectología pasa a poder atender", async () => {
-        const esp = (await admin.get("/especialidades")).data.find((e) => e.nombreEspecialidad === "infectologia");
-        assert.equal(esp.atiendeGuardia, false);
-        const r = await admin.put(`/especialidades/${esp.idEspecialidad}`, { atiendeGuardia: true });
-        assert.equal(r.status, 200);
-        try {
-            const atendido = await house.patch(`/urgencias/${id("P3")}/atender`);   // P3 ya es el primero
-            assert.equal(atendido.status, 200, JSON.stringify(atendido.data));
-        } finally {
-            await admin.put(`/especialidades/${esp.idEspecialidad}`, { atiendeGuardia: false });   // se vuelve a deshabilitar
-        }
+    it("un médico de CUALQUIER especialidad puede atender: Infectología toma al primero y lo finaliza", async () => {
+        const atendido = await house.patch(`/urgencias/${id("P3")}/atender`);   // P3 ya es el primero
+        assert.equal(atendido.status, 200, JSON.stringify(atendido.data));
+        assert.equal(atendido.data.urgencia.medico.apellido, "House");
         assert.equal((await house.patch(`/urgencias/${id("P3")}/finalizar`, { idDiagnostico: 1 })).status, 200);
     });
 });

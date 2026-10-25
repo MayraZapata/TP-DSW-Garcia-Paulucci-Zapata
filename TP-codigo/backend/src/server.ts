@@ -5,7 +5,7 @@ import { verificarEsquema } from "./shared/verificarEsquema.js";
 const PORT = Number(process.env.PORT ?? 3000);
 const URL_BASE = `http://localhost:${PORT}`;
 
-// Antes de aceptar pedidos: la base tiene que tener los cambios de migracion_guardia.sql
+// Antes de aceptar pedidos: la base tiene que estar cargada con la versión actual de database/gestion_turnos.sql
 await verificarEsquema();
 
 app.listen(PORT, () => {

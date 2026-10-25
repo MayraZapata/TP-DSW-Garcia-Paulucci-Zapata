@@ -11,6 +11,7 @@ import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { ObraSocial } from "../../usuarios/cualidadesUsr/obraSocial/obraSocial.entity.js";
 import { existeUsuario } from "../../usuarios/existeUsuario.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../usuarios/paciente/dni.js";
+import { generarNroIngreso } from "../atencion/nroIngreso.js";
 
 const em = orm.em;
 
@@ -53,6 +54,9 @@ function responderError(res: Response, error: any) {
     }
     if (error?.code === "ER_DUP_ENTRY" && String(error.message).includes("uq_diagnostico_nombre")) {
         return res.status(400).json({ message: "Ya existe un diagnóstico con ese nombre. Elegilo de la lista." });
+    }
+    if (error?.code === "ER_DUP_ENTRY" && String(error.message).includes("uq_atencion_nroIngreso")) {
+        return res.status(409).json({ message: "No se pudo asignar el número de ingreso. Intentá de nuevo." });
     }
     return res.status(500).json({ message: error.message });
 }
@@ -216,7 +220,7 @@ export async function add(req: Request, res: Response) {
             const urgencia = new Urgencia();
             urgencia.tipoAtencion = "urgencia";
             Object.assign(urgencia, llegadaAhora());                    // fecha y hora de llegada: del servidor
-            urgencia.nroIngreso = Math.floor(100000 + Math.random() * 900000);   // igual que en los turnos
+            urgencia.nroIngreso = await generarNroIngreso(tx);                  // 6 cifras que no se repiten (ver nroIngreso.ts)
             urgencia.estado = "en_espera";
             urgencia.paciente = paciente;
             urgencia.tipoUrgencia = tipoUrgencia;
@@ -284,8 +288,7 @@ export async function update(req: Request, res: Response) {
 // ---------------------------------------------------------------------------
 // ATENDER (MEDICO): el médico toma al paciente.
 //   Reglas:
-//   - El médico tiene que ser de una especialidad habilitada para la guardia (especialidad.atiendeGuardia).
-//     Es un dato de la tabla especialidad, no código: se habilitan otras sin tocar el programa.
+//   - Cualquier médico puede atender la guardia, sea cual sea su especialidad.
 //   - Solo se puede tomar al PRIMERO de la lista de espera.
 //   Se bloquea la lista de espera mientras se decide, así dos médicos que aprietan "Atender" a la vez
 //   no pueden quedarse con el mismo paciente.
@@ -295,15 +298,8 @@ export async function atender(req: Request, res: Response) {
         const idAtencion = Number(req.params.idAtencion);
 
         await em.transactional(async (tx) => {
-            const medico = await tx.findOne(Medico, { matricula: req.auth!.id }, { populate: ["especialidad"] });
+            const medico = await tx.findOne(Medico, { matricula: req.auth!.id });
             if (!medico) throw new ErrorNegocio(401, "Sesión inválida");
-
-            if (!medico.especialidad.atiendeGuardia) {
-                throw new ErrorNegocio(
-                    403,
-                    `La especialidad ${medico.especialidad.nombreEspecialidad} no está habilitada para atender la guardia`
-                );
-            }
 
             const cola = await tx.find(
                 Urgencia,

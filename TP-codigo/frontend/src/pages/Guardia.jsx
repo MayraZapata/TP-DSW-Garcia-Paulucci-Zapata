@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import usePolling from "../hooks/usePolling";
@@ -26,7 +26,7 @@ function haceCuanto(fechaAtencion, horaAtencion, ahora) {
 
 // Pantalla de la guardia.
 //  - ADMIN: ingresa las urgencias (formulario), puede editar o cancelar.
-//  - MEDICO: ve la lista y atiende al PRIMERO de la fila (si su especialidad está habilitada) y lo finaliza.
+//  - MEDICO: ve la lista y atiende al PRIMERO de la fila (cualquier médico, sin importar su especialidad) y lo finaliza.
 // La lista se actualiza sola y se reordena: primero por prioridad (rojo, amarillo, verde) y, dentro
 // de cada una, por hora de llegada.
 export default function Guardia() {
@@ -38,7 +38,6 @@ export default function Guardia() {
   const [sinConexion, setSinConexion] = useState(false);
   const [enEdicion, setEnEdicion] = useState(null);
   const [aFinalizar, setAFinalizar] = useState(null);
-  const [habilitado, setHabilitado] = useState(true);
 
   const cargar = useCallback(async () => {
     try {
@@ -53,15 +52,6 @@ export default function Guardia() {
   }, []);
 
   usePolling(cargar, CADA_CUANTO_ACTUALIZAR);
-
-  // ¿La especialidad de este médico está habilitada para la guardia? (es un dato de la especialidad)
-  useEffect(() => {
-    if (rol !== "MEDICO" || !usuario?.matricula) return;
-    api
-      .get(`/medicos/${usuario.matricula}`)
-      .then((m) => setHabilitado(Boolean(m.especialidad?.atiendeGuardia)))
-      .catch(() => setHabilitado(false));
-  }, [rol, usuario]);
 
   const enEspera = urgencias.filter((u) => u.estado === "en_espera");
   const enAtencion = urgencias.filter((u) => u.estado === "en_atencion");
@@ -130,7 +120,7 @@ export default function Guardia() {
             <button className="btn btn-peligro" onClick={() => cancelar(u)}>Cancelar</button>
           )}
 
-          {rol === "MEDICO" && u.estado === "en_espera" && habilitado && (
+          {rol === "MEDICO" && u.estado === "en_espera" && (
             <button
               className="btn"
               disabled={!esElPrimero}
@@ -165,9 +155,6 @@ export default function Guardia() {
 
       <Mensaje mensaje={aviso.mensaje} />
       {sinConexion && <div className="mensaje mensaje-error">No se pudo actualizar la lista. Se muestra la última que llegó y se reintenta sola.</div>}
-      {rol === "MEDICO" && !habilitado && (
-        <div className="mensaje mensaje-error">Tu especialidad no está habilitada para atender la guardia: podés ver la lista, pero no tomar pacientes.</div>
-      )}
 
       <div className={rol === "ADMIN" ? "gestion-cuerpo" : "gestion-cuerpo guardia-solo-lista"}>
         {rol === "ADMIN" && (

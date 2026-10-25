@@ -323,9 +323,8 @@ urgenciaRouter.put("/:idAtencion", soloAdmin, update);
  *     tags: [Urgencias]
  *     summary: Tomar al paciente (pasa a en_atencion)
  *     description: >
- *       Solo MEDICO. Reglas: la especialidad del médico tiene que estar habilitada para la guardia
- *       (campo atiendeGuardia de la especialidad; inicialmente solo Medicina General) y solo se puede
- *       tomar al PRIMERO de la lista de espera.
+ *       Solo MEDICO (cualquier médico, sin importar su especialidad). Solo se puede tomar al PRIMERO
+ *       de la lista de espera.
  *     security:
  *       - cookieAuth: []
  *     parameters:
@@ -350,7 +349,7 @@ urgenciaRouter.put("/:idAtencion", soloAdmin, update);
  *       401:
  *         $ref: '#/components/responses/NoAutenticado'
  *       403:
- *         description: El rol no corresponde o la especialidad del médico no está habilitada para la guardia
+ *         description: El rol no corresponde (solo MEDICO atiende)
  *         content:
  *           application/json:
  *             schema:

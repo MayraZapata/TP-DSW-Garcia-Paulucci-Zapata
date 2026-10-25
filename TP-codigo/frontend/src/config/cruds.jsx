@@ -10,14 +10,12 @@ export const crudEspecialidad = {
   campos: [
     { name: "nombreEspecialidad", placeholder: "Nombre de la Especialidad" },
     { name: "descripcion", placeholder: "Descripción (opcional)" },
-    { name: "atiendeGuardia", type: "checkbox", placeholder: "Sus médicos pueden atender la guardia (urgencias)", toEnvio: Boolean },
   ],
   filtrarPor: (e, t) => e.nombreEspecialidad?.toLowerCase().includes(t) || e.descripcion?.toLowerCase().includes(t),
   renderItem: (e) => (
     <>
       <strong>{e.nombreEspecialidad}</strong>
       {e.descripcion && <p style={{ margin: "6px 0 0" }}>{e.descripcion}</p>}
-      {e.atiendeGuardia && <p style={{ margin: "6px 0 0" }}><span className="etiqueta-guardia">Atiende la guardia</span></p>}
     </>
   ),
 };
