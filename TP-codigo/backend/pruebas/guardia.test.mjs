@@ -323,34 +323,6 @@ describe("Lista de espera: prioridad y luego hora de llegada", () => {
     });
 });
 
-
-// ================================================================ Número de ingreso único
-describe("Número de ingreso: no se repite", () => {
-    it("varias urgencias seguidas reciben números distintos y ninguno se repite en toda la tabla atencion", async () => {
-        const numeros = [];
-        for (let i = 0; i < 8; i++) {
-            const r = await ingreso("47076568", { motivo: `nro-${i}` });
-            assert.equal(r.status, 201, JSON.stringify(r.data));
-            numeros.push(r.data.urgencia.nroIngreso);
-        }
-        assert.equal(new Set(numeros).size, numeros.length, "los 8 números son distintos");
-        assert.deepEqual(await filas("SELECT nroIngreso FROM atencion GROUP BY nroIngreso HAVING COUNT(*) > 1"), []);
-    });
-
-    it("el índice único de la base rechaza repetir un número de ingreso (red de seguridad)", async () => {
-        const [{ nroIngreso }] = await filas("SELECT nroIngreso FROM atencion LIMIT 1");
-        await assert.rejects(
-            () => db.query("INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente) VALUES (CURDATE(), CURTIME(), ?, 1)", [nroIngreso]),
-            /Duplicate entry|ER_DUP_ENTRY|denied/   // si el usuario no tiene insert, igual se rechaza
-        );
-    });
-
-    it("limpiar: dejar la guardia vacía", async () => {
-        for (const u of (await admin.get("/urgencias/guardia")).data) await admin.patch(`/urgencias/${u.idAtencion}/cancelar`);
-        assert.deepEqual(await esperaComo(), []);
-    });
-});
-
 // ================================================================ 4) atender y finalizar
 describe("Atención: primero de la fila (cualquier médico puede atender)", () => {
     let lista;

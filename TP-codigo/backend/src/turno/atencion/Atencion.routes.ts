@@ -34,10 +34,6 @@ const adminOMedico = [autenticar, autorizar("ADMIN", "MEDICO")];
  *         horaAtencion:
  *           type: string
  *           example: "09:30"
- *         nroIngreso:
- *           type: integer
- *           description: Número de seis cifras que se genera solo al reservar
- *           example: 483920
  *         estado:
  *           type: string
  *           enum: [pendiente, atendido, ausente, cancelado]

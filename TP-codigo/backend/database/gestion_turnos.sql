@@ -142,12 +142,7 @@ CREATE TABLE IF NOT EXISTS TipoUrgencia (
     nombre VARCHAR(50) NOT NULL,
     descripcionTipo VARCHAR(100)
 );
-INSERT INTO TipoUrgencia (nombre, descripcionTipo) VALUES 
-('Verde / No Urgente', 'Condiciones menores que pueden esperar atención sin riesgo de empeorar.'),
-('Amarillo / Urgencia', 'Requiere atención médica rápida pero la vida del paciente no peligra inmediatamente.'),
-('Rojo / Emergencia', 'Riesgo vital inminente. Requiere atención médica e intervención inmediata.');
-/*Tipos clínicos de urgencia. El color/prioridad (rojo, amarillo, verde) NO sale del tipo: lo decide una persona al ingresar.
-  «Otro» permite describir brevemente una urgencia que no está en la lista (se guarda en atencion.detalleTipo)*/
+
 
 INSERT INTO TipoUrgencia (nombre, descripcionTipo) VALUES
 ('Convulsiones', 'Episodio convulsivo o pérdida de conocimiento.'),
@@ -167,7 +162,6 @@ CREATE TABLE IF NOT EXISTS atencion (
     idAtencion INT AUTO_INCREMENT PRIMARY KEY,
     fechaAtencion DATE NOT NULL,
     horaAtencion TIME NOT NULL,
-    nroIngreso INT NOT NULL,   /* no se repite entre atenciones (consultas y urgencias) */
     idPaciente INT NOT NULL,
     matricula INT NULL,   /* una urgencia en espera todavía no tiene médico */
     idDiagnostico INT,
@@ -178,7 +172,6 @@ CREATE TABLE IF NOT EXISTS atencion (
     motivo VARCHAR(300) NULL,                               /* solo urgencias */
     prioridad ENUM('rojo','amarillo','verde') NULL,         /* solo urgencias; el orden del ENUM es el orden de atención */
     detalleTipo VARCHAR(150) NULL,                          /* solo urgencias de tipo «Otro»: descripción opcional */
-    UNIQUE KEY uq_atencion_nroIngreso (nroIngreso),
     INDEX idx_atencion_guardia (tipoAtencion, estado, prioridad, fechaAtencion, horaAtencion),
     FOREIGN KEY(idPaciente)
         REFERENCES paciente(idPaciente),
@@ -189,17 +182,17 @@ CREATE TABLE IF NOT EXISTS atencion (
     FOREIGN KEY(idTipo)
         REFERENCES TipoUrgencia(idTipo)
 );
-INSERT INTO atencion (fechaAtencion, horaAtencion, nroIngreso, idPaciente, matricula, idDiagnostico, estado) VALUES 
-('2026-10-01', '08:30:00', 1001, 1, 1, 4, 'atendido'),
-('2026-10-01', '09:15:00', 1002, 2, 4, 2, 'atendido'),
-('2026-10-02', '14:00:00', 1003, 3, 2, 3, 'atendido'),
-('2026-10-02', '23:45:00', 1004, 4, 3, 5, 'atendido'),
-('2026-10-03', '11:00:00', 1005, 5, 5, 1, 'atendido'),
-('2026-10-04', '10:30:00', 1006, 6, 2, NULL, 'Pendiente'),
-('2026-10-04', '17:20:00', 1007, 7, 1, NULL, 'Ausente');
+INSERT INTO atencion (fechaAtencion, horaAtencion, idPaciente, matricula, idDiagnostico, estado) VALUES 
+('2026-10-01', '08:30:00', 1, 1, 4, 'atendido'),
+('2026-10-01', '09:15:00', 2, 4, 2, 'atendido'),
+('2026-10-02', '14:00:00', 3, 2, 3, 'atendido'),
+('2026-10-02', '23:45:00', 4, 3, 5, 'atendido'),
+('2026-10-03', '11:00:00', 5, 5, 1, 'atendido'),
+('2026-10-04', '10:30:00', 6, 2, NULL, 'Pendiente'),
+('2026-10-04', '17:20:00', 7, 1, NULL, 'Ausente');
 /*Una urgencia ya finalizada (para ver cómo aparece en el Historial Clínico). Tipo 6 = Fractura, atendida por la Dra. Cuddy*/
-INSERT INTO atencion (tipoAtencion, fechaAtencion, horaAtencion, nroIngreso, idPaciente, matricula, idDiagnostico, idTipo, estado, motivo, prioridad) VALUES
-('urgencia', '2026-10-05', '21:40:00', 2001, 1, 6, 5, 6, 'finalizada', 'Golpe fuerte en el tobillo, sospecha de fractura', 'verde');
+INSERT INTO atencion (tipoAtencion, fechaAtencion, horaAtencion, idPaciente, matricula, idDiagnostico, idTipo, estado, motivo, prioridad) VALUES
+('urgencia', '2026-10-05', '21:40:00', 1, 6, 5, 6, 'finalizada', 'Golpe fuerte en el tobillo, sospecha de fractura', 'verde');
 
 
 

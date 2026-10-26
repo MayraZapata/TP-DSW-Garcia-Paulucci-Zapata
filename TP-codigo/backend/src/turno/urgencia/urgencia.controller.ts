@@ -11,7 +11,6 @@ import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { ObraSocial } from "../../usuarios/cualidadesUsr/obraSocial/obraSocial.entity.js";
 import { existeUsuario } from "../../usuarios/existeUsuario.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../usuarios/paciente/dni.js";
-import { generarNroIngreso } from "../atencion/nroIngreso.js";
 
 const em = orm.em;
 
@@ -54,9 +53,6 @@ function responderError(res: Response, error: any) {
     }
     if (error?.code === "ER_DUP_ENTRY" && String(error.message).includes("uq_diagnostico_nombre")) {
         return res.status(400).json({ message: "Ya existe un diagnóstico con ese nombre. Elegilo de la lista." });
-    }
-    if (error?.code === "ER_DUP_ENTRY" && String(error.message).includes("uq_atencion_nroIngreso")) {
-        return res.status(409).json({ message: "No se pudo asignar el número de ingreso. Intentá de nuevo." });
     }
     return res.status(500).json({ message: error.message });
 }
@@ -220,7 +216,6 @@ export async function add(req: Request, res: Response) {
             const urgencia = new Urgencia();
             urgencia.tipoAtencion = "urgencia";
             Object.assign(urgencia, llegadaAhora());                    // fecha y hora de llegada: del servidor
-            urgencia.nroIngreso = await generarNroIngreso(tx);                  // 6 cifras que no se repiten (ver nroIngreso.ts)
             urgencia.estado = "en_espera";
             urgencia.paciente = paciente;
             urgencia.tipoUrgencia = tipoUrgencia;

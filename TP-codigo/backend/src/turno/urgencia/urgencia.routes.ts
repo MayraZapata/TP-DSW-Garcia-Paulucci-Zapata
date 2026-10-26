@@ -32,9 +32,6 @@ const soloMedico = [autenticar, autorizar("MEDICO")];
  *           type: string
  *           description: Hora de llegada (la pone el servidor)
  *           example: "14:32:05"
- *         nroIngreso:
- *           type: integer
- *           example: 483920
  *         estado:
  *           type: string
  *           enum: [en_espera, en_atencion, finalizada, cancelada]

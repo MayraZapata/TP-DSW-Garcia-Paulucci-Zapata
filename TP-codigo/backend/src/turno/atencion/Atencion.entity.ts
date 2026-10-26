@@ -35,9 +35,6 @@ export abstract class Atencion {
     @Property({ fieldName: 'horaAtencion' }) 
     horaAtencion!: string;
 
-    @Property({ fieldName: 'nroIngreso' }) 
-    nroIngreso!: number;
-
     // Los estados dependen del tipo:
     //   Consulta: pendiente / atendido / ausente / cancelado
     //   Urgencia: en_espera / en_atencion / finalizada / cancelada
