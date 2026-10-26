@@ -26,6 +26,7 @@ export const swaggerSpec = swaggerJsdoc({
             { name: "Atenciones", description: "Turnos y atenciones médicas" },
             { name: "Diagnósticos", description: "Catálogo de diagnósticos" },
             { name: "Tipos de Urgencia", description: "Catálogo de tipos de urgencia" },
+            { name: "Urgencias", description: "Guardia: ingreso, lista de espera, atención y cierre de urgencias" },
         ],
 
         components: {

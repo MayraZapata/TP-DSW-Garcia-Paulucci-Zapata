@@ -9,6 +9,8 @@ import {
   buscarTurnos,
   completarAtencion,
   getHorariosOcupados,
+  historialPorPaciente,
+  historialPorDni
 } from "./Atencion.controller.js";
 import { autenticar, autorizar, soloPropio } from "../../shared/auth.middleware.js";
 
@@ -33,10 +35,6 @@ const adminOMedico = [autenticar, autorizar("ADMIN", "MEDICO")];
  *         horaAtencion:
  *           type: string
  *           example: "09:30"
- *         nroIngreso:
- *           type: integer
- *           description: Número de seis cifras que se genera solo al reservar
- *           example: 483920
  *         estado:
  *           type: string
  *           enum: [pendiente, atendido, ausente, cancelado]
@@ -376,3 +374,118 @@ atencionRouter.patch("/:idAtencion/diagnostico", adminOMedico, completarAtencion
  *         $ref: '#/components/responses/Prohibido'
  */
 atencionRouter.get("/buscar", adminOMedico, buscarTurnos);
+
+/**
+ * @openapi
+ * /atenciones/historial/paciente/{idPaciente}:
+ *   get:
+ *     tags: [Atenciones]
+ *     summary: Historial clínico de un paciente (por id)
+ *     description: >
+ *       ADMIN, MEDICO, o el propio paciente (no puede ver el de otro).
+ *       A diferencia de /atenciones/paciente/{idPaciente} (que solo trae turnos), acá vienen
+ *       TAMBIÉN las urgencias de guardia, identificadas con tipoAtencion = urgencia.
+ *       Ordenadas de la más nueva a la más vieja.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idPaciente
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Datos básicos del paciente y todas sus atenciones
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HistorialClinico'
+ *       401:
+ *         $ref: '#/components/responses/NoAutenticado'
+ *       403:
+ *         $ref: '#/components/responses/Prohibido'
+ *       404:
+ *         description: El paciente no existe
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+atencionRouter.get("/historial/paciente/:idPaciente", [autenticar, autorizar("ADMIN", "MEDICO", "PACIENTE"), soloPropio("PACIENTE", "idPaciente")], historialPorPaciente);
+
+/**
+ * @openapi
+ * /atenciones/historial/dni/{dni}:
+ *   get:
+ *     tags: [Atenciones]
+ *     summary: Historial clínico de un paciente (por DNI)
+ *     description: >
+ *       ADMIN o MEDICO. El DNI se compara sin puntos ni espacios ("47.076.568" es igual a "47076568").
+ *       Incluye consultas y urgencias.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: dni
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "47076568"
+ *     responses:
+ *       200:
+ *         description: Datos básicos del paciente y todas sus atenciones
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HistorialClinico'
+ *       400:
+ *         description: DNI con formato inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/NoAutenticado'
+ *       403:
+ *         $ref: '#/components/responses/Prohibido'
+ *       404:
+ *         description: No existe un paciente con ese DNI
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+atencionRouter.get("/historial/dni/:dni", adminOMedico, historialPorDni);
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     HistorialClinico:
+ *       type: object
+ *       properties:
+ *         paciente:
+ *           type: object
+ *           properties:
+ *             idPaciente:
+ *               type: integer
+ *               example: 1
+ *             nombre:
+ *               type: string
+ *               example: Juan
+ *             apellido:
+ *               type: string
+ *               example: Perez
+ *             dni:
+ *               type: string
+ *               example: "47076568"
+ *         atenciones:
+ *           type: array
+ *           description: Consultas (tipoAtencion = consulta) y urgencias (tipoAtencion = urgencia)
+ *           items:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/Atencion'
+ *               - $ref: '#/components/schemas/Urgencia'
+ */
