@@ -43,7 +43,6 @@ class Especialidad {
 
 class Atencion {
   idAtencion
-  nroIngreso
   fechaAtencion
   horaAtencion
 }
