@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import swaggerUi from "swagger-ui-express";
-
+import { manejarErrores } from "./shared/errorNegocio.js";
 import { RequestContext } from "@mikro-orm/core";
 import { orm } from "./shared/orm.js";
 import { swaggerSpec } from "./shared/swagger.js";
@@ -67,5 +67,7 @@ app.get(/^(?!\/api).*/, (_, res) => {
 app.use((_, res) => {
     return res.status(404).json({ message: "Recurso no encontrado" });
 });
+
+app.use(manejarErrores);
 
 export default app;
