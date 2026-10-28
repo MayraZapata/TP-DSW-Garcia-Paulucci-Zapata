@@ -1,6 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne, OneToMany, Collection } from "@mikro-orm/core";
 
-import { ObraSocial } from "../cualidadesUsr/obraSocial/obraSocial.entity.js";
+import { ObraSocial } from "../obraSocial/obraSocial.entity.js";
 //import { Atencion } from "../../turno/atencion/Atencion.entity.js";
 import { Usuario } from "../usuario.abstract.js";
 

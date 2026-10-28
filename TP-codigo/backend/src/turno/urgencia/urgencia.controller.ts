@@ -8,7 +8,7 @@ import { TipoUrgencia } from "../tipoUrgencia/tipoUrgencia.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
-import { ObraSocial } from "../../usuarios/cualidadesUsr/obraSocial/obraSocial.entity.js";
+import { ObraSocial } from "../../usuarios/obraSocial/obraSocial.entity.js";
 import { existeUsuario } from "../../usuarios/existeUsuario.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../usuarios/paciente/dni.js";
 

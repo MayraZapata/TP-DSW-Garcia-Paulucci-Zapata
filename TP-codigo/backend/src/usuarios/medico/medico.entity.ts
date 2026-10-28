@@ -1,6 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne, OneToMany, Collection } from "@mikro-orm/core";
 
-import { Especialidad } from "../cualidadesUsr/especialidad/especialidad.entity.js";
+import { Especialidad } from "../especialidad/especialidad.entity.js";
 //import { Atencion } from "../../turno/atencion/Atencion.entity.js";
 import { Usuario } from "../usuario.abstract.js";
 

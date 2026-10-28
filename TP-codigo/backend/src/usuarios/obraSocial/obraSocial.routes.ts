@@ -1,61 +1,58 @@
 import { Router } from "express";
+import { findAll, findOne, add, update, remove } from "./obraSocial.controller.js";
+import { autenticar, autorizar } from "../../shared/auth.middleware.js";
 
-import { findAll, findOne, add, update, remove } from "./especialidad.controller.js";
-import { autenticar, autorizar } from "../../../shared/auth.middleware.js";
+export const obraSocialRouter = Router();
 
 const soloAdmin = [autenticar, autorizar("ADMIN")];
-
-
-export const especialidadRouter = Router();
 
 /**
  * @openapi
  * components:
  *   schemas:
- *     Especialidad:
+ *     ObraSocial:
  *       type: object
  *       properties:
- *         idEspecialidad:
+ *         idObra:
  *           type: integer
  *           example: 1
- *         nombreEspecialidad:
+ *         nombreObra:
  *           type: string
- *           example: Cardiología
- *         descripcion:
- *           type: string
- *           nullable: true
- *           example: Enfermedades del corazón
- *     EspecialidadInput:
+ *           example: OSDE
+ *         monto:
+ *           type: number
+ *           example: 5000
+ *     ObraSocialInput:
  *       type: object
- *       required: [nombreEspecialidad]
+ *       required: [nombreObra, monto]
  *       properties:
- *         nombreEspecialidad:
+ *         nombreObra:
  *           type: string
- *           example: Cardiología
- *         descripcion:
- *           type: string
- *           nullable: true
+ *           example: OSDE
+ *         monto:
+ *           type: number
+ *           example: 5000
  */
 
 /**
  * @openapi
- * /especialidades:
+ * /obrasSociales:
  *   get:
- *     tags: [Especialidades]
- *     summary: Listar las especialidades
- *     description: Público (se usa en el registro y al sacar turnos).
+ *     tags: [Obras Sociales]
+ *     summary: Listar las obras sociales
+ *     description: Público (se usa en el registro).
  *     responses:
  *       200:
- *         description: Lista de especialidades
+ *         description: Lista de obras sociales
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Especialidad'
+ *                 $ref: '#/components/schemas/ObraSocial'
  *   post:
- *     tags: [Especialidades]
- *     summary: Crear una especialidad
+ *     tags: [Obras Sociales]
+ *     summary: Crear una obra social
  *     description: Solo ADMIN. No permite nombres repetidos.
  *     security:
  *       - cookieAuth: []
@@ -64,14 +61,14 @@ export const especialidadRouter = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/EspecialidadInput'
+ *             $ref: '#/components/schemas/ObraSocialInput'
  *     responses:
  *       201:
- *         description: Especialidad creada
+ *         description: Obra social creada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Especialidad'
+ *               $ref: '#/components/schemas/ObraSocial'
  *       400:
  *         $ref: '#/components/responses/SolicitudInvalida'
  *       401:
@@ -79,16 +76,15 @@ export const especialidadRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Prohibido'
  */
-especialidadRouter.get("/", findAll);
-
-especialidadRouter.post("/", soloAdmin, add);
+obraSocialRouter.get("/", findAll);
+obraSocialRouter.post("/", soloAdmin, add);
 
 /**
  * @openapi
- * /especialidades/{id}:
+ * /obrasSociales/{id}:
  *   get:
- *     tags: [Especialidades]
- *     summary: Obtener una especialidad
+ *     tags: [Obras Sociales]
+ *     summary: Obtener una obra social
  *     description: Público.
  *     parameters:
  *       - in: path
@@ -99,17 +95,17 @@ especialidadRouter.post("/", soloAdmin, add);
  *         example: 1
  *     responses:
  *       200:
- *         description: La especialidad
+ *         description: La obra social
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Especialidad'
+ *               $ref: '#/components/schemas/ObraSocial'
  *       404:
  *         $ref: '#/components/responses/NoEncontradoMensaje'
  *   put:
- *     tags: [Especialidades]
- *     summary: Editar una especialidad
- *     description: Solo ADMIN. No permite chocar con el nombre de otra especialidad.
+ *     tags: [Obras Sociales]
+ *     summary: Editar una obra social
+ *     description: Solo ADMIN. No permite chocar con el nombre de otra obra social.
  *     security:
  *       - cookieAuth: []
  *     parameters:
@@ -124,14 +120,14 @@ especialidadRouter.post("/", soloAdmin, add);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/EspecialidadInput'
+ *             $ref: '#/components/schemas/ObraSocialInput'
  *     responses:
  *       200:
- *         description: Especialidad actualizada
+ *         description: Obra social actualizada
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Especialidad'
+ *               $ref: '#/components/schemas/ObraSocial'
  *       400:
  *         $ref: '#/components/responses/SolicitudInvalida'
  *       401:
@@ -141,8 +137,8 @@ especialidadRouter.post("/", soloAdmin, add);
  *       404:
  *         $ref: '#/components/responses/NoEncontradoMensaje'
  *   delete:
- *     tags: [Especialidades]
- *     summary: Eliminar una especialidad
+ *     tags: [Obras Sociales]
+ *     summary: Eliminar una obra social
  *     description: Solo ADMIN.
  *     security:
  *       - cookieAuth: []
@@ -155,7 +151,7 @@ especialidadRouter.post("/", soloAdmin, add);
  *         example: 1
  *     responses:
  *       204:
- *         description: Especialidad eliminada
+ *         description: Obra social eliminada
  *       401:
  *         $ref: '#/components/responses/NoAutenticado'
  *       403:
@@ -163,8 +159,6 @@ especialidadRouter.post("/", soloAdmin, add);
  *       404:
  *         $ref: '#/components/responses/NoEncontradoMensaje'
  */
-especialidadRouter.get("/:id",findOne);
-
-especialidadRouter.put("/:id", soloAdmin, update);
-
-especialidadRouter.delete("/:id", soloAdmin, remove);
+obraSocialRouter.get("/:id", findOne);
+obraSocialRouter.put("/:id", soloAdmin, update);
+obraSocialRouter.delete("/:id", soloAdmin, remove);

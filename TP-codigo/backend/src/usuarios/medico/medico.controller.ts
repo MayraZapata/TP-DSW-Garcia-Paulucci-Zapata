@@ -4,7 +4,7 @@ import { hashPassword } from "../../shared/password.js";
 
 
 import { Medico } from "./medico.entity.js";
-import { Especialidad } from "../cualidadesUsr/especialidad/especialidad.entity.js";
+import { Especialidad } from "../especialidad/especialidad.entity.js";
 import { existeUsuario } from "../existeUsuario.js";
 
 const em = orm.em;

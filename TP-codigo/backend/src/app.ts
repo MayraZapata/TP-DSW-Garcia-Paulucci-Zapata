@@ -10,8 +10,8 @@ import { orm } from "./shared/orm.js";
 import { swaggerSpec } from "./shared/swagger.js";
 
 
-import { especialidadRouter } from "./usuarios/cualidadesUsr/especialidad/especialidad.routes.js";
-import { obraSocialRouter } from "./usuarios/cualidadesUsr/obraSocial/obraSocial.routes.js";
+import { especialidadRouter } from "./usuarios/especialidad/especialidad.routes.js";
+import { obraSocialRouter } from "./usuarios/obraSocial/obraSocial.routes.js";
 import { medicoRouter } from "./usuarios/medico/medico.routes.js";
 import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
 import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";

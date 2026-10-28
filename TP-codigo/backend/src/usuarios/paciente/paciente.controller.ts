@@ -3,7 +3,7 @@ import { orm } from "../../shared/orm.js";
 import { hashPassword } from "../../shared/password.js";
 
 import { Paciente } from "./paciente.entity.js";
-import { ObraSocial } from "../cualidadesUsr/obraSocial/obraSocial.entity.js";
+import { ObraSocial } from "../obraSocial/obraSocial.entity.js";
 import { existeUsuario } from "../existeUsuario.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "./dni.js";
 
