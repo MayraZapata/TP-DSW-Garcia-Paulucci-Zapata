@@ -1,6 +1,8 @@
 import { orm } from "../../shared/orm.js";
 import { ErrorNegocio } from "../../shared/errorNegocio.js";
 import { ObraSocial } from "./obraSocial.entity.js";
+import { Paciente } from "../paciente/paciente.entity.js"
+
 
 const em = orm.em;
 
@@ -61,6 +63,13 @@ export async function actualizar(id: number, datos: any) {
 
 //delete
 export async function eliminar(id: number) {
-    const obraSocial = await obtener(id);
+    const obraSocial = await obtener(id); 
+
+    await em.transactional(async (tx) => {
+        // Los pacientes que la tenían quedan sin obra social
+        await tx.nativeUpdate(Paciente, { obraSocial: obraSocial }, { obraSocial: null });
+        await tx.nativeDelete(ObraSocial, { idObra: id });
+    });
+
     await em.removeAndFlush(obraSocial);
 }
