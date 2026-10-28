@@ -1,11 +1,12 @@
 import { orm } from "../../shared/orm.js";
 import { ErrorNegocio } from "../../shared/errorNegocio.js";
 import { hashPassword } from "../../shared/password.js";
+import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../shared/dni.js";
 
 import { Paciente } from "./paciente.entity.js";
 import * as obraSocialService from "../obraSocial/obraSocial.service.js";
 import { existeUsuario } from "../existeUsuario.js";
-import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../shared/dni.js";
+import { Atencion } from "../../turno/atencion/Atencion.entity.js";
 
 const em = orm.em;
 
@@ -19,7 +20,7 @@ function dniValido(valor: unknown): string {
 }
 
 
-// Guarda los cambios. Red de seguridad: dos registros con el mismo DNI exactamente a la vez.
+// validacion de DNI previo a guardar
 async function guardar() {
     try {
         await em.flush();
@@ -35,6 +36,7 @@ export async function listar() {
     return em.find(Paciente, {}, { populate: ["obraSocial"] });
 }
 
+
 // Siempre devuelve 200: que no exista no es un error (en la guardia significa "hay que registrarlo ahora")
 export async function buscarPorDni(valor: unknown) {
     const dni = dniValido(valor);
@@ -49,8 +51,6 @@ export async function buscarPorDni(valor: unknown) {
 
 //get one
 export async function obtener(id: number) {
-    if (!Number.isInteger(id))
-        throw new ErrorNegocio(400, "El id del paciente debe ser un número");
 
     const paciente = await em.findOne(Paciente, { idPaciente: id }, { populate: ["obraSocial"] });
     if (!paciente)
@@ -102,10 +102,18 @@ export async function crear(datos: any) {
 export async function actualizar(id: number, body: any) {
     const paciente = await obtener(id);
 
-    // La contraseña NO se cambia por acá (se hace desde login/cambiar password)
+    // La contraseña NO se cambia por acá 
     const { password, ...datos } = body;
 
-    // Si viene un DNI: se normaliza y no puede ser de OTRO paciente (el propio sí)
+    //validacion de nombre de usuario
+    if (datos.nombreUsuario !== undefined && datos.nombreUsuario !== paciente.nombreUsuario) {
+    if (!datos.nombreUsuario)
+        throw new ErrorNegocio(400, "El nombre de usuario no puede estar vacío");
+    if (await existeUsuario(datos.nombreUsuario))
+        throw new ErrorNegocio(400, "El nombre de usuario ya existe");
+}
+
+    // se normaliza dni y no puede ser de OTRO paciente 
     if (datos.dni !== undefined) {
         const dni = dniValido(datos.dni);
         const otro = await buscarPacientePorDni(em, dni);
@@ -119,7 +127,7 @@ export async function actualizar(id: number, body: any) {
         obraSocial = await obraSocialService.obtener(Number(datos.idObra));
 
     em.assign(paciente, datos);
-    paciente.obraSocial = obraSocial;   // sin idObra en el body, queda sin obra social
+    paciente.obraSocial = obraSocial;   // sin idObra, queda sin obra social
     await guardar();
 
     return paciente;
@@ -130,5 +138,9 @@ export async function actualizar(id: number, body: any) {
 //delete
 export async function eliminar(id: number) {
     const paciente = await obtener(id);
+
+    if (await em.count(Atencion, { paciente }))
+        throw new ErrorNegocio(400, "No se puede eliminar: el paciente tiene atenciones registradas (turnos o urgencias)");
+
     await em.removeAndFlush(paciente);
 }

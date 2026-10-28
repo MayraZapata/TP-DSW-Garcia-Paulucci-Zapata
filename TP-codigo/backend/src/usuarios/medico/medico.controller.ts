@@ -1,154 +1,36 @@
 import { Request, Response } from "express";
-import { orm } from "../../shared/orm.js";
-import { hashPassword } from "../../shared/password.js";
+import * as medicoService from "./medico.service.js";
 
-
-import { Medico } from "./medico.entity.js";
-import { Especialidad } from "../especialidad/especialidad.entity.js";
-import { existeUsuario } from "../existeUsuario.js";
-
-const em = orm.em;
-
+//get all
 export async function findAll(req: Request, res: Response) {
-
-    const medicos = await em.find(Medico, {}, { populate: ["especialidad"] } );
-    res.json(medicos);
-
+    res.json(await medicoService.listar());
 }
 
+//get one
 export async function findOne(req: Request, res: Response) {
-
-    const medico = await em.findOne(Medico, 
-        {matricula: Number(req.params.id)}, 
-        { populate: ["especialidad"] } 
-    );
-
-    if (!medico)
-        return res.sendStatus(404);
-
-    res.json(medico);
+    res.json(await medicoService.obtener(Number(req.params.id)));
 }
 
+//get by especialidad
 export async function findByEspecialidad(req: Request, res: Response) {
-  try {
-    const idEspecialidad = Number(req.params.idEspecialidad);
-
-    // 1. Buscamos primero la especialidad
-    const especialidad = await em.findOne(Especialidad, { idEspecialidad });
-
-    if (!especialidad) {
-      return res.status(404).json({ message: "La especialidad ingresada no existe" });
-    }
-
-    // 2. Buscamos los médicos asociados a esa especialidad
-    const medicos = await em.find(
-      Medico,
-      { especialidad },
-      { populate: ["especialidad"] }
-    );
-
-    // 3. Si no hay médicos asignados a esa especialidad
-    if (medicos.length === 0) {
-      return res.status(404).json({ 
-        message: "No se encontraron médicos disponibles para la especialidad seleccionada" 
-      });
-    }
-
-    return res.json(medicos);
-  } catch (error: any) {
-    return res.status(500).json({ message: error.message });
-  }
+    res.json(await medicoService.listarPorEspecialidad(Number(req.params.idEspecialidad)));
 }
 
-
-
-
-
+//add
 export async function add(req: Request, res: Response) {
-
-    const medicoExistente = await em.findOne(Medico, { matricula: Number(req.body.matricula) });
-    
-
-    if (medicoExistente) {
-        return res.status(400).json({ message: "La matrícula ya existe"});
-    }
-
-
-    if (!req.body.password) 
-        return res.status(400).json({ message: "La contraseña es obligatoria" });
-    
-
-    if (!req.body.idEspecialidad) 
-        return res.status(400).json({ message: "La especialidad es obligatoria" });
-
-
-    if (await existeUsuario(req.body.nombreUsuario)) {
-            return res.status(400).json({ message: "El nombre de usuario ya existe"});
-    }
-
-    const especialidad = await em.findOne( Especialidad, { idEspecialidad: Number(req.body.idEspecialidad) });        
-    if (!especialidad) {
-        return res.status(404).json({ message: "Especialidad inexistente"});
-    }
-    
-    const medico = em.create( Medico,
-            {
-                matricula: req.body.matricula,
-                nombre: req.body.nombre,
-                apellido: req.body.apellido,
-                nombreUsuario: req.body.nombreUsuario,
-                password: await hashPassword(req.body.password),
-                especialidad
-            }
-        );
-
-    await em.persistAndFlush(medico);
-
+    const medico = await medicoService.crear(req.body);
     res.status(201).json(medico);
 }
 
 
-
-
-
-
+//update
 export async function update(req: Request, res: Response) {
-
-    const medico = await em.findOne( Medico,{ matricula: Number(req.params.id) } );
-
-    if (!medico)
-        return res.sendStatus(404);
-
-
-    const { password, ...datos } = req.body;
-    em.assign(medico, datos);
-    if (password) medico.password = await hashPassword(password);
-
-    if (req.body.idEspecialidad) {
-
-        const especialidad = await em.findOne(Especialidad,{idEspecialidad: req.body.idEspecialidad});
-
-        if (especialidad)
-            medico.especialidad = especialidad;
-
-    }
-
-    await em.flush();
-
-    res.json(medico);
-
+    res.json(await medicoService.actualizar(Number(req.params.id), req.body));
 }
 
+
+//delete
 export async function remove(req: Request, res: Response) {
-
-    const medico =
-        await em.findOne(Medico, {matricula:Number(req.params.id)} );
-
-    if (!medico)
-        return res.sendStatus(404);
-
-    await em.removeAndFlush(medico);
-
+    await medicoService.eliminar(Number(req.params.id));
     res.sendStatus(204);
-
 }
