@@ -10,7 +10,7 @@ import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { ObraSocial } from "../../usuarios/obraSocial/obraSocial.entity.js";
 import { existeUsuario } from "../../usuarios/existeUsuario.js";
-import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../usuarios/paciente/dni.js";
+import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../shared/dni.js";
 
 const em = orm.em;
 

@@ -5,7 +5,7 @@ import { Urgencia } from "../urgencia/Urgencia.entity.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js"; // Importado la entidad Diagnóstico
-import { normalizarDni, validarDni, buscarPacientePorDni } from "../../usuarios/paciente/dni.js";
+import { normalizarDni, validarDni, buscarPacientePorDni } from "../../shared/dni.js";
 
 const em = orm.em;
 

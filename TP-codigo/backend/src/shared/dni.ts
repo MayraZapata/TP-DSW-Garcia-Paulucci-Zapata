@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/core";
-import { Paciente } from "./paciente.entity.js";
+import { Paciente } from "../usuarios/paciente/paciente.entity.js";
 
 // El DNI tiene que ser ÚNICO por paciente, sin importar cómo lo escriban:
 // "47.076.568", "47076568" y " 47 076 568 " son el mismo DNI.
