@@ -15,7 +15,7 @@ export default function ReporteTurnos() {
   const [detalle, setDetalle] = useState(null);
 
   const filtrarTurnos = useCallback(async (fecha, matricula) => {
-    let query = "/atenciones/buscar?";
+    let query = "/consultas/buscar?";
     if (fecha) query += `fecha=${fecha}&`;
     if (matricula) query += `matricula=${matricula}&`;
     try {

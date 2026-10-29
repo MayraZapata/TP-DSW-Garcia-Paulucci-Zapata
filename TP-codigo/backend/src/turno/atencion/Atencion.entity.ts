@@ -3,6 +3,7 @@ import { Entity, PrimaryKey, Property, ManyToOne } from "@mikro-orm/core";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { Diagnostico } from "../diagnostico/diagnostico.entity.js";
+import type { TipoUrgencia } from "../tipoUrgencia/tipoUrgencia.entity.js";
 
 // Atencion es la clase PADRE (abstracta) del modelo de dominio:
 //   - Consulta: la atención que se hace por TURNO.
@@ -52,7 +53,10 @@ export abstract class Atencion {
     @ManyToOne(() => Diagnostico, { nullable: true, fieldName: 'idDiagnostico' })
     diagnostico?: Diagnostico;
 
-    // (El tipo de urgencia ya no está acá: según el modelo, TipoUrgencia clasifica a Urgencia.
-    //  Pasó a Urgencia.entity.ts, y con su fieldName correcto.)
+    // Propiedades específicas de subtipos declaradas para el tipado estático de TypeScript en consultas polimórficas
+    declare tipoUrgencia?: TipoUrgencia;
+    declare motivo?: string;
+    declare prioridad?: string;
+    declare detalleTipo?: string | null;
 
 }

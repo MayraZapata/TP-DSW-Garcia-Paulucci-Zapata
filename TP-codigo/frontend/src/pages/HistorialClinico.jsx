@@ -20,7 +20,7 @@ export default function HistorialClinico() {
   async function cargarPorId(idPaciente) {
     try {
       // Historial = consultas (por turno) + urgencias (por guardia). Cada una trae `tipoAtencion`.
-      const data = await api.get(`/atenciones/historial/paciente/${idPaciente}`);
+      const data = await api.get(`/consultas/historial/paciente/${idPaciente}`);
       setAtenciones(data.atenciones);
     } catch {
       setAtenciones([]);
@@ -47,7 +47,7 @@ export default function HistorialClinico() {
       return;
     }
     try {
-      const data = await api.get(`/atenciones/historial/dni/${encodeURIComponent(dniInput)}`);
+      const data = await api.get(`/consultas/historial/dni/${encodeURIComponent(dniInput)}`);
       const p = data.paciente;
 
       if (data.atenciones.length === 0) {

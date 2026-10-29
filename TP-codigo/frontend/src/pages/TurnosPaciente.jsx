@@ -15,7 +15,7 @@ export default function TurnosPaciente() {
     const idPaciente = usuario?.idPaciente;
     if (!idPaciente) return;
     try {
-      const data = await api.get(`/atenciones/paciente/${idPaciente}`);
+      const data = await api.get(`/consultas/paciente/${idPaciente}`);
       setTurnos(data);
     } catch {
       setTurnos([]);
@@ -30,7 +30,7 @@ export default function TurnosPaciente() {
   async function handleCancelar(idAtencion) {
     if (!confirm("¿Estás seguro de que querés cancelar este turno?")) return;
     try {
-      await api.patch(`/atenciones/${idAtencion}/cancelar`, {});
+      await api.patch(`/consultas/${idAtencion}/cancelar`, {});
       aviso.exito("Turno cancelado con éxito");
       cargarMisTurnos();
     } catch (error) {

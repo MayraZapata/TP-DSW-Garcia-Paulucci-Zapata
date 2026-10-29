@@ -82,7 +82,7 @@ const hoy = new Date().toLocaleDateString("en-CA");
     async function cargarHorariosOcupados() {
       try {
         const ocupados = await api.get(
-          `/atenciones/horarios-ocupados?matricula=${matriculaMedico}&fecha=${fechaAtencion}`
+          `/consultas/horarios-ocupados?matricula=${matriculaMedico}&fecha=${fechaAtencion}`
         );
         if (activo) {
           setHorariosOcupados(ocupados);
@@ -122,7 +122,7 @@ const hoy = new Date().toLocaleDateString("en-CA");
     }
 
     try {
-      await api.post("/atenciones", {
+      await api.post("/consultas", {
         idPaciente: Number(idPacienteFinal),
         matriculaMedico: Number(matriculaMedico),
         fechaAtencion,

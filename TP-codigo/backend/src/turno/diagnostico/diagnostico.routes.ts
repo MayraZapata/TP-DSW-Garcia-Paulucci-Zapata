@@ -166,6 +166,8 @@ diagnosticoRouter.post("/", soloAdmin, add);
  *     responses:
  *       204:
  *         description: Diagnóstico eliminado
+ *       400:
+ *         $ref: '#/components/responses/SolicitudInvalida'
  *       401:
  *         $ref: '#/components/responses/NoAutenticado'
  *       403:

@@ -21,7 +21,7 @@ function TurnosPacienteModal({ paciente, onCerrar }) {
 
         async function cargarTurnos() {
             try {
-                const data = await api.get(`/atenciones/paciente/${paciente.idPaciente}`);
+                const data = await api.get(`/consultas/paciente/${paciente.idPaciente}`);
                 if (!cancelado) setTurnos(data);
             } catch (e) {
                 if (!cancelado) setError(e.message);

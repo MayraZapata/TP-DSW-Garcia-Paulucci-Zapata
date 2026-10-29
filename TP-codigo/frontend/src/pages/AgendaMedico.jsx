@@ -21,7 +21,7 @@ export default function AgendaMedico() {
 
   const cargarAgenda = useCallback(async (matricula) => {
     try {
-      const data = await api.get(`/atenciones/medico/${matricula}`);
+      const data = await api.get(`/consultas/medico/${matricula}`);
       setTurnos(data);
     } catch {
       setTurnos([]);
@@ -61,7 +61,7 @@ export default function AgendaMedico() {
       return;
     }
     try {
-      const data = await api.patch(`/atenciones/${modalIdAtencion}/diagnostico`, {
+      const data = await api.patch(`/consultas/${modalIdAtencion}/diagnostico`, {
         idDiagnostico: Number(selectDiagnostico),
         estado: "atendido",
       });
@@ -73,9 +73,9 @@ export default function AgendaMedico() {
     }
   }
 
-  async function cambiarEstado(idAtencion, nuevoEstado) {
+    async function cambiarEstado(idAtencion, nuevoEstado) {
     try {
-      await api.patch(`/atenciones/${idAtencion}/estado`, { estado: nuevoEstado });
+      await api.patch(`/consultas/${idAtencion}/estado`, { estado: nuevoEstado });
       aviso.exito(`Estado del turno actualizado a: ${nuevoEstado}`);
       cargarAgenda(matriculaSeleccionada);
     } catch (error) {

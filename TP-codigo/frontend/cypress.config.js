@@ -1,9 +1,10 @@
 import { defineConfig } from "cypress";
 
 export default defineConfig({
+  projectId: 'p38766',
   e2e: {
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      // Configuración de las pruebas E2E existentes
     },
-  },
+  }
 });
