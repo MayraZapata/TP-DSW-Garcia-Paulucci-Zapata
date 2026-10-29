@@ -47,7 +47,7 @@ export default function ReporteTurnos() {
   return (
     <div className="contenedor-pagina">
       <button className="volver" onClick={() => navigate("/menu")}>Volver</button>
-      <h2>Consulta y Filtro de Turnos</h2>
+      <h2>Atenciones</h2>
 
       {/* Reemplazamos los estilos inline por la clase .filtros-barra */}
       <div className="filtros-barra">
