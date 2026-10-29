@@ -2,6 +2,7 @@
   "name": "gestion-turnosmedicos",
   "type": "module",
   "version": "1.0.0",
+  "packageManager": "pnpm@12.4.2",
   "description": "Sistema web de gestion de turnos medicos",
   "main": "dist/server.js",
   "scripts": {
