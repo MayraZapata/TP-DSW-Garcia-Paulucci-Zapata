@@ -96,11 +96,10 @@ Atencion <|-- Urgencia
 ```
 
 ### Notas para ejecución
-Administrador -  user: admin - contraseña: admin123
-Por cada usuario normal, sus nombres de usuario son posibles de ver en el listado.
-En base al Id, su contraseña será conformada por el nombre y 3 veces su repetición.
-Ejemplo: id: 1 - contraseña: uno111
-(matricula es id de medico. dni es id de paciente)
+* Administrador -  user: admin - contraseña: admin123
+* Por cada usuario normal, sus nombres de usuario son posibles de ver en el listado.
+* En base al Id, su contraseña será conformada por el nombre y 3 veces su repetición.
+* Ejemplo: id: 1 - contraseña: uno111 (matricula es id de medico. dni es id de paciente)
 
 
 
