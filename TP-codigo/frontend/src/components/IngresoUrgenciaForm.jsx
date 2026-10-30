@@ -7,19 +7,8 @@ import BuscadorTipoUrgencia from "./BuscadorTipoUrgencia";
 import { unicosPor } from "../utils/unicos";
 import { esTipoOtro } from "../utils/tiposUrgencia";
 import { PRIORIDADES } from "../config/prioridades";
-import "./IngresoUrgenciaForm.css";
 
-// Formulario del ADMIN para ingresar una urgencia (no hay recepcionista). Tiene DOS ETAPAS, y cada una
-// es su propio <form>, así cada acción valida solo lo que le corresponde:
-//
-// ETAPA 1 — DNI: se escribe el DNI y se busca (clic en «Buscar» o Enter: es el mismo formulario).
-//   - Si el paciente EXISTE: nombre, apellido y obra social se rellenan solos (no se pueden cambiar acá).
-//   - Si NO existe: se completan nombre, apellido y obra social y se lo registra en el mismo ingreso;
-//     el sistema le crea la cuenta con usuario y contraseña iniciales iguales a su DNI.
-// ETAPA 2 — Urgencia: motivo, tipo de urgencia y PRIORIDAD (se elige aparte del tipo, porque la decide
-//   una persona). Recién al confirmar se validan esos campos.
-//
-// Si recibe `urgencia`, funciona en modo EDICIÓN: solo cambian motivo, tipo y prioridad.
+
 export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEdicion }) {
   const editando = Boolean(urgencia);
   const aviso = useMensaje();
@@ -27,7 +16,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
   const obras = unicosPor(useFetchList("/obrasSociales"), "nombreObra");
 
   const [dni, setDni] = useState(urgencia?.paciente?.dni ?? "");
-  // null = todavía no se buscó el DNI | { existe: true | false }
   const [busqueda, setBusqueda] = useState(editando ? { existe: true } : null);
   const [buscando, setBuscando] = useState(false);
   const [nombre, setNombre] = useState(urgencia?.paciente?.nombre ?? "");
@@ -39,26 +27,21 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
   const [prioridad, setPrioridad] = useState(urgencia?.prioridad ?? "");
 
   const pacienteExiste = busqueda?.existe === true;
-  // La caja de descripción se muestra solo si el tipo elegido es "Otro"
   const mostrarDetalle = esTipoOtro(tipos.find((t) => String(t.idTipo) === String(idTipo)));
 
-  // Se llama cuando en el buscador se elige un tipo (o se suelta: valor ""). `textoEscrito` solo viene cuando
-  // lo escrito no estaba en la lista y se eligió «Otro»: pasa a ser la descripción (se puede corregir).
+  
   function cambiarTipo(valor, textoEscrito = "") {
     const nuevo = tipos.find((t) => String(t.idTipo) === String(valor));
     setIdTipo(valor);
     if (!esTipoOtro(nuevo)) {
-      // Con cualquier otro tipo la descripción se descarta: no puede quedar asociada a un tipo que no es "Otro".
       setDetalleTipo("");
     } else if (!mostrarDetalle) {
-      // Se pasó a "Otro" desde otro tipo: la caja arranca con lo escrito (o vacía)
       setDetalleTipo(textoEscrito);
     }
   }
 
   function cambiarDni(valor) {
     setDni(valor);
-    // Si cambia el DNI hay que volver a buscar: lo que se había rellenado ya no corresponde
     if (busqueda) {
       setBusqueda(null);
       setNombre("");
@@ -95,7 +78,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
     }
   }
 
-  // ETAPA 1: solo busca el DNI. No toca ningún campo de la etapa 2.
   function handleBuscar(e) {
     e.preventDefault();
     buscar();
@@ -113,7 +95,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
     setPrioridad("");
   }
 
-  // ETAPA 2: confirma el ingreso (o los cambios, si se está editando). Acá sí se validan motivo, tipo y prioridad.
   async function handleSubmit(e) {
     e.preventDefault();
     aviso.limpiar();
@@ -156,7 +137,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
       <h2>{editando ? "Editar urgencia" : "Ingresar urgencia"}</h2>
       <Mensaje mensaje={aviso.mensaje} />
 
-      {/* ETAPA 1 — DNI. Enter y el botón «Buscar» son el mismo envío del mismo formulario */}
       {editando ? (
         <input className="campo" type="text" value={dni} disabled />
       ) : (
@@ -183,7 +163,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
         </p>
       )}
 
-      {/* ETAPA 2 — Datos de la urgencia: aparece recién cuando el DNI ya fue procesado */}
       {busqueda && (
         <form className="form-col form-etapa2" onSubmit={handleSubmit}>
           <input className="campo" type="text" placeholder="Nombre" value={nombre} disabled={pacienteExiste} onChange={(e) => setNombre(e.target.value)} />
@@ -204,7 +183,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
             onChange={(e) => setMotivo(e.target.value)}
           />
 
-          {/* Se escribe y la lista se filtra sola; si lo escrito no está, se elige «Otro» */}
           <BuscadorTipoUrgencia tipos={tipos} idTipo={idTipo} onChange={cambiarTipo} />
 
           {mostrarDetalle && (
@@ -221,7 +199,6 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
             </div>
           )}
 
-          {/* La prioridad se elige APARTE del tipo: la decide una persona */}
           <fieldset className="prioridad-selector">
             <legend>Prioridad</legend>
             {PRIORIDADES.map((p) => (

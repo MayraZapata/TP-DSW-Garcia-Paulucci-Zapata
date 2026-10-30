@@ -620,8 +620,7 @@ td button:last-child { margin-right: 0; }
 
 /* ---------- Guardia / Urgencias ---------- */
 
-/* Cada prioridad define sus colores en variables; las usan el chip, la tarjeta, el selector y la fila del historial.
-   Se eligieron pares de color de texto y fondo con buen contraste (el amarillo lleva texto oscuro). */
+/* Cada prioridad define sus colores en variables */
 .prioridad-rojo     { --prio: #C62828; --prio-texto: #FFFFFF; --prio-suave: #FDECEA; --prio-borde: #C62828; }
 .prioridad-amarillo { --prio: #FFC928; --prio-texto: #3B2F1E; --prio-suave: #FFF6D6; --prio-borde: #B38600; }
 .prioridad-verde    { --prio: #2E7D32; --prio-texto: #FFFFFF; --prio-suave: #E8F5E9; --prio-borde: #2E7D32; }
@@ -689,6 +688,50 @@ textarea.campo { resize: vertical; }
 .ayuda-paciente { margin: 0; padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
 .ayuda-ok { background: #E8F5E9; color: #1B5E20; }
 .ayuda-nuevo { background: #FFF6D6; color: #5D4300; }
+
+/* Buscador de tipo de urgencia (combo con búsqueda) */
+.form-etapa2 { gap: 12px; }
+
+.combo-tipo { position: relative; }
+.combo-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  margin: 4px 0 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+.combo-opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--texto-oscuro);
+  cursor: pointer;
+}
+.combo-opcion small {
+  color: var(--texto-suave);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.combo-opcion small.combo-nota { white-space: normal; }
+.combo-opcion.activa { background: #FFF1D6; }
+.combo-opcion-otro { margin-top: 4px; border-top: 1px dashed var(--borde); border-radius: 0 0 8px 8px; }
+.combo-vacio { padding: 10px 12px; font-size: 13px; color: var(--texto-suave); }
+.combo-ayuda { margin: 6px 0 0; font-size: 12px; color: var(--texto-suave); }
+
 
 /* Campo que aparece solo si el tipo de urgencia es "Otro" */
 .campo-condicional { display: flex; flex-direction: column; gap: 6px; }

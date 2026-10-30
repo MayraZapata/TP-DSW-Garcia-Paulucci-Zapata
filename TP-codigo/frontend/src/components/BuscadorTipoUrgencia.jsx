@@ -1,16 +1,9 @@
 import { useId, useState } from "react";
 import { esTipoOtro, normalizarTexto } from "../utils/tiposUrgencia";
 
-// Campo para elegir el tipo de urgencia ESCRIBIENDO: la lista se filtra sola mientras se tipea
-// (sin tildes ni mayúsculas), en vez de recorrer un desplegable largo.
-//   - Si lo que se escribe no está en la lista, aparece la opción «Otro»: al elegirla, lo escrito
-//     pasa a ser la descripción de la urgencia (la persona puede corregirla).
-//   - Se maneja con el mouse o con el teclado: flechas para moverse, Enter para elegir, Esc para cerrar.
-// Props: tipos (lista de la tabla TipoUrgencia), idTipo (el elegido, o ""),
-//        onChange(idTipo, textoEscrito) cuando se elige o se suelta un tipo.
 export default function BuscadorTipoUrgencia({ tipos, idTipo, onChange }) {
   const idLista = useId();
-  // null = se muestra el nombre del tipo elegido | texto = lo que la persona está escribiendo
+  
   const [escribiendo, setEscribiendo] = useState(null);
   const [abierto, setAbierto] = useState(false);
   const [activo, setActivo] = useState(0);
@@ -20,9 +13,6 @@ export default function BuscadorTipoUrgencia({ tipos, idTipo, onChange }) {
   const consulta = normalizarTexto(escribiendo);
   const otro = tipos.find(esTipoOtro);
 
-  // Opciones de la lista: los tipos que coinciden con lo escrito, y «Otro» siempre al final.
-  // «Otro» ofrece "usar lo escrito como descripción" solo cuando hay texto y NADA coincide
-  // (si lo escrito es «otro» o «ot», se está buscando ese tipo y no hay nada que usar como descripción).
   const coincidencias = tipos.filter((t) => !esTipoOtro(t) && normalizarTexto(t.nombre).includes(consulta));
   const otroCoincide = Boolean(otro) && normalizarTexto(otro.nombre).includes(consulta);
   const sinResultados = consulta !== "" && coincidencias.length === 0 && !otroCoincide;
@@ -43,7 +33,7 @@ export default function BuscadorTipoUrgencia({ tipos, idTipo, onChange }) {
     setEscribiendo(valor);
     setAbierto(true);
     setActivo(0);
-    // Al tocar el texto se suelta el tipo elegido: así el texto y el tipo nunca quedan desfasados
+    
     if (elegido) onChange("", "");
   }
 
@@ -56,7 +46,6 @@ export default function BuscadorTipoUrgencia({ tipos, idTipo, onChange }) {
       e.preventDefault();
       setActivo(Math.max(posicionActiva - 1, 0));
     } else if (e.key === "Enter" && abierto) {
-      // Con la lista abierta, Enter ELIGE la opción marcada; no envía el formulario
       e.preventDefault();
       if (opciones[posicionActiva]) elegir(opciones[posicionActiva]);
     } else if (e.key === "Escape") {
@@ -87,7 +76,6 @@ export default function BuscadorTipoUrgencia({ tipos, idTipo, onChange }) {
       {abierto && (
         <ul className="combo-lista" id={idLista} role="listbox">
           {opciones.map((op, i) => (
-            // onMouseDown (y no onClick) para elegir antes de que el campo pierda el foco y cierre la lista
             <li
               key={op.tipo.idTipo}
               id={`${idLista}-${i}`}

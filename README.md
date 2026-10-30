@@ -6,13 +6,10 @@
 * Paulucci, Gino - 53670
 * Zapata, Mayra Belén - 42969
 
-### Repositorios
-* [frontend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/TP-codigo/frontend)
-* [backend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/TP-codigo/backend)
-
-### Otros links
+### Algunos links
 * [Sistema hosteado](https://tp-dsw-garcia-paulucci-zapata.onrender.com)
 * [Video de funcionamiento]
+
 
 ## Tema
 ### Descripción
@@ -97,6 +94,14 @@ Atencion <|-- Urgencia
 
 
 ```
+
+### Notas para ejecución
+Administrador -  user: admin - contraseña: admin123
+Por cada usuario normal, sus nombres de usuario son posibles de ver en el listado.
+En base al Id, su contraseña será conformada por el nombre y 3 veces su repetición.
+Ejemplo: id: 1 - contraseña: uno111
+(matricula es id de medico. dni es id de paciente)
+
 
 
 ## Alcance Funcional 

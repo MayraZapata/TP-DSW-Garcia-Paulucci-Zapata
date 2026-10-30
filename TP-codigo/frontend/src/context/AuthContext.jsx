@@ -6,11 +6,9 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
     const [rol, setRol] = useState(null);
     const [usuario, setUsuario] = useState(null);
-    // true hasta que sepamos si hay sesión: evita que al recargar te mande al login por error
     const [cargando, setCargando] = useState(true);
 
     useEffect(() => {
-        // Restos de la versión anterior: ya no se guarda nada en localStorage
         localStorage.removeItem("rol");
         localStorage.removeItem("usuario");
 

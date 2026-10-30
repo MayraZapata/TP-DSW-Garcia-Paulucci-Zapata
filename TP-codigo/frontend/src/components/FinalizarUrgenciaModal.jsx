@@ -5,14 +5,12 @@ import useMensaje from "../hooks/useMensaje";
 import Mensaje from "./Mensaje";
 import PrioridadChip from "./PrioridadChip";
 
-// Ventana del MÉDICO para finalizar una urgencia: hay que dejar un diagnóstico.
-// Se puede elegir uno ya cargado o cargar uno NUEVO en el momento (queda guardado para otras atenciones;
-// el nombre no se puede repetir: si ya existe, el sistema avisa y se elige de la lista).
+
 export default function FinalizarUrgenciaModal({ urgencia, onCerrar, onFinalizada }) {
   const diagnosticos = useFetchList("/diagnosticos");
   const aviso = useMensaje();
 
-  const [modo, setModo] = useState("existente");   // "existente" | "nuevo"
+  const [modo, setModo] = useState("existente");  
   const [idDiagnostico, setIdDiagnostico] = useState("");
   const [nombreDiagnostico, setNombreDiagnostico] = useState("");
   const [tratamiento, setTratamiento] = useState("");

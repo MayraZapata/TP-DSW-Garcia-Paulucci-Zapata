@@ -9,7 +9,7 @@ import IngresoUrgenciaForm from "../components/IngresoUrgenciaForm";
 import FinalizarUrgenciaModal from "../components/FinalizarUrgenciaModal";
 import { PRIORIDADES } from "../config/prioridades";
 
-// Cada cuántos milisegundos se vuelve a pedir la lista al servidor
+
 const CADA_CUANTO_ACTUALIZAR = 5000;
 
 // "14:32:05" -> "14:32"
@@ -24,11 +24,7 @@ function haceCuanto(fechaAtencion, horaAtencion, ahora) {
   return `hace ${Math.floor(minutos / 60)} h ${minutos % 60} min`;
 }
 
-// Pantalla de la guardia.
-//  - ADMIN: ingresa las urgencias (formulario), puede editar o cancelar.
-//  - MEDICO: ve la lista y atiende al PRIMERO de la fila (cualquier médico, sin importar su especialidad) y lo finaliza.
-// La lista se actualiza sola y se reordena: primero por prioridad (rojo, amarillo, verde) y, dentro
-// de cada una, por hora de llegada.
+
 export default function Guardia() {
   const { rol, usuario } = useAuth();
   const aviso = useMensaje();

@@ -47,23 +47,7 @@ button {
     background-color: #f0f0f0;
 }
 
-.registro {
-    text-align: center;
-    margin-top: 15px;
-}
 
-.reg, .reg:visited {
-    color: black;
-    text-decoration: underline;
-    font-size: 16px;
-    display: inline-block;
-    transition: font-size 0.2s ease;
-}
-
-.reg:hover {
-    font-size: 17px;
-    color: black;
-}
 
 
 
