@@ -7,7 +7,7 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "tsc -p ./tsconfig.json && node --env-file=.env.development --test",
-    "start": "node --env-file=.env.production dist/server.js",
+    "start": "node --env-file=.env.development dist/server.js",
     "build": "tsc -p ./tsconfig.json",
     "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node --env-file=.env.development ./dist/server.js\"",
     "hash-passwords": "node --env-file=.env.development scripts/hash-passwords.mjs"
