@@ -19,6 +19,30 @@ DROP TABLE IF EXISTS `administrador`;
 
 
 
+
+/*
+USUARIOS PRECARGADOS: ------------------------------------------------------------------------------------
+    Tipo    |   Usuario     |   Contraseña
+    admin   |   admin       |    admin123
+    Paciente|   user1       |    uno111
+    Paciente|   user2       |    dos222
+    Paciente|   user3       |    tres333
+    Paciente|   user4       |    cuatro444
+    Paciente|   user5       |    cinco555
+    Paciente|   user6       |    seis666
+    Paciente|   user7       |    siete777
+    Medico  |   drHouse     |    uno111
+    Medico  |   drStrange   |    dos222
+    Medico  |   drGrey      |    tres333
+    Medico  |   drWatson    |    cuatro444
+    Medico  |   drWilson    |    cinco555
+    Medico  |   drCuddy     |    seis666
+    Medico  |   drRoss      |    siete777
+---------------------------------------------------------------------------------------------------------*/ 
+
+
+
+
 -- Especialidad
 CREATE TABLE IF NOT EXISTS especialidad (
 
@@ -54,13 +78,13 @@ CREATE TABLE IF NOT EXISTS paciente (
         REFERENCES ObraSocial(idObra)
 );
 INSERT INTO paciente (nombre, apellido, dni, nombreUsuario, password, idObra) VALUES
-('Juan', 'Perez', '47076568', 'user1', '$2b$10$6xTCxXPBjwqk6ijb7w6EaOCacIuGwP01ZCWeQIeaBt1wyyYvuM5ga', 1),
-('Marcelo', 'Tinelli', '7248513', 'user2', '$2b$10$Bec/VcJd5v2vuBNZxo8iieH1Saqmsta..rHWd62dTv8fgy1fWxmJS', null),
-('Roberto', 'Musso', '7915420', 'user3', '$2b$10$DY5TXLZRquumjOATQ1blo.yH7r6ZQ/.QsoJTYsk1MyEsayolXCgHq', 2),
-('Juanito', 'Alcachofa', '39135893', 'user4', '$2b$10$fRykTqA3CT7QbrNEBkfigunLHZhj986yZda0gpb75WIKQQitdWElK', 3),
-('Tim', 'Payne', '26156284', 'user5', '$2b$10$5YtewzjZSCYMMoeJm7Atn.eQwt/9hOooWPadpbqGklxucYRH4GpKK', 4),
-('Thomas ', 'Holland', '39641855', 'user6', '$2b$10$B1RUqQv4c/RbwvAriQgM1uJKGlunQAuj/ru1H8BvCsQHrlEnrwp/u', 2),
-('Stanley', 'Pines', '20154984', 'user7', '$2b$10$tYNLVFsknuKFrNpR4Dt9N.KNXyzdxIj2LqWo5rfZKJYRJgIZ.FLl6', null);
+('Juan', 'Perez', '47076568', 'user1', 'uno111', 1),
+('Marcelo', 'Tinelli', '7248513', 'user2', 'dos222', null),
+('Roberto', 'Musso', '7915420', 'user3', 'tres333', 2),
+('Juanito', 'Alcachofa', '39135893', 'user4', 'cuatro444', 3),
+('Tim', 'Payne', '26156284', 'user5', 'cinco555', 4),
+('Thomas ', 'Holland', '39641855', 'user6', 'seis666', 2),
+('Stanley', 'Pines', '20154984', 'user7', 'siete777', null);
 
 
 -- Medico
@@ -75,13 +99,13 @@ CREATE TABLE IF NOT EXISTS medico (
         REFERENCES especialidad(idEspecialidad)
 );
 INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES
-('Gregory', 'House', 'drHouse', '$2b$10$DaIQuaklGl7YY5Qi0ITybeHoR/N0ekMuPYI6UVAhuHmcuFWSiWHTS', 1),
-('Stephen', 'Strange', 'drStrange', '$2b$10$kJC7VOLGT66WuDAYk4qdvuxkQ64YxR8wLuCBDLw5mujgLp6YiPJuW', 4),
-('Meredith', 'Grey', 'drGrey', '$2b$10$yAhZssncSeSWmkR8EdmVjO45IYu3TjZdn/la.OZeGDuIlqAw9eivK', 4),
-('John', 'Watson', 'drWatson', '$2b$10$hhF04umuKIb2EIVpkXRq3OSYtWqe2HQgBpUQt4bsTP30gUJvk5Dwy', 2),
-('James', 'Wilson', 'drWilson', '$2b$10$rYM3X26iFKteVhjfayUiqek3920Q0FXnJJzUavhubOOR1WMNZMcie', 3),
-('Lisa', 'Cuddy', 'drCuddy', '$2b$10$NS6Y3RFU/d9dXh2RlbZE0ucnhUPkpexNpNClkHCuPxA57dkxoM3zG', 4),
-('Doug', 'Ross', 'drRoss', '$2b$10$9Beo2Px/NYf51Eu.cINni.EAu1sCXse/Yd3G8Z2R9gPLKk8CZWGk2', 3);
+('Gregory', 'House', 'drHouse', 'uno111', 1),
+('Stephen', 'Strange', 'drStrange', 'dos222', 4),
+('Meredith', 'Grey', 'drGrey', 'tres333', 4),
+('John', 'Watson', 'drWatson', 'cuatro444', 2),
+('James', 'Wilson', 'drWilson', 'cinco555', 3),
+('Lisa', 'Cuddy', 'drCuddy', 'seis666', 4),
+('Doug', 'Ross', 'drRoss', 'siete777', 3);
 
 
 -- Administrador
@@ -91,7 +115,7 @@ CREATE TABLE IF NOT EXISTS administrador (
     nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL
 );
-INSERT INTO administrador (nombre, nombreUsuario, password) VALUES ('Administrador Principal', 'admin', '$2b$10$EfMY7zz7/sGv1vgHgGZoFOf6nnY9JX6/ppYmiq7GTuf49Y0ewfGya');
+INSERT INTO administrador (nombre, nombreUsuario, password) VALUES ('Administrador Principal', 'admin', 'admin123');
 
 
 
@@ -140,15 +164,13 @@ CREATE TABLE IF NOT EXISTS atencion (
     fechaAtencion DATE NOT NULL,
     horaAtencion TIME NOT NULL,
     idPaciente INT NOT NULL,
-    matricula INT NULL,   /* una urgencia en espera todavía no tiene médico */
-    idDiagnostico INT,
-    idTipo INT NULL,   /* solo urgencias */
+    matricula INT NULL,   
+    idTipo INT NULL,  
     estado VARCHAR(20),
-    /* Herencia de tabla única: esta tabla guarda Consultas (por turno) y Urgencias (por guardia) */
-    tipoAtencion VARCHAR(20) NOT NULL DEFAULT 'consulta',   /* 'consulta' o 'urgencia' */
-    motivo VARCHAR(300) NULL,                               /* solo urgencias */
-    prioridad ENUM('rojo','amarillo','verde') NULL,         /* solo urgencias; el orden del ENUM es el orden de atención */
-    detalleTipo VARCHAR(150) NULL,                          /* solo urgencias de tipo «Otro»: descripción opcional */
+    tipoAtencion VARCHAR(20) NOT NULL DEFAULT 'consulta',   
+    motivo VARCHAR(300) NULL,                               
+    prioridad ENUM('rojo','amarillo','verde') NULL,         
+    detalleTipo VARCHAR(150) NULL,                          
     INDEX idx_atencion_guardia (tipoAtencion, estado, prioridad, fechaAtencion, horaAtencion),
     FOREIGN KEY(idPaciente)
         REFERENCES paciente(idPaciente),
