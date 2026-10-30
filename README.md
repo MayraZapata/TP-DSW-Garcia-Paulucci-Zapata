@@ -7,8 +7,12 @@
 * Zapata, Mayra Belén - 42969
 
 ### Repositorios
-* [frontend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/tree/main/frontend)
-* [backend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/tree/main/backend)
+* [frontend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/frontend)
+* [backend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/backend)
+
+### Otros links
+* [Sistema hosteado](https://tp-dsw-garcia-paulucci-zapata.onrender.com)
+* [Video de funcionamiento]
 
 ## Tema
 ### Descripción
@@ -20,41 +24,41 @@ El sistema propuesto es una aplicación web destinada a la gestión de turnos m�
 classDiagram
 class Paciente {
   idPaciente
-  nombrePaciente
-  apellidoPaciente
-  direccion
-  telefono
-  historialClinico
-  fechaNacimiento
-  nroDni
+  nombre
+  apellido
+  dni
 }
 
 class Medico {
   matricula
-  nombreMedico
-  apellidoMedico
+  nombre
+  apellido
 }
 
 class Especialidad {
   idEspecialidad
-  nombre
+  nombreEspecialidad
   descripción
 }
 
 class Atencion {
   idAtencion
+  tipoAtencion
   fechaAtencion
   horaAtencion
-}
-
-class Consulta {
   estado
 }
 
-class Urgencia {}
+class Consulta {}
+
+class Urgencia {
+  motivo
+  prioridad
+}
 
 class TipoUrgencia {
   idTipo
+  nombre
   descripciónTipo
 }
 
@@ -72,11 +76,12 @@ class ObraSocial {
 
 class Usuario {
   contraseña
-  idUsuario
   nombreUsuario
 }
 
-class Administrador {}
+class Administrador {
+  idAdministrador
+}
 
 Usuario <|-- Paciente
 Usuario <|-- Administrador
