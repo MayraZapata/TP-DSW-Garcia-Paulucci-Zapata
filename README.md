@@ -6,14 +6,23 @@
 * Paulucci, Gino - 53670
 * Zapata, Mayra Belén - 42969
 
-### Algunos links
-* [Sistema hosteado](https://tp-dsw-garcia-paulucci-zapata.onrender.com)
-* [Video de funcionamiento]
-
-
 ## Tema
 ### Descripción
-El sistema propuesto es una aplicación web destinada a la gestión de turnos médicos para un centro de salud. Permite administrar las atenciones entre pacientes y médicos, facilitando la asignación de turnos según disponibilidad y evitando superposición de horarios. La aplicación contempla distintos tipos de usuarios: los administradores registran a los medicos, visualizan el historial clinico del paciente y verifican los turnos vencidos (no asistidos), los pacientes pueden solicitar turnos y los profesionales acceden a la gestión y visualización de sus turnos y pacientes asignados. Además, permite clasificar las atenciones en consultas (las realizadas por turno) o en una urgencia que deba ser registrada por el administrador.
+El sistema propuesto es una aplicación web destinada a la gestión de turnos médicos y urgencias para un centro de salud. Permite administrar las atenciones entre pacientes y médicos, facilitando la asignación de turnos según disponibilidad. La aplicación contempla distintos tipos de usuarios: los administradores registran a los medicos, visualizan el historial clinico del paciente y verifican los turnos vencidos (no asistidos), los pacientes pueden solicitar turnos y los profesionales acceden a la gestión y visualización de sus turnos y pacientes asignados. Además, permite clasificar las atenciones en consultas (las realizadas por turno) o en una urgencia que deba ser registrada por el administrador.
+
+### Algunos links
+* [Sistema en linea](https://tp-dsw-garcia-paulucci-zapata.onrender.com)
+* [Video de funcionamiento](https://drive.google.com/file/d/1Sn8mysvs3T-qEsKqygFwAwCeOERsGKT1/view?usp=sharing)
+
+### Notas para ejecución
+* Administrador -  user: admin - contraseña: admin123
+* En los datos precargados: 
+* Por cada usuario normal, sus nombres de usuario son posibles de ver en el listado.
+* En base a la matricula, su contraseña será conformada por el nombre y 3 veces su repetición.
+* Ejemplo: matricula: 1 - contraseña: uno111 
+* En base al numero de usuario del paciente, su contraseña será conformada por el nombre y 3 veces su repetición.
+* Ejemplo: usuario: user1 - contraseña: uno111 
+
 
 ### Modelo de Dominio
 
@@ -94,14 +103,6 @@ Atencion <|-- Urgencia
 
 
 ```
-
-### Notas para ejecución
-* Administrador -  user: admin - contraseña: admin123
-* Por cada usuario normal, sus nombres de usuario son posibles de ver en el listado.
-* En base al Id, su contraseña será conformada por el nombre y 3 veces su repetición.
-* Ejemplo: id: 1 - contraseña: uno111 (matricula es id de medico. dni es id de paciente)
-
-
 
 ## Alcance Funcional 
 
