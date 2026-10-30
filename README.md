@@ -7,8 +7,8 @@
 * Zapata, Mayra Belén - 42969
 
 ### Repositorios
-* [frontend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/frontend)
-* [backend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/backend)
+* [frontend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/TP-codigo/frontend)
+* [backend app](https://github.com/MayraZapata/TP-DSW-Garcia-Paulucci-Zapata/main/TP-codigo/backend)
 
 ### Otros links
 * [Sistema hosteado](https://tp-dsw-garcia-paulucci-zapata.onrender.com)
