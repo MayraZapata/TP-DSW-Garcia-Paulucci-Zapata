@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `TipoUrgencia`;
 DROP TABLE IF EXISTS `diagnostico`;
 DROP TABLE IF EXISTS `ObraSocial`;
 DROP TABLE IF EXISTS `especialidad`;
-DROP TABLE IF EXISTS `administrador`;
+DROP TABLE IF EXISTS `usuario`;
 
 
 
@@ -43,6 +43,27 @@ USUARIOS PRECARGADOS: ----------------------------------------------------------
 
 
 
+
+-- Usuario
+CREATE TABLE IF NOT EXISTS usuario (
+    idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    rol ENUM('ADMIN','MEDICO','PACIENTE') NOT NULL
+);
+INSERT INTO usuario (nombreUsuario, password, rol) VALUES
+('admin', 'admin123', 'ADMIN'),
+('user1', 'uno111', 'PACIENTE'), ('user2', 'dos222', 'PACIENTE'), ('user3', 'tres333', 'PACIENTE'),
+('user4', 'cuatro444', 'PACIENTE'), ('user5', 'cinco555', 'PACIENTE'), ('user6', 'seis666', 'PACIENTE'),
+('user7', 'siete777', 'PACIENTE'),
+('drHouse', 'uno111', 'MEDICO'), ('drStrange', 'dos222', 'MEDICO'), ('drGrey', 'tres333', 'MEDICO'),
+('drWatson', 'cuatro444', 'MEDICO'), ('drWilson', 'cinco555', 'MEDICO'), ('drCuddy', 'seis666', 'MEDICO'),
+('drRoss', 'siete777', 'MEDICO');
+
+
+
+
+
 -- Especialidad
 CREATE TABLE IF NOT EXISTS especialidad (
 
@@ -64,58 +85,49 @@ CREATE TABLE IF NOT EXISTS ObraSocial (
 INSERT INTO ObraSocial (nombreObra, monto) VALUES ('Previnca', 1200.00), ('OSDE', 1500.00), ('Swiss Medical', 2000.00), ('Medife', 1800.00), ('Sancor Salud', 1400.00);
 
 
+
+
 -- Paciente
 CREATE TABLE IF NOT EXISTS paciente (
     idPaciente INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT NOT NULL UNIQUE,
     nombre VARCHAR(50) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
     dni VARCHAR(20) NOT NULL,   /* siempre sin puntos ni espacios */
-    nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
     idObra INT,
     UNIQUE KEY uq_paciente_dni (dni),
-    FOREIGN KEY(idObra)
-        REFERENCES ObraSocial(idObra)
+    FOREIGN KEY(idUsuario) REFERENCES usuario(idUsuario),
+    FOREIGN KEY(idObra) REFERENCES ObraSocial(idObra)
 );
-INSERT INTO paciente (nombre, apellido, dni, nombreUsuario, password, idObra) VALUES
-('Juan', 'Perez', '47076568', 'user1', 'uno111', 1),
-('Marcelo', 'Tinelli', '7248513', 'user2', 'dos222', null),
-('Roberto', 'Musso', '7915420', 'user3', 'tres333', 2),
-('Juanito', 'Alcachofa', '39135893', 'user4', 'cuatro444', 3),
-('Tim', 'Payne', '26156284', 'user5', 'cinco555', 4),
-('Thomas ', 'Holland', '39641855', 'user6', 'seis666', 2),
-('Stanley', 'Pines', '20154984', 'user7', 'siete777', null);
+INSERT INTO paciente (nombre, apellido, dni, idUsuario, idObra) VALUES
+('Juan', 'Perez', '47076568', 2, 1),
+('Marcelo', 'Tinelli', '7248513', 3, null),
+('Roberto', 'Musso', '7915420', 4, 2),
+('Juanito', 'Alcachofa', '39135893', 5, 3),
+('Tim', 'Payne', '26156284', 6, 4),
+('Thomas ', 'Holland', '39641855', 7, 2),
+('Stanley', 'Pines', '20154984', 8, null);
+
 
 
 -- Medico
 CREATE TABLE IF NOT EXISTS medico (
     matricula INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT NOT NULL UNIQUE,
     nombre VARCHAR(50) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
-    nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
     idEspecialidad INT,
-    FOREIGN KEY(idEspecialidad)
-        REFERENCES especialidad(idEspecialidad)
+    FOREIGN KEY(idUsuario) REFERENCES usuario(idUsuario),
+    FOREIGN KEY(idEspecialidad) REFERENCES especialidad(idEspecialidad)
 );
-INSERT INTO medico (nombre, apellido, nombreUsuario, password, idEspecialidad) VALUES
-('Gregory', 'House', 'drHouse', 'uno111', 1),
-('Stephen', 'Strange', 'drStrange', 'dos222', 4),
-('Meredith', 'Grey', 'drGrey', 'tres333', 4),
-('John', 'Watson', 'drWatson', 'cuatro444', 2),
-('James', 'Wilson', 'drWilson', 'cinco555', 3),
-('Lisa', 'Cuddy', 'drCuddy', 'seis666', 4),
-('Doug', 'Ross', 'drRoss', 'siete777', 3);
-
-
--- Administrador
-CREATE TABLE IF NOT EXISTS administrador (
-    idAdministrador INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL
-);
-INSERT INTO administrador (nombre, nombreUsuario, password) VALUES ('Administrador Principal', 'admin', 'admin123');
+INSERT INTO medico (nombre, apellido, idUsuario, idEspecialidad) VALUES
+('Gregory', 'House', 9, 1),
+('Stephen', 'Strange', 10, 4),
+('Meredith', 'Grey', 11, 4),
+('John', 'Watson', 12, 2),
+('James', 'Wilson', 13, 3),
+('Lisa', 'Cuddy', 14, 4),
+('Doug', 'Ross', 15, 3);
 
 
 
@@ -164,7 +176,8 @@ CREATE TABLE IF NOT EXISTS atencion (
     fechaAtencion DATE NOT NULL,
     horaAtencion TIME NOT NULL,
     idPaciente INT NOT NULL,
-    matricula INT NULL,   
+    matricula INT NULL,
+	idDiagnostico INT NULL,
     idTipo INT NULL,  
     estado VARCHAR(20),
     tipoAtencion VARCHAR(20) NOT NULL DEFAULT 'consulta',   

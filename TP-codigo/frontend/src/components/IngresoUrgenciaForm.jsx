@@ -29,7 +29,7 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
   const pacienteExiste = busqueda?.existe === true;
   const mostrarDetalle = esTipoOtro(tipos.find((t) => String(t.idTipo) === String(idTipo)));
 
-  
+  //Esta función se ejecuta cuando el usuario cambia el tipo de urgencia.
   function cambiarTipo(valor, textoEscrito = "") {
     const nuevo = tipos.find((t) => String(t.idTipo) === String(valor));
     setIdTipo(valor);
@@ -50,6 +50,7 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
     }
   }
 
+  //Esta función consulta al backend para saber si existe un paciente con ese DNI.
   async function buscar() {
     if (buscando) return;
     aviso.limpiar();
@@ -83,6 +84,7 @@ export default function IngresoUrgenciaForm({ urgencia, onGuardado, onCancelarEd
     buscar();
   }
 
+  //Esta función limpia todos los campos del formulario.
   function limpiar() {
     setDni("");
     setBusqueda(null);

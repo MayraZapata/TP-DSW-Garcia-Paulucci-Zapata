@@ -50,7 +50,7 @@ export const loginRouter = Router();
  *     tags: [Login]
  *     summary: Iniciar sesión
  *     description: >
- *       Valida usuario y contraseña (se busca en pacientes, médicos y administradores).
+ *       Valida usuario y contraseña.
  *       Si son correctos, el servidor guarda el token JWT en una cookie httpOnly.
  *     requestBody:
  *       required: true

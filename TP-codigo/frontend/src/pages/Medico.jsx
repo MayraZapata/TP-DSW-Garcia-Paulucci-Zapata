@@ -33,7 +33,7 @@ export default function Medico() {
     setMatricula(medico.matricula);
     setNombre(medico.nombre || "");
     setApellido(medico.apellido || "");
-    setNombreUsuario(medico.nombreUsuario || "");
+    setNombreUsuario(medico.usuario?.nombreUsuario || "");
     setPassword("");
     setIdEspecialidad(medico.especialidad?.idEspecialidad || "");
     editar(matriculaMedico);
@@ -117,7 +117,7 @@ export default function Medico() {
                   <strong>Dr/a. {medico.nombre} {medico.apellido}</strong>
                   <p style={{ margin: "6px 0 0" }}>
                     Matrícula: {medico.matricula}<br />
-                    Usuario: {medico.nombreUsuario}<br />
+                    Usuario: {medico.usuario?.nombreUsuario}<br />
                     Especialidad: {medico.especialidad?.nombreEspecialidad}
                   </p>
                   <div className="item-card-acciones">

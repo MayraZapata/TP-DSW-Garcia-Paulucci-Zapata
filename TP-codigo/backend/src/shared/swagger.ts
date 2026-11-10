@@ -20,7 +20,6 @@ export const swaggerSpec = swaggerJsdoc({
             { name: "Login", description: "Sesión y contraseña" },
             { name: "Pacientes", description: "ABM de pacientes y registro" },
             { name: "Médicos", description: "ABM de médicos" },
-            { name: "Administradores", description: "Consulta de administradores" },
             { name: "Especialidades", description: "Catálogo de especialidades" },
             { name: "Obras Sociales", description: "Catálogo de obras sociales" },
             { name: "Atenciones", description: "Turnos y atenciones médicas" },

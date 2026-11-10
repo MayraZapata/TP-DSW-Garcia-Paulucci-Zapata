@@ -1,12 +1,11 @@
 import { orm } from "../../shared/orm.js";
 import { ErrorNegocio } from "../../shared/errorNegocio.js";
-import { hashPassword } from "../../shared/password.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../shared/dni.js";
 
 import { Paciente } from "./paciente.entity.js";
 import * as obraSocialService from "../obraSocial/obraSocial.service.js";
-import { existeUsuario } from "../existeUsuario.js";
 import { Atencion } from "../../turno/atencion/Atencion.entity.js";
+import { crearUsuario, cambiarNombreUsuario } from "../usuario/usuario.service.js";
 
 const em = orm.em;
 
@@ -62,13 +61,7 @@ export async function obtener(id: number) {
 
 //add
 export async function crear(datos: any) {
-    if (!datos.nombreUsuario)
-        throw new ErrorNegocio(400, "El nombre de usuario es obligatorio");
-    if (await existeUsuario(datos.nombreUsuario))
-        throw new ErrorNegocio(400, "El nombre de usuario ya existe");
 
-    if (!datos.password)
-        throw new ErrorNegocio(400, "La contraseña es obligatoria");
     if (!datos.nombre || !datos.apellido)
         throw new ErrorNegocio(400, "El nombre y el apellido son obligatorios");
 
@@ -81,58 +74,50 @@ export async function crear(datos: any) {
     if (datos.idObra)
         obraSocial = await obraSocialService.obtener(Number(datos.idObra));
 
+    const usuario = await crearUsuario(em, { nombreUsuario: datos.nombreUsuario, password: datos.password }, "PACIENTE");
+
     const paciente = em.create(Paciente, {
+        usuario,
         nombre: datos.nombre,
         apellido: datos.apellido,
         dni,
-        nombreUsuario: datos.nombreUsuario,
-        password: await hashPassword(datos.password),
         obraSocial,
     });
 
     em.persist(paciente);
-    await guardar();
+    await guardar();  
 
     return paciente;
 }
 
 
-
 //update
-export async function actualizar(id: number, body: any) {
+export async function actualizar(id: number, datos: any) {
     const paciente = await obtener(id);
 
-    // La contraseña NO se cambia por acá 
-    const { password, ...datos } = body;
+    if (datos.nombreUsuario !== undefined) {
+        if (!datos.nombreUsuario)
+            throw new ErrorNegocio(400, "El nombre de usuario no puede estar vacío");
+        await cambiarNombreUsuario(em, paciente.usuario, datos.nombreUsuario);
+    }
 
-    //validacion de nombre de usuario
-    if (datos.nombreUsuario !== undefined && datos.nombreUsuario !== paciente.nombreUsuario) {
-    if (!datos.nombreUsuario)
-        throw new ErrorNegocio(400, "El nombre de usuario no puede estar vacío");
-    if (await existeUsuario(datos.nombreUsuario))
-        throw new ErrorNegocio(400, "El nombre de usuario ya existe");
-}
-
-    // se normaliza dni y no puede ser de OTRO paciente 
     if (datos.dni !== undefined) {
         const dni = dniValido(datos.dni);
         const otro = await buscarPacientePorDni(em, dni);
         if (otro && otro.idPaciente !== paciente.idPaciente)
             throw new ErrorNegocio(400, "Ya existe un paciente con ese DNI");
-        datos.dni = dni;
+        paciente.dni = dni;
     }
 
-    let obraSocial = null;
-    if (datos.idObra)
-        obraSocial = await obraSocialService.obtener(Number(datos.idObra));
+    if (datos.nombre !== undefined) paciente.nombre = datos.nombre;
+    if (datos.apellido !== undefined) paciente.apellido = datos.apellido;
 
-    em.assign(paciente, datos);
-    paciente.obraSocial = obraSocial;   // sin idObra, queda sin obra social
+
+    paciente.obraSocial = datos.idObra ? await obraSocialService.obtener(Number(datos.idObra)) : null;
     await guardar();
 
     return paciente;
 }
-
 
 
 //delete

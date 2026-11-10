@@ -1,7 +1,6 @@
 import { LockMode, QueryOrder } from "@mikro-orm/core";
 import { orm } from "../../shared/orm.js";
 import { ErrorNegocio } from "../../shared/errorNegocio.js";
-import { hashPassword } from "../../shared/password.js";
 import { normalizarDni, validarDni, buscarPacientePorDni, esErrorDniDuplicado } from "../../shared/dni.js";
 import type { Rol } from "../../shared/jwt.js";
 
@@ -12,7 +11,7 @@ import { Diagnostico } from "../diagnostico/diagnostico.entity.js";
 import { Paciente } from "../../usuarios/paciente/paciente.entity.js";
 import { Medico } from "../../usuarios/medico/medico.entity.js";
 import { ObraSocial } from "../../usuarios/obraSocial/obraSocial.entity.js";
-import { existeUsuario } from "../../usuarios/existeUsuario.js";
+import { crearUsuario, nombreUsuarioLibre } from "../../usuarios/usuario/usuario.service.js";
 
 const em = orm.em;
 
@@ -189,18 +188,14 @@ export async function crear(datos: any) {
                     throw new ErrorNegocio(404, "Obra Social inexistente");
             }
 
-            // El nombre de usuario es el DNI: tiene que estar libre entre pacientes, médicos y administradores
-            if (await existeUsuario(dni))
+                        // El nombre de usuario es el DNI: tiene que estar libre (ahora hay una sola tabla de usuarios)
+            if (!(await nombreUsuarioLibre(tx, dni)))
                 throw new ErrorNegocio(400, "Ya existe un usuario con nombre de usuario igual a ese DNI. Cargá al paciente desde Gestión de Pacientes con otro usuario");
 
-            paciente = tx.create(Paciente, {
-                nombre,
-                apellido,
-                dni,
-                nombreUsuario: dni,
-                password: await hashPassword(dni),   // contraseña inicial = DNI, encriptada
-                obraSocial,
-            });
+            // contraseña inicial = DNI (crearUsuario la encripta)
+            const usuario = await crearUsuario(tx, { nombreUsuario: dni, password: dni }, "PACIENTE");
+
+            paciente = tx.create(Paciente, { nombre, apellido, dni, usuario, obraSocial });
             pacienteNuevo = true;
         }
 

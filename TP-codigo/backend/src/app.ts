@@ -14,7 +14,6 @@ import { especialidadRouter } from "./usuarios/especialidad/especialidad.routes.
 import { obraSocialRouter } from "./usuarios/obraSocial/obraSocial.routes.js";
 import { medicoRouter } from "./usuarios/medico/medico.routes.js";
 import { pacienteRouter } from "./usuarios/paciente/paciente.routes.js";
-import { administradorRouter } from "./usuarios/administrador/administrador.routes.js";
 import { loginRouter } from "./login/login.routes.js";
 import { consultaRouter } from "./turno/consulta/consulta.routes.js";
 import { diagnosticoRouter } from "./turno/diagnostico/diagnostico.routes.js";
@@ -52,7 +51,6 @@ app.use("/api/especialidades", especialidadRouter );
 app.use("/api/medicos",medicoRouter);
 app.use("/api/pacientes", pacienteRouter);
 app.use("/api/obrasSociales", obraSocialRouter);
-app.use("/api/administradores", administradorRouter);
 app.use("/api/consultas", consultaRouter);
 app.use("/api/diagnosticos", diagnosticoRouter);
 app.use("/api/tiposUrgencia", tipoUrgenciaRouter);

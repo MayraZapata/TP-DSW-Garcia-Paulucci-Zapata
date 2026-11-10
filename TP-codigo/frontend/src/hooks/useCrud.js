@@ -11,8 +11,6 @@ export default function useCrud(endpoint) {
   }, [endpoint]);
 
   useEffect(() => {
-    // Cargar datos al montar es el uso oficial de useEffect
-    // (sincronizar con un sistema externo: el backend).
     // eslint-disable-next-line
     cargar();
   }, [cargar]);

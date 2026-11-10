@@ -4,7 +4,8 @@ export type Rol = "ADMIN" | "MEDICO" | "PACIENTE";
 
 export interface TokenPayload {
     rol: Rol;
-    id: number; 
+    id: number;       
+    idUsuario: number;
 }
 
 const SECRET = process.env.JWT_SECRET;

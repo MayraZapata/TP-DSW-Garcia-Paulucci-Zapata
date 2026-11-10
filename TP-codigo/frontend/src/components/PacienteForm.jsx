@@ -12,7 +12,7 @@ function desdePaciente(p) {
     nombre: p.nombre || "",
     apellido: p.apellido || "",
     dni: p.dni || "",
-    nombreUsuario: p.nombreUsuario || "",
+    nombreUsuario: p.usuario?.nombreUsuario || "",
     password: "",
     idObra: p.obraSocial?.idObra ?? "",
   };

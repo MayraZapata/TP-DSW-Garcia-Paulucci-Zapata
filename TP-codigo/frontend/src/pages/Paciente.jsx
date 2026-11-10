@@ -60,7 +60,7 @@ export default function Paciente() {
                   <strong>{p.nombre} {p.apellido}</strong>
                   <p style={{ margin: "6px 0 0" }}>
                     DNI: {p.dni || "N/A"}<br />
-                    Usuario: {p.nombreUsuario}<br />
+                    Usuario: {p.usuario?.nombreUsuario}<br />
                     Obra Social: {p.obraSocial?.nombreObra ?? "Sin obra social"}
                   </p>
                   <div className="item-card-acciones">

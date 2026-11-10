@@ -5,11 +5,7 @@ if (!process.env.DB_URL) {throw new Error("Falta DB_URL. Ejecutalo con: pnpm has
 
 const db = await mysql.createConnection(process.env.DB_URL);
 
-const tablas = [
-    { tabla: "paciente", id: "idPaciente" },
-    { tabla: "medico", id: "matricula" },
-    { tabla: "administrador", id: "idAdministrador" },
-];
+const tablas = [{ tabla: "usuario", id: "idUsuario" }];
 
 for (const { tabla, id } of tablas) {
     const [filas] = await db.query(`SELECT ${id} AS id, password FROM ${tabla}`);

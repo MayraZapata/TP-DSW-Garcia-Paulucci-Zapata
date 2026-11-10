@@ -9,16 +9,16 @@ export async function login(req: Request, res: Response) {
     const { usuario, password } = req.body ?? {};
 
     const sesion = await loginService.autenticar(usuario, password);
-    const token = firmarToken({ rol: sesion.rol, id: sesion.id });
+    const token = firmarToken({ rol: sesion.rol, id: sesion.id, idUsuario: sesion.idUsuario });
     res.cookie(COOKIE_NAME, token, opcionesCookie);
 
     res.json({ rol: sesion.rol, usuario: sesion.usuario });
 }
 
+
 // Devuelve la sesión actual
 export async function me(req: Request, res: Response) {
-    const { rol, id } = req.auth!;
-    res.json(await loginService.obtenerSesion(rol, id));
+    res.json(await loginService.obtenerSesion(req.auth!.idUsuario));
 }
 
 
@@ -33,7 +33,7 @@ export function logout(_req: Request, res: Response) {
 export async function cambiarPassword(req: Request, res: Response) {
     const { passwordActual, passwordNueva } = req.body ?? {};
 
-    await loginService.cambiarPassword(req.auth!.rol, req.auth!.id, passwordActual, passwordNueva);
+    await loginService.cambiarPassword(req.auth!.idUsuario, passwordActual, passwordNueva);
 
     res.json({ message: "Contraseña actualizada" });
 }

@@ -1,6 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
-// AuthContext registra acá qué hacer cuando el servidor dice "tu sesión venció"
+// AuthContext registra qué hacer cuando el servidor dice "tu sesión venció"
 let alExpirarSesion = null;
 export function registrarAlExpirarSesion(fn) {
     alExpirarSesion = fn;

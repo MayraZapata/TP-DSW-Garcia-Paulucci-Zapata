@@ -1,14 +1,20 @@
-import { Entity, PrimaryKey, Property, ManyToOne, OneToMany, Collection } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property, ManyToOne, OneToOne, Cascade } from "@mikro-orm/core";
 
 import { ObraSocial } from "../obraSocial/obraSocial.entity.js";
-//import { Atencion } from "../../turno/atencion/Atencion.entity.js";
-import { Usuario } from "../usuario.abstract.js";
+import { Usuario } from "../usuario/usuario.entity.js";
 
 @Entity()
-export class Paciente extends Usuario {
+export class Paciente {
 
     @PrimaryKey({ fieldName: "idPaciente" })
-    idPaciente?: number;     
+    idPaciente?: number;
+
+    //al guardar/borrar el paciente, también su Usuario.
+    @OneToOne(() => Usuario, {
+        fieldName: "idUsuario", owner: true, eager: true,
+        cascade: [Cascade.PERSIST, Cascade.REMOVE],
+    })
+    usuario!: Usuario;
 
     @Property()
     nombre!: string;
@@ -21,6 +27,4 @@ export class Paciente extends Usuario {
 
     @ManyToOne(() => ObraSocial, { fieldName: "idObra", nullable: true })
     obraSocial?: ObraSocial | null;
-
-
 }

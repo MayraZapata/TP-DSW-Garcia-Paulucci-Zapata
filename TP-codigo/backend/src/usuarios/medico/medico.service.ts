@@ -1,11 +1,12 @@
 import { orm } from "../../shared/orm.js";
 import { ErrorNegocio } from "../../shared/errorNegocio.js";
-import { hashPassword } from "../../shared/password.js";
+
 
 import { Medico } from "./medico.entity.js";
 import * as especialidadService from "../especialidad/especialidad.service.js";
-import { existeUsuario } from "../existeUsuario.js";
 import { Atencion } from "../../turno/atencion/Atencion.entity.js";
+import { crearUsuario, cambiarNombreUsuario, establecerPassword } from "../usuario/usuario.service.js";
+
 
 const em = orm.em;
 
@@ -52,24 +53,17 @@ export async function crear(datos: any) {
 
     if (!datos.nombre || !datos.apellido)
         throw new ErrorNegocio(400, "El nombre y el apellido son obligatorios");
-    if (!datos.nombreUsuario)
-        throw new ErrorNegocio(400, "El nombre de usuario es obligatorio");
-    if (!datos.password)
-        throw new ErrorNegocio(400, "La contraseña es obligatoria");
     if (!datos.idEspecialidad)
         throw new ErrorNegocio(400, "La especialidad es obligatoria");
 
-    if (await existeUsuario(datos.nombreUsuario))
-        throw new ErrorNegocio(400, "El nombre de usuario ya existe");
-
     const especialidad = await especialidadService.obtener(Number(datos.idEspecialidad));
+    const usuario = await crearUsuario(em, { nombreUsuario: datos.nombreUsuario, password: datos.password }, "MEDICO");
 
     const medico = em.create(Medico, {
         matricula,
+        usuario,
         nombre: datos.nombre,
         apellido: datos.apellido,
-        nombreUsuario: datos.nombreUsuario,
-        password: await hashPassword(datos.password),
         especialidad,
     });
 
@@ -79,34 +73,27 @@ export async function crear(datos: any) {
 }
 
 
-
 //update
 export async function actualizar(matricula: number, body: any) {
     const medico = await obtener(matricula);
 
-    // La matrícula es la clave primaria: se ignora si viene en el body
-    const { password, idEspecialidad, matricula: _ignorada, ...datos } = body;
+    const { nombreUsuario, password, nombre, apellido, idEspecialidad } = body;
 
-    if (datos.nombreUsuario !== undefined && datos.nombreUsuario !== medico.nombreUsuario) {
-    if (!datos.nombreUsuario)
-        throw new ErrorNegocio(400, "El nombre de usuario no puede estar vacío");
-    if (await existeUsuario(datos.nombreUsuario))
-        throw new ErrorNegocio(400, "El nombre de usuario ya existe");
-}
-
-    let especialidad = null;
+    if (nombreUsuario !== undefined) {
+        if (!nombreUsuario)
+            throw new ErrorNegocio(400, "El nombre de usuario no puede estar vacío");
+        await cambiarNombreUsuario(em, medico.usuario, nombreUsuario);
+    }
+    if (password) await establecerPassword(medico.usuario, password);
+    if (nombre !== undefined) medico.nombre = nombre;
+    if (apellido !== undefined) medico.apellido = apellido;
     if (idEspecialidad)
-        especialidad = await especialidadService.obtener(Number(idEspecialidad));
-
-    em.assign(medico, datos);
-    if (password) medico.password = await hashPassword(password);
-    if (especialidad) medico.especialidad = especialidad;
+        medico.especialidad = await especialidadService.obtener(Number(idEspecialidad));
 
     await em.flush();
 
     return medico;
 }
-
 
 
 //delete
