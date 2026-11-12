@@ -57,7 +57,7 @@ export async function crear(datos: any) {
         throw new ErrorNegocio(400, "La especialidad es obligatoria");
 
     const especialidad = await especialidadService.obtener(Number(datos.idEspecialidad));
-    const usuario = await crearUsuario(em, { nombreUsuario: datos.nombreUsuario, password: datos.password }, "MEDICO");
+    const usuario = await crearUsuario(em, datos.nombreUsuario, datos.password, "MEDICO");
 
     const medico = em.create(Medico, {
         matricula,

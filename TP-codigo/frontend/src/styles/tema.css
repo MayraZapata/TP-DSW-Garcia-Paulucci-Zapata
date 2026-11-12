@@ -4,19 +4,19 @@
 @import "./base/layout.css";
 
 /* Componentes reutilizables */
-@import "./componentes/botones.css";
-@import "./componentes/formularios.css";
-@import "./componentes/navbar.css";
-@import "./componentes/mensajes.css";
-@import "./componentes/modal.css";
-@import "./componentes/tabla.css";
-@import "./componentes/filtros.css";
-@import "./componentes/item-card.css";
+@import "./components/botones.css";
+@import "./components/formularios.css";
+@import "./components/navbar.css";
+@import "./components/mensajes.css";
+@import "./components/modal.css";
+@import "./components/tabla.css";
+@import "./components/filtros.css";
+@import "./components/item-card.css";
 
 /* Páginas */
-@import "./paginas/login.css";
-@import "./paginas/home.css";
-@import "./paginas/info.css";
-@import "./paginas/menu.css";
-@import "./paginas/gestion.css";
-@import "./paginas/guardia.css";
+@import "./pages/login.css";
+@import "./pages/home.css";
+@import "./pages/info.css";
+@import "./pages/menu.css";
+@import "./pages/gestion.css";
+@import "./pages/guardia.css";

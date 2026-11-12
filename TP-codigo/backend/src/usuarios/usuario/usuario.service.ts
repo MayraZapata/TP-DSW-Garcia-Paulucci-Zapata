@@ -3,7 +3,6 @@ import { ErrorNegocio } from "../../shared/errorNegocio.js";
 import { hashPassword } from "../../shared/password.js";
 import type { Rol } from "../../shared/jwt.js";
 import { Usuario } from "./usuario.entity.js";
-import { CrearUsuarioDto } from "./usuario.dto.js";
 
 //verificacion de disponibilidad de nombre de usuario
 export async function nombreUsuarioLibre(em: EntityManager, nombreUsuario: string): Promise<boolean> {
@@ -12,11 +11,11 @@ export async function nombreUsuarioLibre(em: EntityManager, nombreUsuario: strin
 
 
 // Crea la cuenta 
-export async function crearUsuario(em: EntityManager, dto: CrearUsuarioDto, rol: Rol): Promise<Usuario> {
-    const nombreUsuario = typeof dto.nombreUsuario === "string" ? dto.nombreUsuario.trim() : "";
+export async function crearUsuario(em: EntityManager, nombreUsuario: string, password: string, rol: Rol): Promise<Usuario> {
+    nombreUsuario = typeof nombreUsuario === "string" ? nombreUsuario.trim() : "";
     if (!nombreUsuario)
         throw new ErrorNegocio(400, "El nombre de usuario es obligatorio");
-    if (typeof dto.password !== "string" || !dto.password)
+    if (typeof password !== "string" || !password)
         throw new ErrorNegocio(400, "La contraseña es obligatoria");
 
     if (!(await nombreUsuarioLibre(em, nombreUsuario)))
@@ -24,7 +23,7 @@ export async function crearUsuario(em: EntityManager, dto: CrearUsuarioDto, rol:
 
     const usuario = em.create(Usuario, {
         nombreUsuario,
-        password: await hashPassword(dto.password),
+        password: await hashPassword(password),
         rol,
     });
     em.persist(usuario);

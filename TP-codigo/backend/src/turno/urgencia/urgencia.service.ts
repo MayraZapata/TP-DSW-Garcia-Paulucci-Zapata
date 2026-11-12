@@ -193,7 +193,7 @@ export async function crear(datos: any) {
                 throw new ErrorNegocio(400, "Ya existe un usuario con nombre de usuario igual a ese DNI. Cargá al paciente desde Gestión de Pacientes con otro usuario");
 
             // contraseña inicial = DNI (crearUsuario la encripta)
-            const usuario = await crearUsuario(tx, { nombreUsuario: dni, password: dni }, "PACIENTE");
+            const usuario = await crearUsuario(tx, dni, dni, "PACIENTE");
 
             paciente = tx.create(Paciente, { nombre, apellido, dni, usuario, obraSocial });
             pacienteNuevo = true;

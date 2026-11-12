@@ -74,7 +74,7 @@ export async function crear(datos: any) {
     if (datos.idObra)
         obraSocial = await obraSocialService.obtener(Number(datos.idObra));
 
-    const usuario = await crearUsuario(em, { nombreUsuario: datos.nombreUsuario, password: datos.password }, "PACIENTE");
+    const usuario = await crearUsuario(em, datos.nombreUsuario, datos.password, "PACIENTE");
 
     const paciente = em.create(Paciente, {
         usuario,
