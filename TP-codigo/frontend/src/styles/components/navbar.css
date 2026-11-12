@@ -1,0 +1,89 @@
+/* ---------- Navbar ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  height: 64px;
+  background: var(--degradado);
+  box-shadow: 0 2px 8px rgba(120, 70, 0, 0.2);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-oscuro);
+  text-decoration: none;
+}
+.nav-logo-icono { width: 24px; height: 24px; flex-shrink: 0; }
+.nav-derecha { display: flex; align-items: stretch; }
+.nav-links { display: flex; align-items: center; gap: 4px; padding-right: 16px; }
+.nav-links a {
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: #4A3200;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+}
+.nav-links a:hover { background: rgba(255, 255, 255, 0.35); }
+.nav-links a.activo { background: rgba(255, 255, 255, 0.55); }
+
+.nav-usuario {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  border-left: 1px solid rgba(43, 27, 0, 0.25);
+}
+.nav-avatar {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--texto-oscuro);
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav-avatar:hover { background: #fff; }
+.nav-avatar svg { width: 24px; height: 24px; }
+
+.nav-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 220px;
+  background: var(--superficie);
+  border-radius: 0 0 12px 12px;
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+.nav-menu button {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--texto);
+  cursor: pointer;
+}
+.nav-menu button:hover { background: #FFF0D6; }
+.nav-menu hr { margin: 0; border: none; border-top: 1px solid var(--borde); }
+
+@media (max-width: 760px) {
+  .nav { height: auto; flex-wrap: wrap; }
+  .nav-logo { padding: 12px 16px; font-size: 17px; }
+  .nav-links { order: 3; width: 100%; justify-content: center; padding: 0 0 8px; }
+  .nav-derecha { display: contents; }
+  .nav-usuario { padding: 0 16px; }
+}

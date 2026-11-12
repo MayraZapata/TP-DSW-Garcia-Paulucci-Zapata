@@ -1,0 +1,33 @@
+.campo {
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: #FFFDF8;
+  font-family: inherit;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+.campo:focus {
+  outline: none;
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 3px rgba(242, 154, 31, 0.25);
+}
+
+.form-col { display: flex; flex-direction: column; gap: 14px; }
+.info-sub { color: var(--texto-suave); margin: 0 0 8px; }
+.enlace { display: inline-block; margin-top: 12px; color: var(--enlace); font-weight: 700; text-decoration: none; }
+.enlace:hover { text-decoration: underline; }
+
+
+.buscador-box {
+  background: var(--superficie);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+
+/* Casilla (checkbox) de los formularios de gestión */
+.campo-check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+.campo-check input { width: auto; margin: 0; }

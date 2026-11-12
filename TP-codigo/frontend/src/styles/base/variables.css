@@ -1,0 +1,15 @@
+:root {
+  --naranja: #F29A1F;
+  --naranja-oscuro: #D9800A;
+  --enlace: #A85F00;
+  --degradado: linear-gradient(135deg, #F7C331 0%, #F0921A 100%);
+  --fondo: #FFF8EC;
+  --superficie: #FFFFFF;
+  --texto: #3B2F1E;
+  --texto-oscuro: #2B1B00;
+  --texto-suave: #7A6A55;
+  --borde: #EADFCB;
+  --peligro: #C0392B;
+  --radio: 12px;
+  --sombra: 0 4px 16px rgba(120, 70, 0, 0.12);
+}

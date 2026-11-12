@@ -1,0 +1,43 @@
+/* ---------- Home ---------- */
+.home { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 28px; }
+.hero, .banner {
+  background: var(--degradado);
+  border-radius: 20px;
+  color: var(--texto-oscuro);
+  box-shadow: var(--sombra);
+}
+.hero { padding: 48px 40px; }
+.hero h1 { margin: 0 0 12px; font-size: 36px; line-height: 1.15; }
+.hero p { margin: 0 0 24px; max-width: 560px; font-size: 17px; line-height: 1.55; }
+.hero .btn, .banner .btn { background: var(--texto-oscuro); color: #fff; }
+.hero .btn:hover, .banner .btn:hover { background: #4A3200; }
+
+.destacados { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.destacado {
+  padding: 24px;
+  background: var(--superficie);
+  border-radius: var(--radio);
+  border-top: 5px solid var(--naranja);
+  box-shadow: var(--sombra);
+}
+.destacado h3 { margin: 0 0 8px; }
+.destacado h3 { display: flex; align-items: center; gap: 8px; }
+.destacado h3 svg { width: 22px; height: 22px; flex-shrink: 0; }
+.destacado p { margin: 0; color: var(--texto-suave); line-height: 1.5; }
+.destacado {
+  transition: transform 0.15s, border-color 0.15s;
+}
+.destacado:hover { transform: translateY(-3px); border-color: var(--naranja-oscuro); }
+
+.destacado-clicable {
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.destacado-clicable:hover { background: var(--superficie); }
+.destacado-bloqueado { opacity: 0.85; }
+.banner { padding: 32px 28px; text-align: center; }
+.banner h2 { margin: 0 0 20px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.chip { padding: 8px 16px; border-radius: 999px; background: rgba(255, 255, 255, 0.85); font-weight: 700; font-size: 14px; }

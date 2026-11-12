@@ -1,0 +1,11 @@
+/* Contenedor de pagina (Evita desborde del layout en mobile) */
+.contenedor-pagina {
+  width: 100%;
+  max-width: 1000px;
+  box-sizing: border-box;
+}
+@media (max-width: 768px) {
+  .pagina {
+    padding: 20px 12px; /* Reduce los 40px 20px de desktop para ganar espacio */
+  }
+}

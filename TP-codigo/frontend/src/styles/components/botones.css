@@ -1,0 +1,23 @@
+/* ---------- Botones y campos ---------- */
+.btn {
+  width: auto;
+  padding: 11px 22px;
+  border: none;
+  border-radius: 999px;
+  background: var(--naranja);
+  color: var(--texto-oscuro);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn:hover { background: var(--naranja-oscuro); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-block { width: 100%; }
+.btn-secundario { background: #FFFFFF; border: 1px solid var(--borde); color: var(--texto); }
+.btn-secundario:hover { background: #FFF3DE; }
+.btn-peligro { background: #FDECEA; color: var(--peligro); }
+.btn-peligro:hover { background: #F8D7D3; }
+

@@ -1,0 +1,10 @@
+.item-card {
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--naranja);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #FFFDF8;
+}
+.item-card strong { color: var(--texto-oscuro); }
+.item-card-acciones { display: flex; gap: 8px; margin-top: 10px; }
+.item-card-acciones button { width: auto; padding: 6px 14px; font-size: 13px; }

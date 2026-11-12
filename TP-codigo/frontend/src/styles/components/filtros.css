@@ -1,0 +1,53 @@
+/* Barra de filtros responsiva para Reportes (Compacta) */
+.filtros-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  background: var(--superficie);
+  padding: 16px;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+.filtros-barra > div {
+  flex: 1 1 200px;
+}
+
+.filtros-barra label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--texto);
+}
+
+/* Quitamos el margin-bottom global para que la separación la maneje el gap */
+.filtros-barra input,
+.filtros-barra select {
+  margin-bottom: 0;
+}
+
+.filtros-barra button {
+  width: auto;
+  padding: 11px 20px;
+}
+
+@media (max-width: 768px) {
+  .filtros-barra {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px; /* Espaciado compacto de 12px entre fecha, médico y botones */
+    padding: 14px;
+  }
+
+  .filtros-barra > div {
+    width: 100%;
+    flex: none; /* Elimina la altura forzada de 200px en mobile */
+  }
+
+  .filtros-barra button {
+    width: 100%;
+  }
+}

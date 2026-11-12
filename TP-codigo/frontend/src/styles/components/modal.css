@@ -1,0 +1,13 @@
+.modal-content {
+  border: none;
+  border-radius: var(--radio);
+  box-shadow: 0 10px 40px rgba(120, 70, 0, 0.25);
+}
+.modal-close { color: var(--texto-suave); }
+.modal-close:hover { color: var(--texto); }
+.modal-ancho { max-width: 800px; max-height: 85vh; overflow-y: auto; }
+
+/* Ventana de finalizar */
+.selector-modo { display: flex; gap: 8px; margin-top: 8px; }
+.selector-modo .btn { flex: 1; padding: 9px 12px; font-size: 14px; }
+.acciones-modal { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }

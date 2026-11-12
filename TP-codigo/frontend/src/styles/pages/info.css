@@ -1,0 +1,15 @@
+/* ---------- Páginas informativas ---------- */
+.info { width: 100%; max-width: 1000px; }
+.info h1 { margin: 0 0 6px; font-size: 30px; }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 24px; }
+.tarjeta {
+  padding: 22px;
+  background: var(--superficie);
+  border-radius: var(--radio);
+  border-left: 5px solid var(--naranja);
+  box-shadow: var(--sombra);
+}
+.tarjeta h3 { margin: 0 0 8px; }
+.tarjeta h3 { display: flex; align-items: center; gap: 8px; }
+.tarjeta h3 svg { width: 20px; height: 20px; flex-shrink: 0; }
+.tarjeta p { margin: 0; color: var(--texto-suave); line-height: 1.5; }
